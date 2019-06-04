@@ -1,3 +1,4 @@
+import six
 import Model
 import Utils
 from GetResults import GetResults, UnstartedRaceWrapper
@@ -7,7 +8,7 @@ import xlsxwriter
 import operator
 
 def formatUciId( uci_id ):
-	return u' '.join( uci_id[i:i+3] for i in xrange(0, len(uci_id), 3) ) if uci_id.isdigit() else uci_id
+	return u' '.join( uci_id[i:i+3] for i in six.moves.range(0, len(uci_id), 3) ) if uci_id.isdigit() else uci_id
 	
 def countryFromUciId( uci_id ):
 	if uci_id.isdigit():
@@ -22,11 +23,16 @@ def UCIExcel( category, fname, startList=False ):
 	Finisher = Model.Rider.Finisher
 	statusNames = Model.Rider.statusNames
 	
+	rrWinner = None
 	if race.isUnstarted():
 		with UnstartedRaceWrapper():
 			results = GetResults( category )
 	else:
 		results = GetResults( category )
+		try:
+			rrWinner = results[0]
+		except:
+			pass
 	
 	if startList:
 		results = sorted( copy.deepcopy(results), key=operator.attrgetter('num') )
@@ -65,7 +71,7 @@ def UCIExcel( category, fname, startList=False ):
 			ws.write( row, col, v, fmt )
 		else:
 			ws.write( row, col, v )
-		colWidths[col] = max( colWidths.get(col, 0), len(unicode(v)) )
+		colWidths[col] = max( colWidths.get(col, 0), len(six.text_type(v)) )
 	
 	fmt = general_header_format
 	for row, r in enumerate(general, 3):
@@ -73,7 +79,7 @@ def UCIExcel( category, fname, startList=False ):
 			ww( row, col, v, fmt )
 		fmt = general_format
 
-	for col, width in colWidths.iteritems():
+	for col, width in six.iteritems(colWidths):
 		ws.set_column( col, col, width+2 )
 
 	#-------------------------------------------------------------------------------------------------------	
@@ -121,6 +127,8 @@ def UCIExcel( category, fname, startList=False ):
 	def getFinishTime( rr ):
 		if rr.status != Finisher:
 			return u''
+		if rrWinner and rrWinner.laps != rr.laps:
+			return rr.laps - rrWinner.laps
 		try:
 			finishTime = rr.lastTime - rr.raceTimes[0]
 			return Utils.formatTime(finishTime, forceHours=True, twoDigitHours=True)
@@ -128,8 +136,10 @@ def UCIExcel( category, fname, startList=False ):
 			return u''
 			
 	def getIRM( rr ):
-		if 'REL' in unicode(rr.pos):
+		if 'REL' in six.text_type(rr.pos):
 			return 'REL'
+		if rrWinner and rr.laps != rrWinner.laps:
+			return 'LAPS'
 		return u'' if rr.status == Finisher else statusNames[rr.status].replace('DQ', 'DSQ')
 	
 	getValue = {
@@ -155,7 +165,7 @@ def UCIExcel( category, fname, startList=False ):
 		for col, name in enumerate(colNames):
 			ww( row, col, getValue.get(name, lambda rr:u'')(rr), getFmt(name, row) )
 	
-	for col, width in colWidths.iteritems():
+	for col, width in six.iteritems(colWidths):
 		ws.set_column( col, col, width+2 )
 	
 	ws.autofilter( 0, 0, len(results)+1, len(colNames) )	

@@ -1,10 +1,12 @@
 from distutils.core import setup
 import os
+import six
 import shutil
 import zipfile
 import sys
 import datetime
 import subprocess
+import platform
 
 # Copy all dependent files into this folder.
 copyFiles = [
@@ -25,6 +27,7 @@ copyFiles = [
 	"ReadSignOnSheet.py",
 	"HelpSearch.py",
 	"MatchingCategory.py",
+	"ModuleUnpickler.py",
 	"BatchPublishAttrs.py",
 	"ReadCategoriesFromExcel.py",
 	"ReadPropertiesFromExcel.py",
@@ -42,8 +45,19 @@ with open('Dependencies.py', 'w') as fp:
 	for f in copyFiles:
 		fp.write( 'import {}\n'.format(f[:-3]) )
 
+subprocess.call( [
+		'python',
+		'-mcompileall',
+		'-l',
+		'.'
+	]
+)
+
 if os.path.exists('build'):
 	shutil.rmtree( 'build' )
+	
+if platform.platform() == 'Linux':
+	sys.exit()
 
 gds = [
 	r"c:\GoogleDrive\Downloads\Windows",
@@ -134,11 +148,11 @@ def make_inno_version():
 		'VersionInfoVersion':	AppVerName.split()[1],
 	}
 	with open('inno_setup.txt', 'w') as f:
-		for k, v in setup.iteritems():
+		for k, v in six.iteritems(setup):
 			f.write( '{}={}\n'.format(k,v) )
 make_inno_version()
 cmd = '"' + inno + '" ' + 'SeriesMgr.iss'
-print cmd
+six.print_( cmd )
 os.system( cmd )
 
 # Create versioned executable.
@@ -147,12 +161,12 @@ vNum = AppVerName.split()[1].replace( '.', '_' )
 newExeName = 'SeriesMgr_Setup_v' + vNum + '.exe'
 
 try:
-	os.remove( 'install\\' + newExeName )
+	os.remove( os.path.join('install',newExeName) )
 except:
 	pass
 	
-shutil.copy( 'install\\SeriesMgr_Setup.exe', 'install\\' + newExeName )
-print 'executable copied to: ' + newExeName
+shutil.copy( os.path.join('install', 'SeriesMgr_Setup.exe'), os.path.join('install', newExeName) )
+six.print_( 'executable copied to: ' + newExeName )
 
 # Create compressed executable.
 os.chdir( 'install' )
@@ -167,12 +181,13 @@ except:
 z = zipfile.ZipFile(newZipName, "w")
 z.write( newExeName )
 z.close()
-print 'executable compressed.'
+six.print_( 'executable compressed.' )
 
 shutil.copy( newZipName, googleDrive  )
 
-cmd = 'python virustotal_submit.py "{}"'.format(os.path.abspath(newExeName))
-print cmd
-os.chdir( '..' )
-subprocess.call( cmd, shell=True )
-shutil.copy( 'virustotal.html', os.path.join(googleDrive, 'virustotal_v' + vNum + '.html') )
+from virus_total_apis import PublicApi as VirusTotalPublicApi
+API_KEY = '64b7960464d4dbeed26ffa51cb2d3d2588cb95b1ab52fafd82fb8a5820b44779'
+vt = VirusTotalPublicApi(API_KEY)
+six.print_( 'VirusTotal Scan' )
+vt.scan_file( os.path.abspath(newExeName) )
+

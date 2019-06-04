@@ -1,6 +1,8 @@
 import wx
 import os
 import re
+import six
+import sys
 from string import Template
 import operator
 import Model
@@ -164,36 +166,34 @@ class History( wx.Panel ):
 		nonInterpCase = 2
 		if not hasattr(self, 'popupInfo'):
 			self.popupInfo = [
-				(wx.NewId(), _('Results'), 		_('Switch to Results tab'), self.OnPopupResults, allCases),
-				(wx.NewId(), _('RiderDetail'),	_('Show RiderDetail tab'), self.OnPopupRiderDetail, allCases),
-				(None, None, None, None, None),
-				(wx.NewId(), _('Correct...'),	_('Change number or time'),	self.OnPopupCorrect, interpCase),
-				(wx.NewId(), _('Shift...'),		_('Move time earlier/later'),	self.OnPopupShift, interpCase),
-				(wx.NewId(), _('Insert...'),	_('Insert a number before/after existing entry'),	self.OnPopupInsert, nonInterpCase),
-				(None, None, None, None, None),
-				(wx.NewId(), _('Delete...'),	_('Delete an entry'),	self.OnPopupDelete, nonInterpCase),
-				(wx.NewId(), _('Split...'),		_('Split an entry into two'),self.OnPopupSplit, nonInterpCase),
-				(None, None, None, None, None),
-				(wx.NewId(), u'{}...'.format(_('Swap with Entry before')),	_('Swap with Entry before'), self.OnPopupSwapBefore, nonInterpCase),
-				(wx.NewId(), u'{}...'.format(_('Swap with Entry after')),_('Swap with Entry after'),	self.OnPopupSwapAfter, nonInterpCase),
-				(None, None, None, None, None),
-				(wx.NewId(), _('Pull After Lap') + u'...',	_('Pull After lap'),	self.OnPopupPull, nonInterpCase),
-				(wx.NewId(), _('DNF After Lap') + u'...',	_('DNF After lap'),	self.OnPopupDNF, nonInterpCase),
+				(_('Results'), 		_('Switch to Results tab'), self.OnPopupResults, allCases),
+				(_('RiderDetail'),	_('Show RiderDetail tab'), self.OnPopupRiderDetail, allCases),
+				(None, None, None, None),
+				(_('Correct...'),	_('Change number or time'),	self.OnPopupCorrect, interpCase),
+				(_('Shift...'),		_('Move time earlier/later'),	self.OnPopupShift, interpCase),
+				(_('Insert...'),	_('Insert a number before/after existing entry'),	self.OnPopupInsert, nonInterpCase),
+				(None, None, None, None),
+				(_('Delete...'),	_('Delete an entry'),	self.OnPopupDelete, nonInterpCase),
+				(_('Split...'),		_('Split an entry into two'),self.OnPopupSplit, nonInterpCase),
+				(None, None, None, None),
+				(u'{}...'.format(_('Swap with Entry before')),	_('Swap with Entry before'), self.OnPopupSwapBefore, nonInterpCase),
+				(u'{}...'.format(_('Swap with Entry after')),_('Swap with Entry after'),	self.OnPopupSwapAfter, nonInterpCase),
+				(None, None, None, None),
+				(_('Pull After Lap') + u'...',	_('Pull After lap'),	self.OnPopupPull, nonInterpCase),
+				(_('DNF After Lap') + u'...',	_('DNF After lap'),	self.OnPopupDNF, nonInterpCase),
 			]
-			for id, name, text, callback, cCode in self.popupInfo:
-				if id:
-					self.Bind( wx.EVT_MENU, callback, id=id )
 					
 			self.menuOptions = []
-			for caseCode in xrange(3):
+			for caseCode in range(3):
 				menu = wx.Menu()
-				for i, (id, name, text, callback, cCode) in enumerate(self.popupInfo):
-					if not id:
+				for i, (name, text, callback, cCode) in enumerate(self.popupInfo):
+					if not name:
 						Utils.addMissingSeparator( menu )
 						continue
 					if caseCode < cCode:
 						continue
-					menu.Append( id, name, text )
+					item = menu.Append( wx.ID_ANY, name, text )
+					self.Bind( wx.EVT_MENU, callback, item )
 				Utils.deleteTrailingSeparators( menu )
 				self.menuOptions.append( menu )
 
@@ -213,7 +213,7 @@ class History( wx.Panel ):
 		success = False
 		undo.pushState()
 		with Model.LockRace() as race:
-			for rPrev in xrange( r - 1, -1, -1 ):
+			for rPrev in range( r - 1, -1, -1 ):
 				if not h[c][rPrev].interp and (self.category is None or race.inCategory(h[c][rPrev].num, self.category)):
 					EditEntry.SwapEntry( h[c][r], h[c][rPrev] )
 					success = True
@@ -228,7 +228,7 @@ class History( wx.Panel ):
 		success = False
 		undo.pushState()
 		with Model.LockRace() as race:
-			for rNext in xrange( r + 1, len(h[c]) ):
+			for rNext in range( r + 1, len(h[c]) ):
 				if not h[c][rNext].interp and (self.category is None or race.inCategory(h[c][rNext].num, self.category)):
 					EditEntry.SwapEntry( h[c][r], h[c][rNext] )
 					success = True
@@ -255,8 +255,8 @@ class History( wx.Panel ):
 			race = Model.race
 			race.getRider(entry.num).setStatus( Model.Rider.Pulled, entry.t + 1 )
 			race.setChanged()
-		except:
-			pass
+		except Exception as e:
+			Utils.logException( e, sys.exc_info() )
 		wx.CallAfter( self.refresh )
 		wx.CallAfter( Utils.refreshForecastHistory )
 		
@@ -277,8 +277,8 @@ class History( wx.Panel ):
 			race = Model.race
 			race.getRider(entry.num).setStatus( Model.Rider.DNF, entry.t + 1 )
 			race.setChanged()
-		except:
-			pass
+		except Exception as e:
+			Utils.logException( e, sys.exc_info() )
 		wx.CallAfter( self.refresh )
 		wx.CallAfter( Utils.refreshForecastHistory )
 		
@@ -341,7 +341,7 @@ class History( wx.Panel ):
 			return
 		for c, h in enumerate(self.history):
 			try:
-				r = (r for r, e in enumerate(h) if e.num == nSelect).next()
+				r = next(r for r, e in enumerate(h) if e.num == nSelect)
 				self.textColour[ (r,c) ] = self.whiteColour
 				self.backgroundColour[ (r,c) ] = self.blackColour if (r,c) not in self.rcInterp and (r,c) not in self.rcNumTime else self.greyColour
 			except StopIteration:
@@ -448,7 +448,7 @@ class History( wx.Panel ):
 		
 		Finisher = Model.Rider.Finisher
 		results = GetResults( category )
-		lapsDown = { rr.num:rr.gap for rr in results if unicode(rr.gap).startswith('-') }
+		lapsDown = { rr.num:rr.gap for rr in results if six.text_type(rr.gap).startswith('-') }
 		position = { rr.num:pos for pos, rr in enumerate(results, 1) if rr.status == Finisher }
 		winnerLaps = None
 		if results and results[0].status == Finisher:
@@ -484,7 +484,7 @@ class History( wx.Panel ):
 		
 		if isTimeTrial:
 			entries = [Model.Entry(e.num, e.lap, (race.riders[e.num].firstTime or 0.0) + e.t, e.interp) for e in entries]
-			entries.extend( [Model.Entry(r.num, 0, (race.riders[r.num].firstTime or 0.0), r.firstTime > tRace) for r in race.riders.itervalues()] )
+			entries.extend( [Model.Entry(r.num, 0, (race.riders[r.num].firstTime or 0.0), r.firstTime > tRace) for r in six.itervalues(race.riders)] )
 			entries.sort( key = operator.attrgetter('t', 'num') )
 		
 		# Collect the number and times for all entries so we can compute lap times.
@@ -494,7 +494,7 @@ class History( wx.Panel ):
 		
 		if not isTimeTrial:
 			# Trim out the lap 0 starts.
-			entries = [e for e in entries if e.lap > 0]
+			entries = [e for e in entries if (e.lap or 0) > 0]
 		
 		if not entries:
 			self.clearGrid()
@@ -505,11 +505,11 @@ class History( wx.Panel ):
 		if isTimeTrial:
 			leaderTimes = []
 			for e in entries:
-				while len(self.history) <= e.lap:
+				while len(self.history) <= (e.lap or 0):
 					self.history.append( [] )
-				if e.lap >= len(leaderTimes):
+				if (e.lap or 0) >= len(leaderTimes):
 					leaderTimes.append( e.t )
-				self.history[e.lap].append( e )
+				self.history[(e.lap or 0)].append( e )
 		else:
 			numSeen = set()
 			lapCur = 0
@@ -608,7 +608,7 @@ if __name__ == '__main__':
 	mainWin = wx.Frame(None,title="CrossMan", size=(600,400))
 	Model.setRace( Model.Race() )
 	Model.getRace()._populate()
-	for i, rider in enumerate(Model.getRace().riders.itervalues()):
+	for i, rider in enumerate(six.itervalues(Model.getRace().riders)):
 		rider.firstTime = i * 30.0
 	Model.getRace().isTimeTrial = True
 	history = History(mainWin)

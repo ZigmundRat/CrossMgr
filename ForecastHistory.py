@@ -1,8 +1,9 @@
 import wx
-import bisect
 import sys
-import itertools
+import six
+import bisect
 import operator
+import itertools
 import Utils
 import Model
 from Utils import formatTime, formatTimeGap, SetLabel
@@ -248,34 +249,30 @@ class ForecastHistory( wx.Panel ):
 		self.entryCur = self.quickRecorded[r]
 		if not hasattr(self, 'historyPopupInfo'):
 			self.historyPopupInfo = [
-				(u'{}...'.format(_('Correct')),	wx.NewId(), self.OnPopupHistoryCorrect),
-				(u'{}...'.format(_('Split')),	wx.NewId(), self.OnPopupHistorySplit),
-				(u'{}...'.format(_('Shift')),	wx.NewId(), self.OnPopupHistoryShift),
-				(u'{}...'.format(_('Insert')),	wx.NewId(), self.OnPopupHistoryInsert),
-				(u'{}...'.format(_('Delete')),	wx.NewId(), self.OnPopupHistoryDelete),
-				(None,				None,		None),
-				(u'{}...'.format(_('DNF')),		wx.NewId(), self.OnPopupHistoryDNF),
-				(None,				None,		None),
-				(_('RiderDetail'),				wx.NewId(),self.OnPopupHistoryRiderDetail),
-				(_('Results'),					wx.NewId(),self.OnPopupHistoryResults),
-				(_('Passings'),					wx.NewId(),self.OnPopupHistoryPassings),
-				(_('Chart'),					wx.NewId(),self.OnPopupHistoryChart),
+				(u'{}...'.format(_('Correct')),	self.OnPopupHistoryCorrect),
+				(u'{}...'.format(_('Split')),	self.OnPopupHistorySplit),
+				(u'{}...'.format(_('Shift')),	self.OnPopupHistoryShift),
+				(u'{}...'.format(_('Insert')),	self.OnPopupHistoryInsert),
+				(u'{}...'.format(_('Delete')),	self.OnPopupHistoryDelete),
+				(None,				    		None),
+				(u'{}...'.format(_('DNF')),		self.OnPopupHistoryDNF),
+				(None,				    		None),
+				(_('RiderDetail'),				self.OnPopupHistoryRiderDetail),
+				(_('Results'),					self.OnPopupHistoryResults),
+				(_('Passings'),					self.OnPopupHistoryPassings),
+				(_('Chart'),					self.OnPopupHistoryChart),
 			]
-			for p in self.historyPopupInfo:
-				if p[2]:
-					self.Bind( wx.EVT_MENU, p[2], id=p[1] )
-
-			self.menu = wx.Menu()
-			for i, p in enumerate(self.historyPopupInfo):
-				if p[2]:
-					self.menu.Append( p[1], p[0] )
+			
+			menu = wx.Menu()
+			for name, callback in self.historyPopupInfo:
+				if name:
+					item = menu.Append( wx.ID_ANY, name )
+					self.Bind( wx.EVT_MENU, callback, item )
 				else:
-					self.menu.AppendSeparator()
+					menu.AppendSeparator()
+			self.menuHistory = menu
 		
-		try:
-			self.PopupMenu( self.menu )
-		except Exception as e:
-			Utils.writeLog( 'ForecastHistory:doHistoryPopup: {}'.format(e) )
+		self.PopupMenu( self.menuHistory )
 	
 	def fixTTEntry( self, e ):
 		race = Model.race
@@ -382,7 +379,7 @@ class ForecastHistory( wx.Panel ):
 		value = int(value)
 		
 		self.entryCur = None
-		for k in xrange(1, 2*max(r, len(self.quickExpected) - r)):
+		for k in range(1, 2*max(r, len(self.quickExpected) - r)):
 			i = r + (k//2 if k&1 else -k//2)
 			if 0 <= i < len(self.quickExpected):
 				if self.quickExpected[i].num == value:
@@ -394,30 +391,25 @@ class ForecastHistory( wx.Panel ):
 		
 		if not hasattr(self, 'expectedPopupInfo'):
 			self.expectedPopupInfo = [
-				(u'{}...'.format(_('DNF')),		wx.NewId(), self.OnPopupExpectedDNF),
-				(u'{}...'.format(_('Pull')),	wx.NewId(), self.OnPopupExpectedPull),
-				(None,				None,		None),
-				(_('RiderDetail'),	wx.NewId(),	self.OnPopupExpectedRiderDetail),
-				(_('Results'),		wx.NewId(),	self.OnPopupExpectedResults),
-				(_('Passings'),		wx.NewId(),	self.OnPopupExpectedPassings),
-				(_('Chart'),		wx.NewId(),	self.OnPopupExpectedChart),
+				(u'{}...'.format(_('DNF')),		self.OnPopupExpectedDNF),
+				(u'{}...'.format(_('Pull')),	self.OnPopupExpectedPull),
+				(None,							None),
+				(_('RiderDetail'),				self.OnPopupExpectedRiderDetail),
+				(_('Results'),					self.OnPopupExpectedResults),
+				(_('Passings'),					self.OnPopupExpectedPassings),
+				(_('Chart'),					self.OnPopupExpectedChart),
 			]
-			for p in self.expectedPopupInfo:
-				if p[2]:
-					self.Bind( wx.EVT_MENU, p[2], id=p[1] )
 
-		menu = wx.Menu()
-		for i, p in enumerate(self.expectedPopupInfo):
-			if p[2]:
-				menu.Append( p[1], p[0] )
-			else:
-				menu.AppendSeparator()
+			menu = wx.Menu()
+			for name, callback in self.expectedPopupInfo:
+				if name:
+					item = menu.Append( wx.ID_ANY, name )
+					self.Bind( wx.EVT_MENU, callback, item )
+				else:
+					menu.AppendSeparator()
+			self.menuExpected = menu
 		
-		try:
-			self.PopupMenu( menu )
-			menu.Destroy()
-		except Exception as e:
-			Utils.writeLog( 'ForecastHistory:doExpectedPopup: {}'.format(e) )
+		self.PopupMenu( self.menuExpected )
 		
 	def OnPopupExpectedEnter( self, event ):
 		try:
@@ -520,7 +512,7 @@ class ForecastHistory( wx.Panel ):
 		if not tRace:
 			tRace = race.curRaceTime()
 		getT = self.getETATimeFunc()
-		self.expectedGrid.SetColumn( iExpectedTimeCol, [formatTime(getT(e) - tRace) if e.lap > 0 else ('[{}]'.format(formatTime(max(0.0, getT(e) - tRace + 0.0000001))))\
+		self.expectedGrid.SetColumn( iExpectedTimeCol, [formatTime(getT(e) - tRace) if (e.lap or 0) > 0 else ('[{}]'.format(formatTime(max(0.0, getT(e) - tRace + 0.0000001))))\
 										for e in self.quickExpected] )
 	
 	def addGaps( self, recorded ):
@@ -560,9 +552,9 @@ class ForecastHistory( wx.Panel ):
 		isTimeTrial = race.isTimeTrial
 		if isTimeTrial and expected:
 			for e in expected:
-				if e.lap == 0:
+				if (e.lap or 0) == 0:
 					# Schedule a refresh later to update started riders.
-					milliSeconds = max( 1, int((e.t - tRace)*1000.0 + 10.0) )
+					milliSeconds = max( 1, int(((e.t or 0.0) - tRace)*1000.0 + 10.0) )
 					if self.callLaterRefresh is None:
 						def doRefresh():
 							self.refresh()
@@ -611,7 +603,7 @@ class ForecastHistory( wx.Panel ):
 		tMissing = tRace - averageLapTime / 8.0
 		iNotMissing = 0
 		for r in (i for i, e in enumerate(expected) if e.t < tMissing):
-			for c in xrange(iExpectedColMax):
+			for c in range(iExpectedColMax):
 				backgroundColour[(r, c)] = self.orangeColour
 			iNotMissing = r + 1
 			
@@ -636,11 +628,11 @@ class ForecastHistory( wx.Panel ):
 		data = [None] * iExpectedColMax
 		data[iExpectedNumCol] = [u'{}'.format(e.num) for e in expected]
 		getT = self.getETATimeFunc()
-		data[iExpectedTimeCol] = [formatTime(getT(e) - tRace) if e.lap > 0
+		data[iExpectedTimeCol] = [formatTime(getT(e) - tRace) if (e.lap or 0) > 0
 			else (u'[{}]'.format(formatTime(max(0.0, getT(e) - tRace + 0.99999999)))) for e in expected]
-		data[iExpectedLapCol] = [u'{}'.format(e.lap) if e.lap > 0 else u'' for e in expected]
+		data[iExpectedLapCol] = [u'{}'.format(e.lap) if (e.lap or 0) > 0 else u'' for e in expected]
 		def getNoteExpected( e ):
-			if e.lap == 0:
+			if (e.lap or 0) == 0:
 				return _('Start')
 			try:
 				position = prevRiderPosition.get(e.num, -1) if e.t < catNextTime[race.getCategory(e.num)] else \
@@ -694,7 +686,7 @@ class ForecastHistory( wx.Panel ):
 		# Highlight the leader in the recorded list.
 		for r, e in enumerate(recorded):
 			if e.isGap():
-				for i in xrange( iRecordedColMax ):
+				for i in range( iRecordedColMax ):
 					backgroundColour[(r, i)] = self.groupColour
 			if prevRiderPosition.get(e.num,-1) == 1:
 				backgroundColour[(r, iRecordedNoteCol)] = wx.GREEN
@@ -708,7 +700,7 @@ class ForecastHistory( wx.Panel ):
 		data = [None] * iRecordedColMax
 		data[iRecordedNumCol] = [u'{}{}'.format(e.num,u"\u2190" if IsRiderFinished(e.num, e.t) else u'') if e.num > 0 else u' ' for e in recorded]
 		data[iRecordedTimeCol] = [
-			formatTime(e.t) if e.lap > 0 else
+			formatTime(e.t) if (e.lap or -1) > 0 else
 			(u'{}'.format(formatTimeGap(e.t)) if e.t is not None else u' ') if e.isGap() else
 			u'[{}]'.format(formatTime(e.t)) for e in recorded]
 		data[iRecordedLapCol] = [u'{}'.format(e.lap) if e.lap else u' ' for e in recorded]
@@ -716,7 +708,7 @@ class ForecastHistory( wx.Panel ):
 			if e.isGap():
 				return u'{}'.format(e.groupCount)
 			
-			if e.lap == 0:
+			if (e.lap or 0) == 0:
 				return _('Start')
 
 			position = nextRiderPosition.get(e.num, -1)
@@ -728,7 +720,7 @@ class ForecastHistory( wx.Panel ):
 				return ' '
 		data[iRecordedNoteCol] = [getNoteHistory(e) for e in recorded]
 		def getGapHistory( e ):
-			if e.lap == 0:
+			if (e.lap or 0) == 0:
 				return ' '
 			return prevRiderGap.get(e.num, u'')
 		data[iRecordedGapCol] = [getGapHistory(e) for e in recorded]
@@ -752,7 +744,7 @@ if __name__ == '__main__':
 	fh = ForecastHistory(mainWin)
 	Model.setRace( Model.Race() )
 	Model.getRace()._populate()
-	for i, rider in enumerate(Model.getRace().riders.itervalues()):
+	for i, rider in enumerate(six.itervalues(Model.getRace().riders)):
 		rider.firstTime = i * 30.0
 	Model.getRace().isTimeTrial = True
 	fh.refresh()

@@ -4,6 +4,7 @@ from Undo import undo
 import wx
 import re
 import os
+import six
 import wx.lib.intctrl as intctrl
 import wx.lib.masked.numctrl as numctrl
 import wx.lib.masked as masked
@@ -223,9 +224,6 @@ class RaceOptionsProperties( wx.Panel ):
 		self.showCourseAnimationInHtml = wx.CheckBox( self, label=_("Show Course Animation in Html") )
 		self.showCourseAnimationInHtml.SetValue( True )
 
-		self.winAndOut = wx.CheckBox( self, label=_("Win and Out") )
-		self.winAndOut.SetValue( False )
-
 		self.minPossibleLapTimeLabel = wx.StaticText( self, label=_('Min. Possible Lap Time: ') )
 		self.minPossibleLapTime = HighPrecisionTimeEdit( self, seconds = 0.0 )
 		self.minPossibleLapTimeUnit = wx.StaticText( self, label=_('hh:mm:ss.ddd') )
@@ -236,6 +234,9 @@ class RaceOptionsProperties( wx.Panel ):
 		self.licenseLinkTemplateLabel = wx.StaticText( self, label=_('License Link HTML Template: ') )
 		self.licenseLinkTemplate = wx.TextCtrl( self, size=(64,-1), style=wx.TE_PROCESS_ENTER )
 		
+		self.winAndOut = wx.CheckBox( self, label=_("Win and Out") )
+		self.winAndOut.SetValue( False )
+
 		#-------------------------------------------------------------------------------
 		ms = wx.BoxSizer( wx.HORIZONTAL )
 		self.SetSizer( ms )
@@ -260,9 +261,9 @@ class RaceOptionsProperties( wx.Panel ):
 			(self.distanceUnitLabel,0, labelAlign),		(self.distanceUnitSizer,		1, fieldAlign),
 			(blank(),				0, labelAlign),		(self.showDetails,				1, fieldAlign),
 			(blank(),				0, labelAlign),		(self.showCourseAnimationInHtml,1, fieldAlign),
-			(blank(),				0, labelAlign),		(self.winAndOut,				1, fieldAlign),
 			(self.minPossibleLapTimeLabel,0, labelAlign),(mplths,						0, 0),
 			(self.licenseLinkTemplateLabel,0, labelAlign),(self.licenseLinkTemplate,	1, fieldAlign),
+			(blank(),				0, labelAlign),		(self.winAndOut,				1, fieldAlign),
 		]
 		addToFGS( fgs, labelFieldBatchPublish )
 		
@@ -840,7 +841,7 @@ class BatchPublishProperties( wx.Panel ):
 			fgs.Add( st, flag=wx.ALL, border=4 )
 		
 		for i, attr in enumerate(batchPublishAttr):
-			for k in xrange(len(headers)): fgs.Add( wx.StaticLine(self, size=(1,1)), flag=wx.EXPAND )
+			for k in six.moves.range(len(headers)): fgs.Add( wx.StaticLine(self, size=(1,1)), flag=wx.EXPAND )
 		
 			attrCB = wx.CheckBox(self, label=attr.uiname)
 			attrCB.Bind( wx.EVT_CHECKBOX, lambda event, iAttr=i: self.onSelect(iAttr) )
@@ -1010,7 +1011,7 @@ def doBatchPublish( silent=False, iAttr=None ):
 				def run(self):
 					wx.CallAfter( self.progressDialog.ShowModal )
 					self.e = FtpUploadFile( self.ftpFiles, self.progressDialog.update )
-					wx.CallAfter( self.progressDialog.Show, False )
+					wx.CallAfter( self.progressDialog.EndModal, 0 )
 				
 			bytesTotal = sum( os.path.getsize(f) for f in ftpFiles )
 			uploadProgress = FtpUploadProgress( mainWin, fileTotal=len(ftpFiles), bytesTotal=bytesTotal, )
@@ -1138,11 +1139,10 @@ class NotesProperties( wx.Panel ):
 			self.menu = wx.Menu()
 			self.idVariable = {}
 			for v in sorted(race.getTemplateValues().keys() + ['Bib ', 'BibList ', 'BibTable ']):
-				idCur = wx.NewId()
 				v = u'{=' + v + u'}'
-				self.idVariable[idCur] = v
-				self.menu.Append( idCur, v )
-				self.Bind( wx.EVT_MENU, self.onInsertVariable, id=idCur )
+				item = self.menu.Append( wx.ID_ANY, v )
+				self.Bind( wx.EVT_MENU, self.onInsertVariable, item )
+				self.idVariable[item.GetId()] = v
 		
 		self.PopupMenu( self.menu )
 		wx.CallAfter( self.notes.SetFocus )

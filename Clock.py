@@ -4,8 +4,8 @@ import datetime
 
 now = datetime.datetime.now
 
-tCos60 = [cos((i/60.0)*2.0*pi-pi/2.0) for i in xrange(60)]
-tSin60 = [sin((i/60.0)*2.0*pi-pi/2.0) for i in xrange(60)]
+tCos60 = [cos((i/60.0)*2.0*pi-pi/2.0) for i in range(60)]
+tSin60 = [sin((i/60.0)*2.0*pi-pi/2.0) for i in range(60)]
 
 def GetCosSin( pos ):
 	a = pos*2.0*pi-pi/2.0
@@ -152,7 +152,7 @@ class Clock(wx.Control):
 		ctx.DrawEllipse( xCenter - rOutside, yCenter - rOutside, rOutside*2, rOutside*2 )
 
 		penCur = None
-		for i in xrange(60):
+		for i in range(60):
 			if i % 5 == 0:
 				rIn = rInHourTicks
 				pen = penHour

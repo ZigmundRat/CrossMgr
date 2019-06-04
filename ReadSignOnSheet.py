@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import wx
 import wx.adv as adv
 import wx.lib.filebrowsebutton as filebrowse
@@ -7,10 +5,11 @@ import wx.lib.scrolledpanel as scrolled
 import os
 import re
 import sys
+import six
 import cgi
 import copy
 import string
-from StringIO import StringIO
+StringIO = six.StringIO
 import Utils
 from Utils import tag
 import Model
@@ -24,7 +23,12 @@ import HelpSearch
 
 with Utils.SuspendTranslation():
 	TagFields = [
-		_('Tag'), _('Tag2'), _('Tag3'), _('Tag4'), _('Tag5'), _('Tag6'), _('Tag7'), _('Tag8'), _('Tag9'),
+		_('Tag'), _('Tag1'), _('Tag2'), _('Tag3'), _('Tag4'), _('Tag5'), _('Tag6'), _('Tag7'), _('Tag8'), _('Tag9'),
+	]
+
+with Utils.SuspendTranslation():
+	CustomCategoryFields = [
+		_('CustomCategory'), _('CustomCategory1'), _('CustomCategory2'), _('CustomCategory3'), _('CustomCategory4'), _('CustomCategory5'), _('CustomCategory6'), _('CustomCategory7'), _('CustomCategory8'), _('CustomCategory9'),
 	]
 
 with Utils.SuspendTranslation():
@@ -33,11 +37,11 @@ with Utils.SuspendTranslation():
 		_('LastName'), _('FirstName'),
 		_('Team'),
 		_('City'), _('State'), _('Prov'), _('StateProv'), _('Nat.'),
-		_('Category'), _('EventCategory'), _('CustomCategory'), _('Age'), _('Gender'),
+		_('Category'), _('EventCategory'), _('Age'), _('Gender'),
 		_('License'),
 		_('NatCode'), _('UCIID'), _('UCICode'), _('TeamCode'),
 		_('Factor'),
-	] + TagFields
+	] + TagFields + CustomCategoryFields
 
 IgnoreFields = ['Bib#', 'Factor', 'EventCategory', 'CustomCategory', 'TeamCode'] + TagFields	# Fields to ignore when adding data to standard reports.
 NumericFields = ['Age','Factor']
@@ -109,17 +113,17 @@ def getDefaultFieldMap( fileName, sheetName, expectedFieldCol = None ):
 	# Try to find the header columns.
 	# Look for the first row with more than 4 columns.
 	for r, row in enumerate(reader.iter_list(sheetName)):
-		cols = sum( 1 for d in row if d and unicode(d).strip() )
+		cols = sum( 1 for d in row if d and six.text_type(d).strip() )
 		if cols > 4:
-			headers = [unicode(h or '').strip() for h in row]
+			headers = [six.text_type(h or '').strip() for h in row]
 			break
 
 	# If we haven't found a header row yet, assume the first non-empty row is the header.
 	if not headers:
 		for r, row in enumerate(reader.iter_list(sheetName)):
-			cols = sum( 1 for d in row if d and unicode(d).strip() )
+			cols = sum( 1 for d in row if d and six.text_type(d).strip() )
 			if cols > 0:
-				headers = [unicode(h or '').strip() for h in row]
+				headers = [six.text_type(h or '').strip() for h in row]
 				break
 	
 	# Ignore empty columns on the end.
@@ -127,7 +131,7 @@ def getDefaultFieldMap( fileName, sheetName, expectedFieldCol = None ):
 		headers.pop()
 		
 	if not headers:
-		raise ValueError, u'{} {}::{}.'.format(_('Could not find a Header Row'), fileName, sheetName)
+		raise ValueError( u'{} {}::{}.'.format(_('Could not find a Header Row'), fileName, sheetName) )
 	
 	# Rename empty columns so as not to confuse the user.
 	headers = [h if h else u'<{} {:03d}>'.format(_('Blank Header Column'), (c+1)) for c, h in enumerate(headers)]
@@ -145,6 +149,9 @@ def getDefaultFieldMap( fileName, sheetName, expectedFieldCol = None ):
 	GetTranslation = _
 	iNoMatch = len(headers) - 1
 	exactMatch = { h.lower():(100.0, i) for i, h in enumerate(headers) }
+	# For Tag fields, try remove spaces.
+	exactMatch.update( {h.lower().replace(u' ', u''):(100.0, i) for i, h in enumerate(headers) if h.lower().startswith('tag')} )
+	
 	matchStrength = {}
 	for c, f in enumerate(Fields):
 		# Figure out some reasonable defaults for headers.
@@ -152,7 +159,7 @@ def getDefaultFieldMap( fileName, sheetName, expectedFieldCol = None ):
 		# First look for a perfect match ignoring case.
 		matchBest, iBest = exactMatch.get( f.lower(), (0.0, iNoMatch) )
 		
-		if not f.lower().startswith('tag'):			
+		if not f.lower().startswith('tag'):
 			# Then try the local translation of the header name.
 			if matchBest < 2.0:
 				fTrans = GetTranslation( f )
@@ -165,9 +172,9 @@ def getDefaultFieldMap( fileName, sheetName, expectedFieldCol = None ):
 			# If we don't get a high enough match, set to blank.
 			if matchBest <= 0.34:
 				try:
-					iBest = min( expectedFieldCol[h], iNoMatch )
+					iBest = min( expectedFieldCol[c], iNoMatch )
 				except (TypeError, KeyError):
-					iBest = iNoMatch
+					iBest = iNoMatch			
 		
 		fieldCol[f] = iBest
 		matchStrength[f] = matchBest
@@ -264,7 +271,7 @@ class HeaderNamesPage(adv.WizardPageSimple):
 		self.mapSummary.DeleteAllItems()
 		GetTranslation = _
 		for c, f in enumerate(Fields):
-			r = self.mapSummary.InsertItem( sys.maxint, GetTranslation(f) )
+			r = self.mapSummary.InsertItem( 999999, GetTranslation(f) )
 			self.mapSummary.SetItem( r, 1, self.choices[c].GetStringSelection() )
 		
 	def getFieldCol( self ):
@@ -529,9 +536,14 @@ class GetExcelLink( object ):
 JChipTagLength = 6
 OrionTagLength = 16
 
-trantab = string.maketrans( 'lOo', '100' )	# Translate lower-case l's to ones and Os to zeros. 
-def GetCleanTag( tag ):
-	return str(tag).translate(trantab, ' \t\n\r')	# Also, remove any extra spaces.
+if six.PY2:
+	trantab = string.maketrans( 'lOo', '100' ) # Translate lower-case l's to ones and Os to zeros. 
+	def GetCleanTag( tag ):
+		return six.text_type(tag).translate(trantab, ' \t\n\r')	# Also, remove any extra spaces.
+else:
+	trantab = str.maketrans( 'lOo', '100', ' \t\n\r' ) # Translate lower-case l's to ones and Os to zeros. Also, remove any extra spaces.
+	def GetCleanTag( tag ):
+		return six.text_type(tag).translate(trantab)
 
 def FixJChipTag( tag ):
 	return GetCleanTag(tag).zfill(JChipTagLength)
@@ -542,7 +554,7 @@ def FixOrionTag( tag ):
 def GetFixTag( externalInfo ):
 	# Check if we have JChip or Orion tags.
 	countJChip, countOrion = 0, 0
-	for num, edata in externalInfo.iteritems():
+	for num, edata in six.iteritems(externalInfo):
 		for tagName in TagFields:
 			try:
 				tag = edata[tagName]
@@ -559,7 +571,7 @@ def GetFixTag( externalInfo ):
 
 def FixTagFormat( externalInfo ):
 	fixTagFunc = GetFixTag( externalInfo )
-	for num, edata in externalInfo.iteritems():
+	for num, edata in six.iteritems(externalInfo):
 		for tagName in TagFields:
 			try:
 				tag = edata[tagName]
@@ -588,9 +600,9 @@ def GetTagNums( forceUpdate = False ):
 				for tagName in TagFields:
 					if excelLink.hasField( tagName ):
 						tn = {}
-						for num, edata in externalInfo.iteritems():
+						for num, edata in six.iteritems(externalInfo):
 							try:
-								tag = Utils.removeDiacritic(unicode(edata[tagName] or '')).lstrip('0').upper()
+								tag = Utils.removeDiacritic(six.text_type(edata[tagName] or '')).lstrip('0').upper()
 							except (KeyError, ValueError):
 								continue
 							if tag:
@@ -605,7 +617,7 @@ def UnmatchedTagsUpdate():
 	
 	tagNums = GetTagNums( forceUpdate=True )
 	tagsFound = False
-	for tag, times in race.unmatchedTags.iteritems():
+	for tag, times in six.iteritems(race.unmatchedTags):
 		try:
 			num = tagNums[tag]
 		except KeyError:
@@ -616,7 +628,7 @@ def UnmatchedTagsUpdate():
 		tagsFound = True
 	
 	if tagsFound:
-		race.unmatchedTags = { tag: times for tag, times in race.unmatchedTags.iteritems() if tag not in tagNums }
+		race.unmatchedTags = { tag: times for tag, times in six.iteritems(race.unmatchedTags) if tag not in tagNums }
 	
 #-----------------------------------------------------------------------------------------------------
 # Cache the Excel sheet so we don't have to re-read if it has not changed.
@@ -648,9 +660,27 @@ class ExcelLink( object ):
 		self.readFromFile = True
 		self.fieldCol = dict( (f, c) for c, f in enumerate(Fields) )
 	
-	def __cmp__( self, e ):
-		return cmp((self.fileName, self.sheetName, self.fieldCol), (e.fileName, e.sheetName, e.fieldCol))
+	def key( self ):
+		return (self.fileName, self.sheetName, self.fieldCol)
 	
+	def __eq__(self, other):
+		return self.key() == other.key()
+
+	def __ne__(self, other):
+		return self.key() != other.key()
+
+	def __lt__(self, other):
+		return self.key() < other.key()
+
+	def __le__(self, other):
+		return self.key() <= other.key()
+
+	def __gt__(self, other):
+		return self.key() > other.key()
+
+	def __ge__(self, other):
+		return self.key() >= other.key()
+		
 	def setFileName( self, fname ):
 		self.fileName = fname
 		
@@ -753,9 +783,10 @@ class ExcelLink( object ):
 		info = {}
 		rowInfo = []
 		hasTags = False
+		
 		for r, row in enumerate(reader.iter_list(self.sheetName)):
 			data = {}
-			for field, col in self.fieldCol.iteritems():
+			for field, col in self.fieldCol.items():
 				if col < 0:					# Skip unmapped columns.
 					continue
 				try:
@@ -769,7 +800,7 @@ class ExcelLink( object ):
 						
 					if field == 'LastName':
 						try:
-							data[field] = unicode(data[field] or '').upper()
+							data[field] = six.text_type(data[field] or '').upper()
 						except:
 							data[field] = _('Unknown')
 					elif field.startswith('Tag'):
@@ -778,14 +809,14 @@ class ExcelLink( object ):
 						except (ValueError, TypeError):
 							pass
 						try:
-							data[field] = unicode(data[field] or '').upper()
+							data[field] = six.text_type(data[field] or '').upper()
 							hasTags = True
 						except:
 							pass
 					elif field == 'Gender':
 						# Normalize and encode the gender information.
 						try:
-							genderFirstChar = unicode(data[field] or 'Open').strip().lower()[:1]
+							genderFirstChar = six.text_type(data[field] or 'Open').strip().lower()[:1]
 							if genderFirstChar in 'mhu':	# Men, Male, Hommes, Uomini
 								data[field] = 'Men'
 							elif genderFirstChar in 'wlfd':	# Women, Ladies, Female, Femmes, Donne
@@ -804,7 +835,7 @@ class ExcelLink( object ):
 							except ValueError:
 								data[field] = 0
 						else:
-							data[field] = unicode(data[field])
+							data[field] = six.text_type(data[field])
 						
 				except IndexError:
 					pass
@@ -862,7 +893,7 @@ class ExcelLink( object ):
 					)
 					continue
 					
-				tag = unicode(data.get(tField,u'')).lstrip('0').upper()
+				tag = six.text_type(data.get(tField,u'')).lstrip('0').upper()
 				if tag:
 					if tag in tRow:
 						errors.append( (
@@ -910,9 +941,9 @@ class ExcelLink( object ):
 			self.hasPropertiesSheet = ReadPropertiesFromExcel( reader )
 			
 		if not self.hasCategoriesSheet and self.initCategoriesFromExcel and (
-				self.hasField('EventCategory') or self.hasField('CustomCategory')):
+				self.hasField('EventCategory') or any( self.hasField(f) for f in CustomCategoryFields )):
 			MatchingCategory.PrologMatchingCategory()
-			for bib, fields in infoCache.iteritems():
+			for bib, fields in infoCache.items():
 				MatchingCategory.AddToMatchingCategory( bib, fields )
 			MatchingCategory.EpilogMatchingCategory()
 			
@@ -972,7 +1003,7 @@ class BibInfo( object ):
 			return {}
 		
 		try:
-			data = { k:unicode(v) for k, v in self.externalInfo.get(bib, {}).iteritems() }
+			data = { k:six.text_type(v) for k, v in six.iteritems(self.externalInfo.get(bib, {})) }
 		except ValueError:
 			data = {}
 		
@@ -985,7 +1016,7 @@ class BibInfo( object ):
 	def bibField( self, bib ):
 		data = self.getData( bib )
 		if not data:
-			return unicode(bib)
+			return six.text_type(bib)
 		values = [(u'<strong>{}</strong>' if 'Name' in f else u'{}').format(cgi.escape(data[f])) for f in self.fields if data.get(f, None)]
 		return u'{}: {}'.format(bib, u', '.join(values))
 	
@@ -1015,7 +1046,7 @@ class BibInfo( object ):
 					with tag( html, 'tr' ):
 						data = self.getData( bib )
 						with tag( html, 'td', {'style':"text-align:right"} ):
-							html.write( unicode(bib) )
+							html.write( six.text_type(bib) )
 						for f in self.fields:
 							with tag( html, 'td', {'style':"text-align:left"}):
 								if 'Name' in f:

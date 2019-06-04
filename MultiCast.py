@@ -1,9 +1,10 @@
+import six
 import socket
 import struct
 import sys
 import time
 import json
-from Queue import Queue, Empty
+from six.moves.queue import Queue, Empty
 from collections import deque
 import threading
 from datetime import datetime, timedelta
@@ -12,6 +13,9 @@ now = datetime.now
 
 multicast_group = '225.3.14.15'
 multicast_port = 10083
+
+def ToJson( v ):
+	return json.dumps( v, separators=(',',':') )
 
 def makeJSONCompatible( info ):
 	info = info.copy()
@@ -52,7 +56,7 @@ class MultiCastSender( threading.Thread ):
 			{ 'ts_sender': [tNow.year, tNow.month, tNow.day, tNow.hour, tNow.minute, tNow.second, tNow.microsecond] }
 		]
 		try:
-			sent = sock.sendto(json.dumps(message), (multicast_group, multicast_port))
+			sent = sock.sendto(ToJson(message).encode(), (multicast_group, multicast_port))
 		except Exception as e:
 			return receivers
 		
@@ -64,7 +68,7 @@ class MultiCastSender( threading.Thread ):
 				break
 			
 			try:
-				response = json.loads( data )
+				response = json.loads( data.decode() )
 			except Exception as e:
 				continue
 			
@@ -130,9 +134,9 @@ class MultiCastSender( threading.Thread ):
 			for message in messages:
 				if message[0] == 'trigger':
 					try:
-						sent = sock.sendto(json.dumps([message[0], makeJSONCompatible(message[1])]), (multicast_group, multicast_port))
+						sent = sock.sendto(ToJson([message[0], makeJSONCompatible(message[1])]).encode(), (multicast_group, multicast_port))
 					except Exception as e:
-						print e
+						# six.print_( 'MultiCastSender:', e )
 						pass
 				elif message[0] == 'terminate':
 					keepGoing = False
@@ -214,7 +218,7 @@ class MultiCastReceiver( threading.Thread ):
 			tNow = now()
 			
 			try:
-				message = json.loads( data )
+				message = json.loads( data.decode() )
 			except Exception as e:
 				continue
 			
@@ -239,12 +243,14 @@ class MultiCastReceiver( threading.Thread ):
 				self.recentCorrections.append( (tNow - datetime( *message[1]['ts_sender'] )).total_seconds() )
 
 				ts_receiver = [tNow.year, tNow.month, tNow.day, tNow.hour, tNow.minute, tNow.second, tNow.microsecond]
-				sock.sendto( json.dumps(['idreply', {
-					'hostname':socket.gethostname(),
-					'name':self.name,
-					'ts_receiver':ts_receiver,
-					'correction_secs': sorted(self.recentCorrections)[len(self.recentCorrections)//2],
-				}]), address )
+				sock.sendto( ToJson(
+					['idreply', {
+						'hostname':socket.gethostname(),
+						'name':self.name,
+						'ts_receiver':ts_receiver,
+						'correction_secs': sorted(self.recentCorrections)[len(self.recentCorrections)//2],
+						}
+					]).encode(), address )
 			
 			elif message[0] == 'terminate':
 				break
@@ -262,7 +268,7 @@ if __name__ == '__main__':
 		def printQ():
 			while 1:
 				info = triggerQ.get()
-				print info
+				six.print_( info )
 				triggerQ.task_done()
 				
 		triggerPrinter = threading.Thread( target=printQ )
@@ -275,11 +281,11 @@ if __name__ == '__main__':
 	else:
 		# Sender
 		def receiverCallback( receivers ):
-			print 'receivers:'
+			six.print_( 'receivers:' )
 			for r in receivers:
-				print r
+				six.print_( r )
 		
-		for i in xrange(200):
+		for i in range(200):
 			SendTrigger( ('trigger', {'bib':200+i, 'team':'MyTeam', 'ts':now()}) )
 			time.sleep( 0.0001 if 10 < i < 20 else 1 )
 		

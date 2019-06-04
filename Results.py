@@ -1,6 +1,7 @@
 import wx
 import re
 import os
+import six
 import sys
 import Model
 import Utils
@@ -326,33 +327,50 @@ class Results( wx.Panel ):
 		nonInterpCase = 2
 		if not hasattr(self, 'popupInfo'):
 			self.popupInfo = [
-				(wx.NewId(), _('Passings'), 	_('Switch to Passings tab'), self.OnPopupHistory, allCases),
-				(wx.NewId(), _('RiderDetail'),	_('Show RiderDetail Dialog'), self.OnPopupRiderDetail, allCases),
-				(None, None, None, None, None),
-				(wx.NewId(), _('Show Photos'),	_('Show Photos'), self.OnPopupShowPhotos, allCases),
-				(None, None, None, None, None),
-				(wx.NewId(), _('Correct...'),	_('Change number or lap time...'),	self.OnPopupCorrect, interpCase),
-				(wx.NewId(), _('Shift...'),	_('Move lap time earlier/later...'),	self.OnPopupShift, interpCase),
-				(wx.NewId(), _('Delete...'),	_('Delete lap time...'),	self.OnPopupDelete, nonInterpCase),
-				(None, None, None, None, None),
-				(wx.NewId(), _('Swap with Rider before'),	_('Swap with Rider before'),	self.OnPopupSwapBefore, allCases),
-				(wx.NewId(), _('Swap with Rider after'),	_('Swap with Rider after'),	self.OnPopupSwapAfter, allCases),
+				(_('Passings'), 	_('Switch to Passings tab'), self.OnPopupHistory, allCases),
+				(_('RiderDetail'),	_('Show RiderDetail Dialog'), self.OnPopupRiderDetail, allCases),
+				(None, None, None, None),
+				(_('Show Photos'),	_('Show Photos'), self.OnPopupShowPhotos, allCases),
+				(None, None, None, None),
+				(_('Correct...'),	_('Change number or lap time...'),	self.OnPopupCorrect, interpCase),
+				(_('Shift...'),	_('Move lap time earlier/later...'),	self.OnPopupShift, interpCase),
+				(_('Delete...'),	_('Delete lap time...'),	self.OnPopupDelete, nonInterpCase),
+				(None, None, None, None),
+				(_('Swap with Rider before'),	_('Swap with Rider before'),	self.OnPopupSwapBefore, allCases),
+				(_('Swap with Rider after'),	_('Swap with Rider after'),	self.OnPopupSwapAfter, allCases),
 			]
-			for p in self.popupInfo:
-				if p[0]:
-					self.Bind( wx.EVT_MENU, p[3], id=p[0] )
+
+			self.menuOptions = {}
+			for numBefore in [False, True]:
+				for numAfter in [False, True]:
+					for caseCode in range(3):
+						menu = wx.Menu()
+						for name, text, callback, cCase in self.popupInfo:
+							if not name:
+								Utils.addMissingSeparator( menu )
+								continue
+							if caseCode < cCase:
+								continue
+							if (name.endswith(_('before')) and not numBefore) or (name.endswith(_('after')) and not numAfter):
+								continue
+							item = menu.Append( wx.ID_ANY, name, text )
+							self.Bind( wx.EVT_MENU, callback, item )
+					
+						Utils.deleteTrailingSeparators( menu )
+						self.menuOptions[(numBefore,numAfter,caseCode)] = menu
 		
 		num = int(self.numSelect)
 		with Model.LockRace() as race:
 			if not race or num not in race.riders:
 				return
-			entries = race.getRider(num).interpolate()
 			category = FixCategories( self.categoryChoice, getattr(race, 'resultsCategory', 0) )
 			
 		riderResults = dict( (r.num, r) for r in GetResults(category) )
 		
+		entries = race.riders[num].interpolate()
 		try:
-			self.entry = entries[self.iLap]
+			laps = riderResults[num].laps
+			self.entry = next(e for e in entries if e.t == riderResults[num].raceTimes[laps])
 			caseCode = 1 if self.entry.interp else 2
 		except (TypeError, IndexError, KeyError):
 			caseCode = 0
@@ -365,20 +383,9 @@ class Results( wx.Panel ):
 			if RidersCanSwap( riderResults, num, numAdjacent ):
 				setattr( self, attr, numAdjacent )
 			
-		menu = wx.Menu()
-		for id, name, text, callback, cCase in self.popupInfo:
-			if not id:
-				Utils.addMissingSeparator( menu )
-				continue
-			if caseCode >= cCase:
-				if (name.endswith('before') and not self.numBefore) or (name.endswith('after') and not self.numAfter):
-					continue
-				menu.Append( id, name, text )
-				
-		Utils.deleteTrailingSeparators( menu )
+		menu = self.menuOptions[(self.numBefore is not None, self.numAfter is not None, caseCode)]
 		try:
 			self.PopupMenu( menu )
-			menu.Destroy()
 		except Exception as e:
 			Utils.writeLog( 'Results:doRightClick: {}'.format(e) )
 		
@@ -405,12 +412,15 @@ class Results( wx.Panel ):
 			
 		riderResults = dict( (r.num, r) for r in GetResults(category) )
 		try:
-			laps = riderResults[num].laps
+			rr1, rr2 = riderResults[num], riderResults[numAdjacent]
+			laps = rr1.laps
 			undo.pushState()
+			ee1 = next( e for e in e1 if e.t == rr1.raceTimes[laps] )
+			ee2 = next( e for e in e2 if e.t == rr2.raceTimes[laps] )
 			with Model.LockRace() as race:
-				SwapEntry( e1[laps], e2[laps] )
+				SwapEntry( ee1, ee2 )
 			wx.CallAfter( self.refresh )
-		except KeyError:
+		except (KeyError, StopIteration):
 			pass
 	
 	def showLastLap( self ):
@@ -459,23 +469,23 @@ class Results( wx.Panel ):
 		backgroundColourLabel = {}
 		
 		timeCol = None
-		for c in xrange(self.labelGrid.GetNumberCols()):
+		for c in range(self.labelGrid.GetNumberCols()):
 			if self.labelGrid.GetColLabelValue(c) == _('Time'):
 				timeCol = c
 				break
 		
-		for r in xrange(self.lapGrid.GetNumberRows()):		
+		for r in range(self.lapGrid.GetNumberRows()):		
 			try:
 				cellNum = int(self.labelGrid.GetCellValue(r,1))
 			except:
 				continue
 			
 			if cellNum == numSelectSearch:
-				for c in xrange(self.labelGrid.GetNumberCols()):
+				for c in range(self.labelGrid.GetNumberCols()):
 					textColourLabel[ (r,c) ] = self.whiteColour
 					backgroundColourLabel[ (r,c) ] = self.blackColour
 
-				for c in xrange(self.lapGrid.GetNumberCols()):
+				for c in range(self.lapGrid.GetNumberCols()):
 					textColourLap[ (r,c) ] = self.whiteColour
 					backgroundColourLap[ (r,c) ] = self.blackColour if (r,c) not in self.rcInterp and (r,c) not in self.rcNumTime else self.greyColour
 					
@@ -487,17 +497,17 @@ class Results( wx.Panel ):
 					backgroundColourLabel[ (r,timeCol) ] = self.lightBlueColour
 		
 		# Highlight the sorted columns.
-		for c in xrange(self.lapGrid.GetNumberCols()):
+		for c in range(self.lapGrid.GetNumberCols()):
 			if self.lapGrid.GetColLabelValue(c).startswith('<'):
-				for r in xrange(self.lapGrid.GetNumberRows()):
+				for r in range(self.lapGrid.GetNumberRows()):
 					textColourLap[ (r,c) ] = self.whiteColour
 					backgroundColourLap[ (r,c) ] = self.blackColour \
 						if (r,c) not in self.rcInterp and (r,c) not in self.rcNumTime else self.greyColour
 				break
 			
-		for c in xrange(self.labelGrid.GetNumberCols()):
+		for c in range(self.labelGrid.GetNumberCols()):
 			if self.labelGrid.GetColLabelValue(c).startswith('<'):
-				for r in xrange(self.labelGrid.GetNumberRows()):
+				for r in range(self.labelGrid.GetNumberRows()):
 					textColourLabel[ (r,c) ] = self.whiteColour
 					backgroundColourLabel[ (r,c) ] = self.blackColour
 				break
@@ -622,7 +632,7 @@ class Results( wx.Panel ):
 				if rr.status==Model.Rider.Finisher and rr.lapTimes and getSortTime(rr) > 0),
 			key = getSortTime
 		)
-		for i in xrange(1, len(results)):
+		for i in range(1, len(results)):
 			if results[i]._lastTimeOrig - results[i-1]._lastTimeOrig <= CloseFinishTime:
 				self.closeFinishBibs[results[i-1].num].append( results[i].num )
 				self.closeFinishBibs[results[i].num].append( results[i-1].num )
@@ -641,7 +651,7 @@ class Results( wx.Panel ):
 		speedUnit = None
 		iSpeedCol = None
 		try:
-			iSpeedCol = (i for i, c in enumerate(exportGrid.colnames) if c == _('Speed')).next()
+			iSpeedCol = next(i for i, c in enumerate(exportGrid.colnames) if c == _('Speed'))
 		except StopIteration:
 			pass
 		if iSpeedCol is not None:
@@ -717,7 +727,7 @@ class Results( wx.Panel ):
 		
 		highPrecision = Model.highPrecisionTimes()
 		try:
-			firstLapCol = (i for i, name in enumerate(colnames) if name.startswith(_('Lap'))).next()
+			firstLapCol = next(i for i, name in enumerate(colnames) if name.startswith(_('Lap')))
 		except StopIteration:
 			firstLapCol = len(colnames)
 		
@@ -769,7 +779,7 @@ class Results( wx.Panel ):
 				elif colnames[sortCol] == _('Factor'):
 					getFunc = lambda x: float(x) if x else maxVal
 				elif colnames[sortCol] in [_('Pos'), _('Bib')]:
-					getFunc = lambda x: int(x) if x and unicode(x).isdigit() else maxVal
+					getFunc = lambda x: int(x) if x and six.text_type(x).isdigit() else maxVal
 				else:
 					getFunc = lambda x: u'{}'.format(x)
 					maxVal = '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
@@ -782,12 +792,12 @@ class Results( wx.Panel ):
 				sortPairs.append( (k, r) )
 			sortPairs.sort()
 			
-			for c in xrange(len(data)):
+			for c in range(len(data)):
 				col = data[c]
 				data[c] = [col[i] if i < len(col) else u'' for k, i in sortPairs]
 			
 			if colnames[sortCol] != _('Bib'):
-				for r in xrange(len(data[sortCol])):
+				for r in range(len(data[sortCol])):
 					if data[sortCol][r]:
 						data[sortCol][r] = u'{} [{}: {}]'.format(data[sortCol][r], r+1, data[1][r])
 		
@@ -812,7 +822,7 @@ class Results( wx.Panel ):
 			colnames = exportGrid.colnames
 		
 		try:
-			iLabelMax = (i for i, name in enumerate(colnames) if name.startswith(_('Lap')) or name.startswith('<' + _('Lap'))).next()
+			iLabelMax = next(i for i, name in enumerate(colnames) if name.startswith(_('Lap')) or name.startswith('<' + _('Lap')))
 		except StopIteration:
 			iLabelMax = len(colnames)
 		colnamesLabels = colnames[:iLabelMax]
@@ -846,7 +856,7 @@ class Results( wx.Panel ):
 		with Model.LockRace() as race:
 			numTimeInfo = race.numTimeInfo
 			riders = race.riders
-			for r in xrange(self.lapGrid.GetNumberRows()):
+			for r in range(self.lapGrid.GetNumberRows()):
 				try:
 					rider = riders[int(self.labelGrid.GetCellValue(r, 1))]
 				except:
@@ -859,7 +869,7 @@ class Results( wx.Panel ):
 				
 				if not entries:
 					continue
-				for c in xrange(self.lapGrid.GetNumberCols()):
+				for c in range(self.lapGrid.GetNumberCols()):
 					if not self.lapGrid.GetCellValue(r, c):
 						break
 					try:

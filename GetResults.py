@@ -2,6 +2,7 @@ import Model
 from bisect import bisect_left
 from math import floor
 import re
+import six
 import sys
 import copy
 import Utils
@@ -31,17 +32,12 @@ def RidersCanSwap( riderResults, num, numAdjacent ):
 			rr1.laps != rr2.laps ):
 			return False
 		laps = rr1.laps
-		# Check if swapping the last times would result in race times out of order.
-		with Model.LockRace() as race:
-			e1 = race.getRider(num).interpolate()
-			e2 = race.getRider(numAdjacent).interpolate()
-		if e1[laps].interp or e2[laps].interp:
+		if rr1.interp[laps] or rr2.interp[laps]:
 			return False
-		rt1 = [e.t for e in e1]
-		rt2 = [e.t for e in e2]
+		rt1, rt2 = rr1.raceTimes[:], rr2.raceTimes[:]
 		rt1[laps], rt2[laps] = rt2[laps], rt1[laps]
-		if 	all( x < y for x, y in itertools.izip(rt1, rt1[1:]) ) and \
-			all( x < y for x, y in itertools.izip(rt2, rt2[1:]) ):
+		if 	all( x < y for x, y in six.moves.zip(rt1, rt1[1:]) ) and \
+			all( x < y for x, y in six.moves.zip(rt2, rt2[1:]) ):
 			return True
 	except (IndexError, ValueError, KeyError):
 		pass
@@ -100,7 +96,7 @@ class RiderResult( object ):
 			self.lastTime, getattr(self, 'startTime', 0.0) or 0.0,
 			self.num
 		)
-		
+	
 	def _getWinAndOutKey( self ):
 		k = self._getKey()
 		laps = -k[1]
@@ -113,6 +109,10 @@ class RiderResult( object ):
 	
 	def _getWinAndOutComponentKey( self ):
 		return (statusSortSeq[self.status], self.laps if self.laps else 999999, toInt(self.pos), self.lastTime, getattr(self, 'startTime', 0.0) or 0.0, self.num)
+		
+	def _setLapsDown( self, lapsDown ):
+		self.gap = u'-{} {}'.format(lapsDown, _('lap') if lapsDown == 1 else _('laps'))
+		self.gapValue = -lapsDown
 
 def assignFinishPositions( riderResults ):
 	Finisher = Model.Rider.Finisher
@@ -157,7 +157,73 @@ def FixRelegations( riderResults ):
 	riderResultsNew.extend( nonFinishers )
 		
 	riderResults[:] = riderResultsNew
+
+def getPulledCmpTuple( rr, rider, winnerLaps, decreasingLapsToGo=True ):
+	f = 1 if decreasingLapsToGo else -1
+	if rider.pulledLapsToGo:
+		lapsToGo = rider.pulledLapsToGo
+	else:
+		try:
+			lapsToGo = winnerLaps - (len(rr.lapTimes) + int(rider.tStatus - rr.raceLaps[-1] > 20.0))
+		except:
+			lapsToGo = winnerLaps
+	return (lapsToGo*f, rider.pulledSequence or 9999999, rr.raceTimes[-1] if rr.raceTimes else 24.0*60*60*300, rr.num, rr)
 	
+def FixPulled( riderResults, race, category ):
+	if race.isTimeTrial:
+		return
+	
+	catPull = defaultdict( list )
+	catWinnerLaps = {}
+	setPull = set()
+	Finisher, Pulled = Model.Rider.Finisher, Model.Rider.Pulled
+	hasPulledSequence = 0
+	for rr in riderResults:
+		category = race.getCategory(rr.num)
+		if not category:
+			continue
+		if category not in catWinnerLaps:
+			catWinnerLaps[category] = len(rr.lapTimes) if rr.lapTimes else None
+		rider = race.riders[rr.num]
+		if rider.status == Pulled:
+			catPull[category].append( rr )
+			setPull.add( rr.num )
+			hasPulledSequence += int(rider.pulledSequence is not None)
+	
+	if not catPull or not hasPulledSequence:
+		return
+	
+	pullSort = []
+	for cat, winnerLaps in six.iteritems(catWinnerLaps):
+		if not winnerLaps:
+			continue
+		for rr in catPull[cat]:
+			rider = race.riders[rr.num]
+			pullSort.append( getPulledCmpTuple(rr, rider, winnerLaps) )
+			
+			pulledLapsToGo = abs(pullSort[-1][0])
+			rr._setLapsDown( pulledLapsToGo )
+			
+			lapsCompleted = max( 0, winnerLaps - pulledLapsToGo )
+			del rr.raceTimes[((lapsCompleted+1) if lapsCompleted else 0):]
+			del rr.lapTimes[lapsCompleted:]
+			rr.lastTime = rr.lastTimeOrig = rr._lastTimeOrig = rr.raceTimes[-1] if rr.raceTimes else 0.0
+
+	pullSort.sort()
+	
+	riderResultsNew, nonFinishers = [], []
+	for rr in riderResults:
+		if rr.num not in setPull:
+			if rr.status == Finisher:
+				riderResultsNew.append( rr )
+			else:
+				nonFinishers.append( rr )
+	
+	riderResultsNew.extend( v[-1] for v in pullSort )
+	riderResultsNew.extend( nonFinishers)
+	
+	riderResults[:] = riderResultsNew
+
 def _GetResultsCore( category ):
 	Finisher = Model.Rider.Finisher
 	PUL = Model.Rider.Pulled
@@ -187,7 +253,7 @@ def _GetResultsCore( category ):
 	# Group finish times are defined as times which are separated from the previous time by at least 1 second.
 	groupFinishTimes = [0 if not entries else floor(entries[0].t)]
 	if roadRaceFinishTimes and not isTimeTrial:
-		groupFinishTimes.extend( [floor(entries[i].t) for i in xrange(1, len(entries)) if entries[i].t - entries[i-1].t >= 1.0] )
+		groupFinishTimes.extend( [floor(entries[i].t) for i in range(1, len(entries)) if entries[i].t - entries[i-1].t >= 1.0] )
 		groupFinishTimes.extend( [sys.float_info.max] * 5 )
 	
 	allRiderTimes = defaultdict( list )
@@ -201,7 +267,7 @@ def _GetResultsCore( category ):
 	fastestRidersLastLapTime = None
 	if allCategoriesFinishAfterFastestRidersLastLap and not isTimeTrial:
 		resultBest = (0, sys.float_info.max)
-		for c, (times, nums) in race.getCategoryTimesNums().iteritems():
+		for c, (times, nums) in six.iteritems(race.getCategoryTimesNums()):
 			if not times:
 				continue
 			try:
@@ -217,7 +283,7 @@ def _GetResultsCore( category ):
 				
 	# Get the number of race laps for each category.
 	categoryWinningTime, categoryWinningLaps = {}, {}
-	for c, (times, nums) in race.getCategoryTimesNums().iteritems():
+	for c, (times, nums) in six.iteritems(race.getCategoryTimesNums()):
 		if category and c != category:
 			continue
 		
@@ -249,7 +315,7 @@ def _GetResultsCore( category ):
 	
 	highPrecision = Model.highPrecisionTimes()
 	getCategory = race.getCategory
-	for rider in list(race.riders.itervalues()):
+	for rider in list(six.itervalues(race.riders)):
 		riderCategory = getCategory( rider.num )
 		
 		if category and riderCategory != category:
@@ -289,7 +355,7 @@ def _GetResultsCore( category ):
 			status = NP
 		rr = RiderResult(	rider.num, status, lastTime,
 							riderCategory.fullname,
-							[times[i] - times[i-1] for i in xrange(1, len(times))],
+							[times[i] - times[i-1] for i in range(1, len(times))],
 							times,
 							interp )
 		
@@ -398,15 +464,15 @@ def _GetResultsCore( category ):
 		# if gapValue is negative, it is laps down.  Otherwise, it is seconds.
 		rr.gapValue = 0
 		if rr.laps < leader.laps:
-			lapsDown = leader.laps - rr.laps
-			rr.gap = u'-{} {}'.format(lapsDown, _('lap') if lapsDown == 1 else _('laps'))
-			rr.gapValue = -lapsDown
+			rr._setLapsDown( leader.laps - rr.laps )
 		elif (winAndOut or rr != leader) and not (isTimeTrial and rr.lastTime == leader.lastTime):
 			rr.gap = (
 				Utils.formatTimeGap( TimeDifference(rr.lastTime, leader.lastTime, highPrecision), highPrecision )
 					if leader.lastTime < rr.lastTime else u''
 			)
 			rr.gapValue = max(0.0, rr.lastTime - leader.lastTime)
+
+	FixPulled( riderResults, race, category )
 	
 	# Compute road race times and gaps.
 	if roadRaceFinishTimes and not isTimeTrial:
@@ -564,7 +630,7 @@ def GetResultsWithData( category ):
 	race = Model.race
 	if category is None:
 		singleCategory = None
-		for c in race.categories.itervalues():
+		for c in race.categories.values():
 			if c.active and c.catType == CatWave:
 				if not singleCategory:
 					singleCategory = c
@@ -599,7 +665,7 @@ def GetResultsWithData( category ):
 					if float(v) == int(v):
 						v = int(v)
 				else:
-					v = unicode(v)
+					v = six.text_type(v)
 				setattr( rr, f, v )
 			except (KeyError, ValueError):
 				setattr( rr, f, u'' )
@@ -661,6 +727,14 @@ def GetEntries( category ):
 		),
 		key=Entry.key
 	)
+
+def GetEntriesForNum( category, num ):
+	results = GetResultsWithData( category )
+	Entry = Model.Entry
+	for r in results:
+		if r.num == num:
+			return [Entry(r.num, lap, t, r.interp[lap]) for lap, t in enumerate(r.raceTimes)]
+	return []
 	
 @Model.memoize
 def GetLastRider( category ):
@@ -750,7 +824,7 @@ def UnstartedRaceDataProlog( getExternalData = True ):
 		# Add all numbers from the spreadsheet if they are not already in the race.
 		# Default the status to NP.
 		if externalInfo:
-			for num, info in externalInfo.iteritems():
+			for num, info in six.iteritems(externalInfo):
 				if num not in race.riders and any(info.get(f, None) for f in ['LastName', 'FirstName', 'Team', 'License']):
 					rider = race.getRider( num )
 					rider.status = Model.Rider.NP

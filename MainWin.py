@@ -4,11 +4,15 @@ import wx.adv as adv
 from wx.lib.wordwrap import wordwrap
 import wx.lib.imagebrowser as imagebrowser
 import wx.lib.agw.flatnotebook as flatnotebook
+import six
 import os
 import re
 import io
-import cgi
 import sys
+if six.PY2:
+	from cgi import escape
+else:
+	from html import escape
 import time
 import copy
 import json
@@ -23,7 +27,7 @@ import platform
 import zipfile
 import base64
 import hashlib
-import urllib
+from six.moves.urllib.parse import quote
 from collections import defaultdict
 
 import locale
@@ -34,7 +38,7 @@ except:
 	localDateFormat = '%b %d, %Y'
 	localTimeFormat = '%I:%M%p'
 
-import cPickle as pickle
+import six.moves.cPickle as pickle
 from argparse import ArgumentParser
 import xlwt
 import xlsxwriter
@@ -78,6 +82,7 @@ from RaceDB				import RaceDB, RaceDBUpload
 from SimulateData		import SimulateData
 from NonBusyCall		import NonBusyCall
 from Playback			import Playback
+from Pulled				import Pulled
 import BatchPublishAttrs
 import Model
 import JChipSetup
@@ -215,8 +220,8 @@ def ShowTipAtStartup():
 		pass
 
 class SimulateDialog(wx.Dialog):
-	ID_MASS_START = wx.NewId()
-	ID_TIME_TRIAL = wx.NewId()
+	ID_MASS_START = 0
+	ID_TIME_TRIAL = 1
 
 	def __init__(
 			self, parent, fName, id=wx.ID_ANY, title=_('Simulation'), size=wx.DefaultSize, pos=wx.DefaultPosition,
@@ -284,7 +289,7 @@ class SimulateDialog(wx.Dialog):
 		sizer.Fit(self)
 
 def replaceJsonVar( s, varName, value ):
-	return s.replace( u'{} = null'.format(varName), u'{} = {}'.format(varName, json.dumps(value, separators=(',',':'))), 1 )
+	return s.replace( u'{} = null'.format(varName), u'{} = {}'.format(varName, Utils.ToJson(value, separators=(',',':'))), 1 )
 
 # Code on web page required by Google Analytics.
 gaSnippet = u'''
@@ -306,6 +311,7 @@ def AppendMenuItemBitmap( menu, id, name, help, bitmap ):
 	mi = wx.MenuItem( menu, id, name, help )
 	mi.SetBitmap( bitmap )
 	menu.Append( mi )
+	return mi
 		
 class MainWin( wx.Frame ):
 	def __init__( self, parent, id = wx.ID_ANY, title='', size=(200,200) ):
@@ -313,7 +319,7 @@ class MainWin( wx.Frame ):
 
 		Utils.setMainWin( self )
 		
-		self.updateLater = None	# Used for delayed updates after chip reads.
+		self.callLaterProcessRfidRefresh = None	# Used for delayed updates after chip reads.
 		self.numTimes = []
 		
 		self.nonBusyRefresh = NonBusyCall( self.refresh, min_millis=1500, max_millis=7500 )
@@ -333,7 +339,7 @@ class MainWin( wx.Frame ):
 		self.raceDBUploadDialog = None
 		
 		# Setup the objects for the race clock.
-		self.timer = wx.Timer( self, id=wx.NewId() )
+		self.timer = wx.Timer( self, id=wx.ID_ANY )
 		self.secondCount = 0
 		self.Bind( wx.EVT_TIMER, self.updateRaceClock, self.timer )
 
@@ -352,60 +358,53 @@ class MainWin( wx.Frame ):
 		#-----------------------------------------------------------------------
 		self.fileMenu = wx.Menu()
 
-		AppendMenuItemBitmap( self.fileMenu, wx.ID_NEW , _("&New..."), _("Create a new race"), Utils.GetPngBitmap('document-new.png') )
-		self.Bind(wx.EVT_MENU, self.menuNew, id=wx.ID_NEW )
+		item = AppendMenuItemBitmap( self.fileMenu, wx.ID_NEW, _("&New..."), _("Create a new race"), Utils.GetPngBitmap('document-new.png') )
+		self.Bind(wx.EVT_MENU, self.menuNew, item )
 
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.fileMenu, idCur , _("New Nex&t..."), _("Create a new race starting from the current race"), Utils.GetPngBitmap('document-new-next.png') )
-		self.Bind(wx.EVT_MENU, self.menuNewNext, id=idCur )
+		item = AppendMenuItemBitmap( self.fileMenu, wx.ID_ANY, _("New Nex&t..."), _("Create a new race starting from the current race"), Utils.GetPngBitmap('document-new-next.png') )
+		self.Bind(wx.EVT_MENU, self.menuNewNext, item )
 
 		self.fileMenu.AppendSeparator()
 		
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.fileMenu, idCur , _("New from &RaceDB Excel..."), _("Create a new race from RaceDB Excel output"), Utils.GetPngBitmap('database-add.png') )
-		self.Bind(wx.EVT_MENU, self.menuNewRaceDB, id=idCur )
+		item = AppendMenuItemBitmap( self.fileMenu, wx.ID_ANY, _("New from &RaceDB Excel..."), _("Create a new race from RaceDB Excel output"), Utils.GetPngBitmap('database-add.png') )
+		self.Bind(wx.EVT_MENU, self.menuNewRaceDB, item )
 
 		self.fileMenu.AppendSeparator()
-		AppendMenuItemBitmap( self.fileMenu, wx.ID_OPEN , _("&Open..."), _("Open a race"), Utils.GetPngBitmap('document-open.png') )
-		self.Bind(wx.EVT_MENU, self.menuOpen, id=wx.ID_OPEN )
+		item = AppendMenuItemBitmap( self.fileMenu, wx.ID_OPEN, _("&Open..."), _("Open a race"), Utils.GetPngBitmap('document-open.png') )
+		self.Bind(wx.EVT_MENU, self.menuOpen, item )
 
-		idCur = wx.NewId()
-		self.fileMenu.Append( idCur , _("Open N&ext..."), _("Open the next race starting from the current race") )
-		self.Bind(wx.EVT_MENU, self.menuOpenNext, id=idCur )
+		item = self.fileMenu.Append( wx.ID_ANY, _("Open N&ext..."), _("Open the next race starting from the current race") )
+		self.Bind(wx.EVT_MENU, self.menuOpenNext, item )
 
 		self.fileMenu.AppendSeparator()
-		idCur = wx.NewId()
-		self.fileMenu.Append( idCur , _("Open from RaceDB Server..."), _("Open a Race directly from RaceDB server") )
-		self.Bind(wx.EVT_MENU, self.menuOpenRaceDB, id=idCur )
+		item = self.fileMenu.Append( wx.ID_ANY, _("Open from RaceDB Server..."), _("Open a Race directly from RaceDB server") )
+		self.Bind(wx.EVT_MENU, self.menuOpenRaceDB, item )
 
-		idCur = wx.NewId()
-		self.fileMenu.Append( idCur , _("Upload Results to RaceDB Server..."), _("Upload Results to RaceDB server") )
-		self.Bind(wx.EVT_MENU, self.menuUploadRaceDB, id=idCur )
+		item = self.fileMenu.Append( wx.ID_ANY, _("Upload Results to RaceDB Server..."), _("Upload Results to RaceDB server") )
+		self.Bind(wx.EVT_MENU, self.menuUploadRaceDB, item )
 		
 		self.fileMenu.AppendSeparator()
 		
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.fileMenu, idCur , _("&Restore from Original Input..."), _("Restore from Original Input"),
+		item = AppendMenuItemBitmap( self.fileMenu, wx.ID_ANY, _("&Restore from Original Input..."), _("Restore from Original Input"),
 			Utils.GetPngBitmap('document-revert.png') )
-		self.Bind(wx.EVT_MENU, self.menuRestoreFromInput, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuRestoreFromInput, item )
 
 		self.fileMenu.AppendSeparator()
 		
 		recent = wx.Menu()
-		menu = self.fileMenu.Append(wx.ID_ANY, _("Recent Fil&es"), recent)
+		menu = self.fileMenu.AppendSubMenu( recent, _("Recent Fil&es") )
 		menu.SetBitmap( Utils.GetPngBitmap('document-open-recent.png') )
 		self.filehistory.UseMenu( recent )
 		self.filehistory.AddFilesToMenu()
 		
 		self.fileMenu.AppendSeparator()
 		
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.fileMenu, idCur, _('&Close Race'), _('Close this race without exiting CrossMgr'),
+		item = AppendMenuItemBitmap( self.fileMenu, wx.ID_ANY, _('&Close Race'), _('Close this race without exiting CrossMgr'),
 			Utils.GetPngBitmap('document-close.png') )
-		self.Bind(wx.EVT_MENU, self.menuCloseRace, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuCloseRace, item )
 		
-		AppendMenuItemBitmap( self.fileMenu, wx.ID_EXIT, _("E&xit"), _("Exit CrossMgr"), Utils.GetPngBitmap('exit.png') )
-		self.Bind(wx.EVT_MENU, self.menuExit, id=wx.ID_EXIT )
+		item = AppendMenuItemBitmap( self.fileMenu, wx.ID_EXIT, _("E&xit"), _("Exit CrossMgr"), Utils.GetPngBitmap('exit.png') )
+		self.Bind(wx.EVT_MENU, self.menuExit, item )
 		
 		self.Bind(wx.EVT_MENU_RANGE, self.menuFileHistory, id=wx.ID_FILE1, id2=wx.ID_FILE9)
 		
@@ -414,252 +413,217 @@ class MainWin( wx.Frame ):
 		#-----------------------------------------------------------------------
 		self.publishMenu = wx.Menu()
 		
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.publishMenu, idCur, _("Page &Setup..."), _("Setup the print page"), Utils.GetPngBitmap('page-setup.png') )
-		self.Bind(wx.EVT_MENU, self.menuPageSetup, id=idCur )
+		item = AppendMenuItemBitmap( self.publishMenu, wx.ID_ANY, _("Page &Setup..."), _("Setup the print page"), Utils.GetPngBitmap('page-setup.png') )
+		self.Bind(wx.EVT_MENU, self.menuPageSetup, item )
 
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.publishMenu, idCur, _("P&review Print Results..."), _("Preview the printed results on screen"),
+		item = AppendMenuItemBitmap( self.publishMenu, wx.ID_ANY, _("P&review Print Results..."), _("Preview the printed results on screen"),
 								Utils.GetPngBitmap('print-preview.png') )
-		self.Bind(wx.EVT_MENU, self.menuPrintPreview, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuPrintPreview, item )
 
 		self.publishMenu.AppendSeparator()
 		
-		AppendMenuItemBitmap( self.publishMenu, wx.ID_PRINT, _("&Print Results..."), _("Print the results to a printer"),
+		item = AppendMenuItemBitmap( self.publishMenu, wx.ID_PRINT, _("&Print Results..."), _("Print the results to a printer"),
 								Utils.GetPngBitmap('Printer.png') )
 		self.Bind(wx.EVT_MENU, self.menuPrint, id=wx.ID_PRINT )
 
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.publishMenu, idCur, _("Print P&odium Results..."), _("Print the top position results to a printer"),
+		item = AppendMenuItemBitmap( self.publishMenu, wx.ID_ANY, _("Print P&odium Results..."), _("Print the top position results to a printer"),
 								Utils.GetPngBitmap('Podium.png') )
-		self.Bind(wx.EVT_MENU, self.menuPrintPodium, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuPrintPodium, item )
 
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.publishMenu, idCur , _("Print C&ategories..."), _("Print Categories"), Utils.GetPngBitmap('categories.png') )
-		self.Bind(wx.EVT_MENU, self.menuPrintCategories, id=idCur )
+		item = AppendMenuItemBitmap( self.publishMenu, wx.ID_ANY, _("Print C&ategories..."), _("Print Categories"), Utils.GetPngBitmap('categories.png') )
+		self.Bind(wx.EVT_MENU, self.menuPrintCategories, item )
 
 		self.publishMenu.AppendSeparator()
 		
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.publishMenu, idCur,
+		item = AppendMenuItemBitmap( self.publishMenu, wx.ID_ANY,
 							_("&Batch Publish Files..."), _("Publish Multiple Results File Formats"), Utils.GetPngBitmap('batch_process_icon.png') )
-		self.Bind(wx.EVT_MENU, self.menuPublishBatch, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuPublishBatch, item )
 		
 		'''
 		self.publishMenu.AppendSeparator()
 		
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.publishMenu, idCur,
+		item = AppendMenuItemBitmap( self.publishMenu, wx.ID_ANY,
 							_("&HTML Publish..."), _("Publish Results as HTML (.html)"), Utils.GetPngBitmap('html-icon.png') )
-		self.Bind(wx.EVT_MENU, self.menuPublishHtmlRaceResults, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuPublishHtmlRaceResults, item )
 
 		self.publishMenu.AppendSeparator()
 		
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.publishMenu, idCur,
+		item = AppendMenuItemBitmap( self.publishMenu, wx.ID_ANY,
 							_("&Ftp Publish..."), _("Publish Results to FTP"),
 							Utils.GetPngBitmap('ftp-icon.png') )
-		self.Bind(wx.EVT_MENU, self.menuExportHtmlFtp, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuExportHtmlFtp, item )
 
 		self.publishMenu.AppendSeparator()
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.publishMenu, idCur,
+		item = AppendMenuItemBitmap( self.publishMenu, wx.ID_ANY,
 							_("&PDF Publish..."), _("Publish Results as PDF Files"),
 							Utils.GetPngBitmap('pdf-icon.png') )
-		self.Bind(wx.EVT_MENU, self.menuPrintPDF, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuPrintPDF, item )
 		
 		self.publishMenu.AppendSeparator()
 		
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.publishMenu, idCur,
+		item = AppendMenuItemBitmap( self.publishMenu, wx.ID_ANY,
 							_("&Excel Publish..."), _("Publish Results as an Excel Spreadsheet (.xls)"), Utils.GetPngBitmap('excel-icon.png') )
-		self.Bind(wx.EVT_MENU, self.menuPublishAsExcel, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuPublishAsExcel, item )
 		
 		self.publishMenu.AppendSeparator()
 		
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.publishMenu, idCur,
+		item = AppendMenuItemBitmap( self.publishMenu, wx.ID_ANY,
 							_("&CrossResults.com Publish..."), _("Publish Results to the CrossResults.com web site"),
 							Utils.GetPngBitmap('crossresults-icon.png') )
-		self.Bind(wx.EVT_MENU, self.menuExportCrossResults, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuExportCrossResults, item )
 
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.publishMenu, idCur,
+		item = AppendMenuItemBitmap( self.publishMenu, wx.ID_ANY,
 							_("&Road-Results.com Publish..."), _("Publish Results to the Road-Results.com web site"),
 							Utils.GetPngBitmap('crossresults-icon.png') )
-		self.Bind(wx.EVT_MENU, self.menuExportRoadResults, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuExportRoadResults, item )
 
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.publishMenu, idCur,
+		item = AppendMenuItemBitmap( self.publishMenu, wx.ID_ANY,
 							_("&WebScorer.com Publish..."), _("Publish Results in WebScorer.com format"),
 							Utils.GetPngBitmap('webscorer-icon.png') )
-		self.Bind(wx.EVT_MENU, self.menuExportWebScorer, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuExportWebScorer, item )
 
 		self.publishMenu.AppendSeparator()
 		
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.publishMenu, idCur,
+		item = AppendMenuItemBitmap( self.publishMenu, wx.ID_ANY,
 							_("&USAC Excel Publish..."), _("Publish Results in USAC Excel Format"),
 							Utils.GetPngBitmap('usac-icon.png') )
-		self.Bind(wx.EVT_MENU, self.menuExportUSAC, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuExportUSAC, item )
 
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.publishMenu, idCur,
+		item = AppendMenuItemBitmap( self.publishMenu, wx.ID_ANY,
 							_("UCI (&Infostrada) Excel Publish..."), _("Publish Results in UCI (&Infostrada) Excel Format"),
 							Utils.GetPngBitmap('infostrada-icon.png') )
-		self.Bind(wx.EVT_MENU, self.menuExportUCI, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuExportUCI, item )
 
 		self.publishMenu.AppendSeparator()
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.publishMenu, idCur,
+		item = AppendMenuItemBitmap( self.publishMenu, wx.ID_ANY,
 							_("&VTTA Excel Publish..."), _("Publish Results in Excel Format for VTTA analysis"),
 							Utils.GetPngBitmap('vtta-icon.png') )
-		self.Bind(wx.EVT_MENU, self.menuExportVTTA, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuExportVTTA, item )
 
 		self.publishMenu.AppendSeparator()
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.publishMenu, idCur,
+		item = AppendMenuItemBitmap( self.publishMenu, wx.ID_ANY,
 							_("&Facebook PNG Publish..."), _("Publish Results as PNG files for posting on Facebook"),
 							Utils.GetPngBitmap('facebook-icon.png') )
-		self.Bind(wx.EVT_MENU, self.menuPrintPNG, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuPrintPNG, item )
 		
 		self.publishMenu.AppendSeparator()
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.publishMenu, idCur,
+		item = AppendMenuItemBitmap( self.publishMenu, wx.ID_ANY,
 							_("TT Start HTML Publish..."), _("Publish Time Trial Start page"),
 							Utils.GetPngBitmap('stopwatch-icon.png') )
-		self.Bind(wx.EVT_MENU, self.menuPublishHtmlTTStart, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuPublishHtmlTTStart, item )
 		'''
 		
 		self.menuBar.Append( self.publishMenu, _("&Publish") )
 		
 		#-----------------------------------------------------------------------
 		self.editMenu = wx.Menu()
-		self.undoMenuButton = wx.MenuItem( self.editMenu, wx.ID_UNDO , _("&Undo\tCtrl+Z"), _("Undo the last edit") )
+		item = self.undoMenuButton = wx.MenuItem( self.editMenu, wx.ID_UNDO , _("&Undo\tCtrl+Z"), _("Undo the last edit") )
 		self.undoMenuButton.SetBitmap( Utils.GetPngBitmap('Undo-icon.png') )
 		self.editMenu.Append( self.undoMenuButton )
-		self.Bind(wx.EVT_MENU, self.menuUndo, id=wx.ID_UNDO )
+		self.Bind(wx.EVT_MENU, self.menuUndo, item )
 		self.undoMenuButton.Enable( False )
 		
 		self.redoMenuButton = wx.MenuItem( self.editMenu, wx.ID_REDO , _("&Redo\tCtrl+Y"), _("Redo the last edit") )
 		self.redoMenuButton.SetBitmap( Utils.GetPngBitmap('Redo-icon.png') )
-		self.editMenu.Append( self.redoMenuButton )
-		self.Bind(wx.EVT_MENU, self.menuRedo, id=wx.ID_REDO )
+		item = self.editMenu.Append( self.redoMenuButton )
+		self.Bind(wx.EVT_MENU, self.menuRedo, item )
 		self.redoMenuButton.Enable( False )
 		self.editMenu.AppendSeparator()
 		
-		self.editMenu.Append( wx.ID_FIND, _("&Find...\tCtrl+F"), _("Find a Rider") )
-		self.Bind(wx.EVT_MENU, self.menuFind, id=wx.ID_FIND )
+		item = self.editMenu.Append( wx.ID_FIND, _("&Find...\tCtrl+F"), _("Find a Rider") )
+		self.Bind(wx.EVT_MENU, self.menuFind, item )
 		
 		self.editMenu.AppendSeparator()
 		
-		idCur = wx.NewId()
-		self.editMenu.Append( idCur, _('&Delete Bib Number...'), _('Delete Bib Number...') )
-		self.Bind( wx.EVT_MENU, self.menuDeleteBib, id=idCur )
+		item = self.editMenu.Append( wx.ID_ANY, _('&Delete Bib Number...'), _('Delete Bib Number...') )
+		self.Bind( wx.EVT_MENU, self.menuDeleteBib, item )
 		
-		idCur = wx.NewId()
-		self.editMenu.Append( idCur, _('&Swap Bib Numbers...'), _('Swap Bib Numbers...') )
-		self.Bind( wx.EVT_MENU, self.menuSwapBibs, id=idCur )
+		item = self.editMenu.Append( wx.ID_ANY, _('&Swap Bib Numbers...'), _('Swap Bib Numbers...') )
+		self.Bind( wx.EVT_MENU, self.menuSwapBibs, item )
 		
-		idCur = wx.NewId()
-		self.editMenu.Append( idCur, _('&Change Bib Number...'), _('Change Bib Number...') )
-		self.Bind( wx.EVT_MENU, self.menuChangeBib, id=idCur )
+		item = self.editMenu.Append( wx.ID_ANY, _('&Change Bib Number...'), _('Change Bib Number...') )
+		self.Bind( wx.EVT_MENU, self.menuChangeBib, item )
 		
-		idCur = wx.NewId()
-		self.editMenu.Append( idCur, _('&Add Missing Bib Number...'), _('Add Missing Bib Number...') )
-		self.Bind( wx.EVT_MENU, self.menuAddBibNumber, id=idCur )
+		item = self.editMenu.Append( wx.ID_ANY, _('&Add Missing Bib Number...'), _('Add Missing Bib Number...') )
+		self.Bind( wx.EVT_MENU, self.menuAddBibNumber, item )
 		
 		self.editMenu.AppendSeparator()
-		idCur = wx.NewId()
-		self.editMenu.Append( idCur, _('&Change "Autocorrect"...'), _('Change "Autocorrect"...') )
-		self.Bind( wx.EVT_MENU, self.menuAutocorrect, id=idCur )
+		item = self.editMenu.Append( wx.ID_ANY, _('&Change "Autocorrect"...'), _('Change "Autocorrect"...') )
+		self.Bind( wx.EVT_MENU, self.menuAutocorrect, item )
 		
 		self.editMenuItem = self.menuBar.Append( self.editMenu, _("&Edit") )
 
 		#-----------------------------------------------------------------------
 		self.dataMgmtMenu = wx.Menu()
 		
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.dataMgmtMenu, idCur , _("&Link to External Excel Data..."), _("Link to information in an Excel spreadsheet"),
+		item = AppendMenuItemBitmap( self.dataMgmtMenu, wx.ID_ANY, _("&Link to External Excel Data..."), _("Link to information in an Excel spreadsheet"),
 			Utils.GetPngBitmap('excel-icon.png') )
-		self.Bind(wx.EVT_MENU, self.menuLinkExcel, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuLinkExcel, item )
 		
 		self.dataMgmtMenu.AppendSeparator()
 		
 		#-----------------------------------------------------------------------
-		idCur = wx.NewId()
-		self.dataMgmtMenu.Append( idCur, _('&Add DNS from External Excel Data...'), _('Add DNS...') )
-		self.Bind( wx.EVT_MENU, self.menuDNS, id=idCur )
+		item = self.dataMgmtMenu.Append( wx.ID_ANY, _('&Add DNS from External Excel Data...'), _('Add DNS...') )
+		self.Bind( wx.EVT_MENU, self.menuDNS, item )
 		
-		idCur = wx.NewId()
-		self.dataMgmtMenu.Append( idCur, _('&Open Excel Spreadsheet...'), _('Open Excel Spreadsheet...') )
-		self.Bind( wx.EVT_MENU, self.menuOpenExcelSheet, id=idCur )
+		item = self.dataMgmtMenu.Append( wx.ID_ANY, _('&Open Excel Spreadsheet...'), _('Open Excel Spreadsheet...') )
+		self.Bind( wx.EVT_MENU, self.menuOpenExcelSheet, item )
 		
 		self.dataMgmtMenu.AppendSeparator()
 		
 		#-----------------------------------------------------------------------
-		idCur = wx.NewId()
-		AppendMenuItemBitmap(self.dataMgmtMenu, idCur , _("&Import Time Trial Start Times..."), _("Import Time Trial Start Times"),
+		item = AppendMenuItemBitmap(self.dataMgmtMenu, wx.ID_ANY, _("&Import Time Trial Start Times..."), _("Import Time Trial Start Times"),
 			Utils.GetPngBitmap('clock-add.png') )
-		self.Bind(wx.EVT_MENU, self.menuImportTTStartTimes, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuImportTTStartTimes, item )
 		
 		'''
 		#-----------------------------------------------------------------------
 		self.dataMgmtMenu.AppendSeparator()
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.dataMgmtMenu, idCur , _("&Import Course in GPX format..."), _("Import Course in GPX format"),
+		item = AppendMenuItemBitmap( self.dataMgmtMenu, wx.ID_ANY, _("&Import Course in GPX format..."), _("Import Course in GPX format"),
 			Utils.GetPngBitmap('gps-icon.png') )
-		self.Bind(wx.EVT_MENU, self.menuImportGpx, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuImportGpx, item )
 		
 		self.exportGpxMenu = wx.Menu()
 		
-		idCur = wx.NewId()
-		self.exportGpxMenu.Append( idCur, _("in GPX Format..."), _("Export Course in GPX format") )
-		self.Bind(wx.EVT_MENU, self.menuExportGpx, id=idCur )
+		item = self.exportGpxMenu.Append( wx.ID_ANY, _("in GPX Format..."), _("Export Course in GPX format") )
+		self.Bind(wx.EVT_MENU, self.menuExportGpx, item )
 		
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.exportGpxMenu, idCur , _("as HTML &Preview..."),
+		item = AppendMenuItemBitmap( self.exportGpxMenu, wx.ID_ANY, _("as HTML &Preview..."),
 			_("Export Course Preview in HTML"),
 			Utils.GetPngBitmap('html-icon.png')
 		)
-		self.Bind(wx.EVT_MENU, self.menuExportCoursePreviewAsHtml, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuExportCoursePreviewAsHtml, item )
 		
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.exportGpxMenu, idCur,
+		item = AppendMenuItemBitmap( self.exportGpxMenu, wx.ID_ANY,
 			_("as KMZ Virtual Tour..."),
 			_("Export Course as KMZ Virtual Tour (Requires Google Earth to View)"),
 			Utils.GetPngBitmap('Google-Earth-icon.png')
 		)
-		self.Bind(wx.EVT_MENU, self.menuExportCourseAsKml, id=idCur )
+		self.Bind(wx.EVT_MENU, self.menuExportCourseAsKml, item )
 		
-		self.dataMgmtMenu.AppendMenu( wx.NewId(), _('Export Course'), self.exportGpxMenu  )
+		self.dataMgmtMenu.AppendMenu( wx.ANY_ID, _('Export Course'), self.exportGpxMenu  )
 		'''
 		
 		#-----------------------------------------------------------------------
 		
 		self.dataMgmtMenu.AppendSeparator()
 		
-		idCur = wx.NewId()
-		self.dataMgmtMenu.Append( idCur , _("&Import Categories from File..."), _("Import Categories from File") )
-		self.Bind(wx.EVT_MENU, self.menuImportCategories, id=idCur )
+		item = self.dataMgmtMenu.Append( wx.ID_ANY, _("&Import Categories from File..."), _("Import Categories from File") )
+		self.Bind(wx.EVT_MENU, self.menuImportCategories, item )
 
-		idCur = wx.NewId()
-		self.dataMgmtMenu.Append( idCur , _("&Export Categories to File..."), _("Export Categories to File") )
-		self.Bind(wx.EVT_MENU, self.menuExportCategories, id=idCur )
+		item = self.dataMgmtMenu.Append( wx.ID_ANY, _("&Export Categories to File..."), _("Export Categories to File") )
+		self.Bind(wx.EVT_MENU, self.menuExportCategories, item )
 		
 		self.dataMgmtMenu.AppendSeparator()
 
-		idCur = wx.NewId()
-		self.dataMgmtMenu.Append( idCur , _("Export Passings to Excel..."), _("Export Passings to Excel File") )
-		self.Bind(wx.EVT_MENU, self.menuExportHistory, id=idCur )
+		item = self.dataMgmtMenu.Append( wx.ID_ANY, _("Export Passings to Excel..."), _("Export Passings to Excel File") )
+		self.Bind(wx.EVT_MENU, self.menuExportHistory, item )
 
-		idCur = wx.NewId()
-		self.dataMgmtMenu.Append( idCur , _("Export Raw Data as &HTML..."), _("Export raw data as HTML (.html)") )
-		self.Bind(wx.EVT_MENU, self.menuExportHtmlRawData, id=idCur )
+		item = self.dataMgmtMenu.Append( wx.ID_ANY, _("Export Raw Data as &HTML..."), _("Export raw data as HTML (.html)") )
+		self.Bind(wx.EVT_MENU, self.menuExportHtmlRawData, item )
 
-		idCur = wx.NewId()
-		self.dataMgmtMenu.Append( idCur , _("Export Results as &JSON..."), _("Export results as JSON (.json)") )
-		self.Bind(wx.EVT_MENU, self.menuExportResultsJSON, id=idCur )
+		item = self.dataMgmtMenu.Append( wx.ID_ANY, _("Export Results as &JSON..."), _("Export results as JSON (.json)") )
+		self.Bind(wx.EVT_MENU, self.menuExportResultsJSON, item )
 		
 		self.menuBar.Append( self.dataMgmtMenu, _("&DataMgmt") )
 
@@ -699,20 +663,21 @@ class MainWin( wx.Frame ):
 			[ 'actions',		Actions,			_('Actions') ],
 			[ 'record',			NumKeypad,			_('Record') ],
 			[ 'results',		Results,			_('Results') ],
+			[ 'pulled',			Pulled,				_('Pulled') ],
 			[ 'history',		History,			_('Passings') ],
 			[ 'riderDetail',	RiderDetail,		_('RiderDetail') ],
 			[ 'gantt', 			Gantt,				_('Chart') ],
-			[ 'raceAnimation',	RaceAnimation,		_('Animation') ],
 			[ 'recommendations',Recommendations,	_('Recommendations') ],
 			[ 'categories', 	Categories,			_('Categories') ],
 			[ 'properties',		Properties,			_('Properties') ],
 			[ 'primes',			Primes,				_('Primes') ],
+			[ 'raceAnimation',	RaceAnimation,		_('Animation') ],
 			[ 'situation',		Situation,			_('Situation') ],
 			[ 'lapCounter',		LapCounter,			_('LapCounter') ],
 			[ 'announcer',		Announcer,			_('Announcer') ],
 			[ 'histogram',		HistogramPanel,		_('Histogram') ],
 		]
-		self.attrWindowSet = {'results', 'history', 'gantt', 'raceAnimation', 'situation', 'lapCounter'}
+		self.attrWindowSet = {'results', 'history', 'gantt', 'raceAnimation', 'situation', 'announcer', 'lapCounter'}
 		
 		for i, (a, c, n) in enumerate(self.attrClassName):
 			setattr( self, a, c(self.notebook) )
@@ -730,112 +695,92 @@ class MainWin( wx.Frame ):
 		#-----------------------------------------------------------------------
 		self.chipMenu = wx.Menu()
 
-		idCur = wx.NewId()
-		AppendMenuItemBitmap( self.chipMenu, idCur, _("Chip Reader &Setup..."), _("Configure and Test the Chip Reader"), Utils.GetPngBitmap('rfid-signal.png') )
-		self.Bind(wx.EVT_MENU, self.menuJChip, id=idCur )
+		item = AppendMenuItemBitmap( self.chipMenu, wx.ID_ANY, _("Chip Reader &Setup..."), _("Configure and Test the Chip Reader"), Utils.GetPngBitmap('rfid-signal.png') )
+		self.Bind(wx.EVT_MENU, self.menuJChip, item )
 		
 		self.chipMenu.AppendSeparator()
 		
-		idCur = wx.NewId()
-		self.chipMenu.Append( idCur , _("Import JChip File..."), _("JChip Formatted File") )
-		self.Bind(wx.EVT_MENU, self.menuJChipImport, id=idCur )
+		item = self.chipMenu.Append( wx.ID_ANY, _("Import JChip File..."), _("JChip Formatted File") )
+		self.Bind(wx.EVT_MENU, self.menuJChipImport, item )
 		
-		idCur = wx.NewId()
-		self.chipMenu.Append( idCur , _("Import Impinj File..."), _("Impinj Formatted File") )
-		self.Bind(wx.EVT_MENU, self.menuImpinjImport, id=idCur )
+		item = self.chipMenu.Append( wx.ID_ANY, _("Import Impinj File..."), _("Impinj Formatted File") )
+		self.Bind(wx.EVT_MENU, self.menuImpinjImport, item )
 		
-		idCur = wx.NewId()
-		self.chipMenu.Append( idCur , _("Import Ipico File..."), _("Ipico Formatted File") )
-		self.Bind(wx.EVT_MENU, self.menuIpicoImport, id=idCur )
+		item = self.chipMenu.Append( wx.ID_ANY, _("Import Ipico File..."), _("Ipico Formatted File") )
+		self.Bind(wx.EVT_MENU, self.menuIpicoImport, item )
 		
-		idCur = wx.NewId()
-		self.chipMenu.Append( idCur , _("Import Alien File..."), _("Alien Formatted File") )
-		self.Bind(wx.EVT_MENU, self.menuAlienImport, id=idCur )
+		item = self.chipMenu.Append( wx.ID_ANY, _("Import Alien File..."), _("Alien Formatted File") )
+		self.Bind(wx.EVT_MENU, self.menuAlienImport, item )
 		
-		idCur = wx.NewId()
-		self.chipMenu.Append( idCur , _("Import Orion File..."), _("Orion Formatted File") )
-		self.Bind(wx.EVT_MENU, self.menuOrionImport, id=idCur )
+		item = self.chipMenu.Append( wx.ID_ANY, _("Import Orion File..."), _("Orion Formatted File") )
+		self.Bind(wx.EVT_MENU, self.menuOrionImport, item )
 		
-		idCur = wx.NewId()
-		self.chipMenu.Append( idCur , _("Import RaceResult File..."), _("RaceResult File") )
-		self.Bind(wx.EVT_MENU, self.menuRaceResultImport, id=idCur )
+		item = self.chipMenu.Append( wx.ID_ANY, _("Import RaceResult File..."), _("RaceResult File") )
+		self.Bind(wx.EVT_MENU, self.menuRaceResultImport, item )
 		
 		self.menuBar.Append( self.chipMenu, _("Chip&Reader") )
 
 		#----------------------------------------------------------------------------------------------
 		self.toolsMenu = wx.Menu()
 		
-		idCur = wx.NewId()
-		self.toolsMenu.Append( idCur , _("&Change Race Start Time..."), _("Change the Start Time of the Race") )
-		self.Bind(wx.EVT_MENU, self.menuChangeRaceStartTime, id=idCur )
+		item = self.toolsMenu.Append( wx.ID_ANY, _("&Change Race Start Time..."), _("Change the Start Time of the Race") )
+		self.Bind(wx.EVT_MENU, self.menuChangeRaceStartTime, item )
 		
 		self.toolsMenu.AppendSeparator()
 
-		idCur = wx.NewId()
-		self.toolsMenu.Append( idCur , _("Copy Log File to &Clipboard..."), _("Copy Log File to Clipboard") )
-		self.Bind(wx.EVT_MENU, self.menuCopyLogFileToClipboard, id=idCur )
+		item = self.toolsMenu.Append( wx.ID_ANY, _("Copy Log File to &Clipboard..."), _("Copy Log File to Clipboard") )
+		self.Bind(wx.EVT_MENU, self.menuCopyLogFileToClipboard, item )
 
 		self.toolsMenu.AppendSeparator()
 		
-		idCur = wx.NewId()
-		self.toolsMenu.Append( idCur , _("&Simulate Race..."), _("Simulate a race") )
-		self.Bind(wx.EVT_MENU, self.menuSimulate, id=idCur )
+		item = self.toolsMenu.Append( wx.ID_ANY, _("&Simulate Race..."), _("Simulate a race") )
+		self.Bind(wx.EVT_MENU, self.menuSimulate, item )
 
-		idCur = wx.NewId()
-		self.toolsMenu.Append( idCur , _("&Reload Checklist..."), _("Reload the Checklist from the Checklist File") )
-		self.Bind(wx.EVT_MENU, self.menuReloadChecklist, id=idCur )
+		item = self.toolsMenu.Append( wx.ID_ANY, _("&Reload Checklist..."), _("Reload the Checklist from the Checklist File") )
+		self.Bind(wx.EVT_MENU, self.menuReloadChecklist, item )
 		
 		self.toolsMenu.AppendSeparator()
-		idCur = wx.NewId()
-		self.toolsMenu.Append( idCur , _("&Playback..."), _("Playback this race from original data.") )
-		self.Bind(wx.EVT_MENU, self.menuPlayback, id=idCur )
+		item = self.toolsMenu.Append( wx.ID_ANY, _("&Playback..."), _("Playback this race from original data.") )
+		self.Bind(wx.EVT_MENU, self.menuPlayback, item )
 		
 		self.menuBar.Append( self.toolsMenu, _("&Tools") )
 		
 		#-----------------------------------------------------------------------
 		self.optionsMenu = wx.Menu()
-		idCur = wx.NewId()
-		self.menuItemHighPrecisionTimes = self.optionsMenu.Append( idCur , _("&Show 100s of a second"), _("Show 100s of a second"), wx.ITEM_CHECK )
-		self.Bind( wx.EVT_MENU, self.menuShowHighPrecisionTimes, id=idCur )
+		item = self.menuItemHighPrecisionTimes = self.optionsMenu.Append( wx.ID_ANY, _("&Show 100s of a second"), _("Show 100s of a second"), wx.ITEM_CHECK )
+		self.Bind( wx.EVT_MENU, self.menuShowHighPrecisionTimes, item )
 		
-		idCur = wx.NewId()
-		self.menuItemPlaySounds = self.optionsMenu.Append( idCur , _("&Play Sounds"), _("Play Sounds"), wx.ITEM_CHECK )
+		item = self.menuItemPlaySounds = self.optionsMenu.Append( wx.ID_ANY, _("&Play Sounds"), _("Play Sounds"), wx.ITEM_CHECK )
 		self.playSounds = self.config.ReadBool('playSounds', True)
 		self.menuItemPlaySounds.Check( self.playSounds )
-		self.Bind( wx.EVT_MENU, self.menuPlaySounds, id=idCur )
+		self.Bind( wx.EVT_MENU, self.menuPlaySounds, item )
 		
-		idCur = wx.NewId()
-		self.menuItemSyncCategories = self.optionsMenu.Append( idCur , _("Sync &Categories between Tabs"), _("Sync Categories between Tabs"), wx.ITEM_CHECK )
-		self.Bind( wx.EVT_MENU, self.menuSyncCategories, id=idCur )
+		item = self.menuItemSyncCategories = self.optionsMenu.Append( wx.ID_ANY, _("Sync &Categories between Tabs"), _("Sync Categories between Tabs"), wx.ITEM_CHECK )
+		self.Bind( wx.EVT_MENU, self.menuSyncCategories, item )
 		
 		self.optionsMenu.AppendSeparator()
-		idCur = wx.NewId()
-		self.menuItemLaunchExcelAfterPublishingResults = self.optionsMenu.Append( idCur,
+		item = self.menuItemLaunchExcelAfterPublishingResults = self.optionsMenu.Append( wx.ID_ANY,
 			_("&Launch Excel after Publishing Results"),
 			_("Launch Excel after Publishing Results"), wx.ITEM_CHECK )
 		self.launchExcelAfterPublishingResults = self.config.ReadBool('menuLaunchExcelAfterPublishingResults', True)
 		self.menuItemLaunchExcelAfterPublishingResults.Check( self.launchExcelAfterPublishingResults )
-		self.Bind( wx.EVT_MENU, self.menuLaunchExcelAfterPublishingResults, id=idCur )
+		self.Bind( wx.EVT_MENU, self.menuLaunchExcelAfterPublishingResults, item )
 		
 		'''
 		self.optionsMenu.AppendSeparator()
-		idCur = wx.NewId()
-		self.optionsMenu.Append( idCur , _("Set Contact &Email..."), _("Set Contact Email for HTML Output") )
-		self.Bind(wx.EVT_MENU, self.menuSetContactEmail, id=idCur )
+		item = self.optionsMenu.Append( wx.ID_ANY, _("Set Contact &Email..."), _("Set Contact Email for HTML Output") )
+		self.Bind(wx.EVT_MENU, self.menuSetContactEmail, item )
 		
-		idCur = wx.NewId()
-		self.optionsMenu.Append( idCur , _("Set &Graphic..."), _("Set Graphic") )
-		self.Bind(wx.EVT_MENU, self.menuSetGraphic, id=idCur )
+		item = self.optionsMenu.Append( wx.ID_ANY, _("Set &Graphic..."), _("Set Graphic") )
+		self.Bind(wx.EVT_MENU, self.menuSetGraphic, item )
 		'''
 		
 		self.optionsMenu.AppendSeparator()
-		idCur = wx.NewId()
-		self.optionsMenu.Append( idCur , _("Set Default Contact &Email..."), _("Set Default Contact Email") )
-		self.Bind(wx.EVT_MENU, self.menuSetDefaultContactEmail, id=idCur )
+		item = self.optionsMenu.Append( wx.ID_ANY, _("Set Default Contact &Email..."), _("Set Default Contact Email") )
+		self.Bind(wx.EVT_MENU, self.menuSetDefaultContactEmail, item )
 		
-		idCur = wx.NewId()
-		self.optionsMenu.Append( idCur , _("Set Default &Graphic..."), _("Set Default Graphic") )
-		self.Bind(wx.EVT_MENU, self.menuSetDefaultGraphic, id=idCur )
+		item = self.optionsMenu.Append( wx.ID_ANY, _("Set Default &Graphic..."), _("Set Default Graphic") )
+		self.Bind(wx.EVT_MENU, self.menuSetDefaultGraphic, item )
 		
 		self.menuBar.Append( self.optionsMenu, _("&Options") )
 		
@@ -847,14 +792,13 @@ class MainWin( wx.Frame ):
 		jumpToIds = []
 		for i, p in enumerate(self.pages):
 			name = self.notebook.GetPageText(i)
-			idCur = wx.NewId()
-			self.idPage[idCur] = i
 			if i <= 11:
-				self.pageMenu.Append( idCur, u'{}\tF{}'.format(name, i+1), u"{} {}".format(_('Jump to'), name) )
+				item = self.pageMenu.Append( wx.ID_ANY, u'{}\tF{}'.format(name, i+1), u"{} {}".format(_('Jump to'), name) )
 			else:
-				self.pageMenu.Append( idCur, name, u"{} {}".format(_('Jump to'), name) )
-			self.Bind(wx.EVT_MENU, self.menuShowPage, id=idCur )
-			jumpToIds.append( idCur )
+				item = self.pageMenu.Append( wx.ID_ANY, name, u"{} {}".format(_('Jump to'), name) )
+			self.idPage[item.GetId()] = i
+			self.Bind(wx.EVT_MENU, self.menuShowPage, item )
+			jumpToIds.append( item.GetId() )
 			
 		self.menuBar.Append( self.pageMenu, _("&JumpTo") )
 
@@ -864,13 +808,12 @@ class MainWin( wx.Frame ):
 		self.menuIdToWindowInfo = {}
 		
 		def addMenuWindow( attr, cls, name ):
-			idCur = wx.NewId()
-			menuItem = self.windowMenu.Append( idCur, name, name, wx.ITEM_CHECK )
-			self.Bind( wx.EVT_MENU, self.menuWindow, id=idCur )
-			pageDialog = PageDialog(self, cls, closeCallback=lambda idIn=idCur: self.windowCloseCallback(idIn), title=name)
+			menuItem = self.windowMenu.Append( wx.ID_ANY, name, name, wx.ITEM_CHECK )
+			self.Bind( wx.EVT_MENU, self.menuWindow, menuItem )
+			pageDialog = PageDialog(self, cls, closeCallback=lambda idIn=menuItem.GetId(): self.windowCloseCallback(idIn), title=name)
 			if attr == 'lapCounter':
 				self.lapCounterDialog = pageDialog
-			self.menuIdToWindowInfo[idCur] = [
+			self.menuIdToWindowInfo[menuItem.GetId()] = [
 				attr, name, menuItem,
 				pageDialog,
 			]
@@ -886,37 +829,32 @@ class MainWin( wx.Frame ):
 		#------------------------------------------------------------------------------
 		self.webMenu = wx.Menu()
 
-		idCur = wx.NewId()
-		self.webMenu.Append( idCur, _("&Index Page..."), _("Index Page...") )
-		self.Bind(wx.EVT_MENU, self.menuWebIndexPage, id=idCur )
+		item = self.webMenu.Append( wx.ID_ANY, _("&Index Page..."), _("Index Page...") )
+		self.Bind(wx.EVT_MENU, self.menuWebIndexPage, item )
 
-		idCur = wx.NewId()
-		self.webMenu.Append( idCur, _("&QR Code Share Page..."), _("QR Code Share Page...") )
-		self.Bind(wx.EVT_MENU, self.menuWebQRCodePage, id=idCur )
+		item = self.webMenu.Append( wx.ID_ANY, _("&QR Code Share Page..."), _("QR Code Share Page...") )
+		self.Bind(wx.EVT_MENU, self.menuWebQRCodePage, item )
 		
 		self.menuBar.Append( self.webMenu, _("&Web") )
 		
 		#------------------------------------------------------------------------------
 		self.helpMenu = wx.Menu()
 
-		idCur = wx.NewId()
-		self.helpMenu.Append( idCur, _("Help &Search..."), _("Search Help...") )
-		self.Bind(wx.EVT_MENU, self.menuHelpSearch, id=idCur )
+		item = self.helpMenu.Append( wx.ID_ANY, _("Help &Search..."), _("Search Help...") )
+		self.Bind(wx.EVT_MENU, self.menuHelpSearch, item )
 		self.helpSearch = HelpSearchDialog( self, title=_('Help Search') )
-		self.helpMenu.Append( wx.ID_HELP, _("&Help..."), _("Help about CrossMgr...") )
-		self.Bind(wx.EVT_MENU, self.menuHelp, id=wx.ID_HELP )
-		idCur = wx.NewId()
-		self.helpMenu.Append( idCur , _("&QuickStart..."), _("Get started with CrossMgr Now...") )
-		self.Bind(wx.EVT_MENU, self.menuHelpQuickStart, id=idCur )
+		item = self.helpMenu.Append( wx.ID_HELP, _("&Help..."), _("Help about CrossMgr...") )
+		self.Bind(wx.EVT_MENU, self.menuHelp, item )
+		item = self.helpMenu.Append( wx.ID_ANY, _("&QuickStart..."), _("Get started with CrossMgr Now...") )
+		self.Bind(wx.EVT_MENU, self.menuHelpQuickStart, item )
 		
 		self.helpMenu.AppendSeparator()
 
-		self.helpMenu.Append( wx.ID_ABOUT , _("&About..."), _("About CrossMgr...") )
-		self.Bind(wx.EVT_MENU, self.menuAbout, id=wx.ID_ABOUT )
+		item = self.helpMenu.Append( wx.ID_ABOUT , _("&About..."), _("About CrossMgr...") )
+		self.Bind(wx.EVT_MENU, self.menuAbout, item )
 
-		idCur = wx.NewId()
-		self.helpMenu.Append( idCur , _("&Tips at Startup..."), _("Enable/Disable Tips at Startup...") )
-		self.Bind(wx.EVT_MENU, self.menuTipAtStartup, id=idCur )
+		item = self.helpMenu.Append( wx.ID_ANY, _("&Tips at Startup..."), _("Enable/Disable Tips at Startup...") )
+		self.Bind(wx.EVT_MENU, self.menuTipAtStartup, item )
 
 
 		self.menuBar.Append( self.helpMenu, _("&Help") )
@@ -928,8 +866,8 @@ class MainWin( wx.Frame ):
 
 		#------------------------------------------------------------------------------
 		# Set the accelerator table so we can switch windows with the function keys.
-		accTable = [(wx.ACCEL_NORMAL, wx.WXK_F1 + i, jumpToIds[i]) for i in xrange(min(11,len(jumpToIds)))]
-		self.contextHelp = wx.NewId()
+		accTable = [(wx.ACCEL_NORMAL, wx.WXK_F1 + i, jumpToIds[i]) for i in six.moves.range(min(11,len(jumpToIds)))]
+		self.contextHelp = wx.ID_HELP
 		self.Bind(wx.EVT_MENU, self.onContextHelp, id=self.contextHelp )
 		accTable.append( (wx.ACCEL_CTRL, ord('H'), self.contextHelp) )
 		accTable.append( (wx.ACCEL_SHIFT, wx.WXK_F1, self.contextHelp) )
@@ -1453,7 +1391,7 @@ class MainWin( wx.Frame ):
 		graphicFName = self.config.Read( 'graphic', defaultFName )
 		if graphicFName != defaultFName:
 			try:
-				with open(graphicFName, 'rb') as f:
+				with open(graphicFName, 'r') as f:
 					return graphicFName
 			except IOError:
 				pass
@@ -1557,9 +1495,15 @@ class MainWin( wx.Frame ):
 		pdd.EnablePrintToFile( False )
 		
 		printer = wx.Printer(pdd)
-		printout = CrossMgrPrintout( categories )
+		for i in six.moves.range(3):
+			try:
+				printout = CrossMgrPrintout( categories )
+				printError = False
+				break
+			except:
+				printError = True
 
-		if not printer.Print(self, printout, True):
+		if not printer.Print(self, printout, True) or printError:
 			if printer.GetLastError() == wx.PRINTER_ERROR:
 				Utils.MessageOK(self, u'\n\n'.join( [_("There was a printer problem."), _("Check your printer setup.")] ), _("Printer Error"), iconMask=wx.ICON_ERROR)
 		else:
@@ -1641,7 +1585,7 @@ class MainWin( wx.Frame ):
 			
 			fname = None
 			success = True
-			for page in xrange(1, pages+1):
+			for page in range(1, pages+1):
 				try:
 					printout.OnPrintPage( page )
 					if fname is None:
@@ -1692,7 +1636,7 @@ class MainWin( wx.Frame ):
 		fname = None
 		success = True
 		with Utils.UIBusy():
-			for page in xrange(1, pages+1):
+			for page in range(1, pages+1):
 				try:
 					printout.OnPrintPage( page )
 					if fname is None:
@@ -1782,8 +1726,8 @@ class MainWin( wx.Frame ):
 		if silent:
 			try:
 				wb.close()
-			except:
-				pass
+			except Exception as e:
+				logException( e, sys.exc_info() )
 			return
 			
 		try:
@@ -1791,7 +1735,8 @@ class MainWin( wx.Frame ):
 			if self.launchExcelAfterPublishingResults:
 				Utils.LaunchApplication( xlFName )
 			Utils.MessageOK(self, u'{}:\n\n   {}'.format(_('Excel file written to'), xlFName), _('Excel Write'))
-		except IOError:
+		except IOError as e:
+			logException( e, sys.exc_info() )
 			Utils.MessageOK(self,
 						u'{} "{}"\n\n{}\n{}'.format(
 							_('Cannot write'), xlFName,
@@ -1860,7 +1805,7 @@ class MainWin( wx.Frame ):
 			notes = notes.replace('<', '{-{').replace( '>', '}-}' )
 			payload['raceNotes']	= notes
 		else:
-			notes = TemplateSubstitute( cgi.escape(notes), race.getTemplateValues() )
+			notes = TemplateSubstitute( escape(notes), race.getTemplateValues() )
 			notes = self.reTagTrainingSpaces.sub( u'>', notes ).replace( '</table>', '</table><br/>' )
 			notes = notes.replace('<', '{-{').replace( '>', '}-}' ).replace('\n','{-{br/}-}')
 			payload['raceNotes']	= notes
@@ -1893,7 +1838,7 @@ class MainWin( wx.Frame ):
 		
 		#------------------------------------------------------------------------
 		title = u'{} - {} {} {}'.format( race.title, _('Starting'), raceTime.strftime(localTimeFormat), raceTime.strftime(localDateFormat) )
-		html = html.replace( u'CrossMgr Race Results by Edward Sitarski', cgi.escape(title) )
+		html = html.replace( u'CrossMgr Race Results by Edward Sitarski', escape(title) )
 		if getattr(race, 'gaTrackingID', None):
 			html = html.replace( u'<!-- Google Analytics -->', gaSnippet.replace('UA-XXXX-Y', race.gaTrackingID) )
 		if race.isRunning():
@@ -1903,7 +1848,7 @@ class MainWin( wx.Frame ):
 <meta http-equiv="Expires" content="0"/>''' )
 		
 		#------------------------------------------------------------------------
-		courseCoordinates, gpsPoints, gpsAltigraph, totalElevationGain, isPointToPoint = None, None, None, None, None
+		courseCoordinates, gpsPoints, gpsAltigraph, totalElevationGain, isPointToPoint, lengthKm = None, None, None, None, None, None
 		geoTrack = getattr(race, 'geoTrack', None)
 		if geoTrack is not None:
 			courseCoordinates = geoTrack.asCoordinates()
@@ -1911,13 +1856,14 @@ class MainWin( wx.Frame ):
 			gpsAltigraph = geoTrack.getAltigraph()
 			totalElevationGain = geoTrack.totalElevationGainM
 			isPointToPoint = getattr( geoTrack, 'isPointToPoint', False )
+			lengthKm = geoTrack.lengthKm
 		
 		#------------------------------------------------------------------------
 		codes = []
 		if 'UCICode' in payload['infoFields']:
-			codes.extend( r['UCICode'] for r in payload['data'].itervalues() if r.get('UCICode',None) )
+			codes.extend( r['UCICode'] for r in six.itervalues(payload['data']) if r.get('UCICode',None) )
 		if 'NatCode' in payload['infoFields']:
-			codes.extend( r['NatCode'] for r in payload['data'].itervalues() if r.get('NatCode',None) )
+			codes.extend( r['NatCode'] for r in six.itervalues(payload['data']) if r.get('NatCode',None) )
 		payload['flags']				= Flags.GetFlagBase64ForUCI( codes )
 		if gpsPoints:
 			payload['gpsPoints']		= gpsPoints
@@ -1938,7 +1884,7 @@ class MainWin( wx.Frame ):
 			# Add the course viewer template.
 			templateFile = os.path.join(Utils.getHtmlFolder(), 'CourseViewerTemplate.html')
 			try:
-				with io.open(templateFile, 'r', encoding='utf-8') as fp:
+				with io.open(templateFile, 'r') as fp:
 					template = fp.read()
 				payload['courseViewerTemplate'] = sanitize( template )
 			except:
@@ -1947,7 +1893,7 @@ class MainWin( wx.Frame ):
 		# Add the rider dashboard.
 		templateFile = os.path.join(Utils.getHtmlFolder(), 'RiderDashboard.html')
 		try:
-			with io.open(templateFile, 'r', encoding='utf-8') as fp:
+			with io.open(templateFile, 'r') as fp:
 				template = fp.read()
 			payload['riderDashboard'] = sanitize( template )
 		except:
@@ -1959,7 +1905,7 @@ class MainWin( wx.Frame ):
 			if excelLink.hasField('City') and any(excelLink.hasField(f) for f in ('Prov','State','StateProv')):
 				templateFile = os.path.join(Utils.getHtmlFolder(), 'TravelMap.html')
 				try:
-					with io.open(templateFile, 'r', encoding='utf-8') as fp:
+					with io.open(templateFile, 'r') as fp:
 						template = fp.read()
 					payload['travelMap'] = sanitize( template )
 				except:
@@ -1973,6 +1919,8 @@ class MainWin( wx.Frame ):
 			payload['gpsAltigraph'] = gpsAltigraph
 		if isPointToPoint:
 			payload['gpsIsPointToPoint'] = isPointToPoint
+		if lengthKm:
+			payload['lengthKm'] = lengthKm
 
 		html = replaceJsonVar( html, 'payload', payload )
 		graphicBase64 = self.getGraphicBase64()
@@ -2024,9 +1972,9 @@ class MainWin( wx.Frame ):
 			hour, minute, second = timeComponents
 			raceTime = datetime.datetime( year, month, day, hour, minute, second )
 			title = u'{} {} {}'.format( race.title, _('Course for'), raceTime.strftime(localDateFormat) )
-			html = html.replace( 'CrossMgr Race Results by Edward Sitarski', cgi.escape(title) )
+			html = html.replace( 'CrossMgr Race Results by Edward Sitarski', escape(title) )
 			
-			payload['raceName']			= cgi.escape(race.title)
+			payload['raceName']			= escape(race.title)
 			payload['organizer']		= getattr(race, 'organizer', '')
 			payload['rfid']				= getattr(race, 'enableJChipIntegration', False)
 			payload['displayUnits']		= race.distanceUnitStr
@@ -2037,7 +1985,7 @@ class MainWin( wx.Frame ):
 				notes = notes.replace('<', '{-{').replace( '>', '}-}' )
 				payload['raceNotes']	= notes
 			else:
-				payload['raceNotes']	= cgi.escape(notes).replace('\n','{-{br/}-}')
+				payload['raceNotes']	= escape(notes).replace('\n','{-{br/}-}')
 			courseCoordinates, gpsAltigraph, totalElevationGain, lengthKm, isPointToPoint = None, None, None, None, None
 			geoTrack = getattr(race, 'geoTrack', None)
 			if geoTrack is not None:
@@ -2055,7 +2003,7 @@ class MainWin( wx.Frame ):
 			# Fix the google maps template.
 			templateFile = os.path.join(Utils.getHtmlFolder(), 'VirtualTourTemplate.html')
 			try:
-				with io.open(templateFile, 'r', encoding='utf-8') as fp:
+				with io.open(templateFile, 'r') as fp:
 					template = fp.read()
 				# Sanitize the template into a safe json string.
 				template = self.reLeadingWhitespace.sub( '', template )
@@ -2094,7 +2042,7 @@ class MainWin( wx.Frame ):
 			Utils.MessageOK(self, u'{}\n\n{}.'.format(_('No Race'), _('New/Open a Race and try again.')),
 				_('No Race'), iconMask=wx.ICON_ERROR )
 			return
-		if not race.email:
+		if race and not race.email:
 			if Utils.MessageOKCancel( self,
 				_('Your Email contact is not set.\n\nConfigure it now?'),
 				_('Set Email Contact'), wx.ICON_EXCLAMATION ):
@@ -2121,7 +2069,7 @@ class MainWin( wx.Frame ):
 		# Read the html template.
 		htmlFile = os.path.join(Utils.getHtmlFolder(), 'RaceAnimation.html')
 		try:
-			with io.open(htmlFile, 'r', encoding='utf-8') as fp:
+			with io.open(htmlFile, 'r') as fp:
 				html = fp.read()
 		except:
 			Utils.MessageOK(self, _('Cannot read HTML template file.  Check program installation.'),
@@ -2133,13 +2081,14 @@ class MainWin( wx.Frame ):
 		# Write out the results.
 		fname = self.getFormatFilename('html')
 		try:
-			with io.open(fname, 'w', encoding='utf-8') as fp:
+			with io.open(fname, 'w') as fp:
 				fp.write( html )
 			if not silent:
 				Utils.LaunchApplication( fname )
 				Utils.MessageOK(self, u'{}:\n\n   {}'.format(_('Html Race Animation written to'), fname), _('Html Write'))
-		except:
-			Utils.MessageOK(self, u'{} ({}).'.format(_('Cannot write HTML file'), fname),
+		except Exception as e:
+			logException( e, sys.exc_info() )
+			Utils.MessageOK(self, u'{}\n\t\t{}\n({}).'.format(_('Cannot write HTML file'), e, fname),
 							_('Html Write Error'), iconMask=wx.ICON_ERROR )
 	
 	@logCall
@@ -2150,6 +2099,7 @@ class MainWin( wx.Frame ):
 		try:
 			WebServer.WriteHtmlIndexPage()
 		except Exception as e:
+			logException( e, sys.exc_info() )
 			Utils.MessageOK(self, u'{}\n\n{}.'.format(_('HTML Index Failure'), e),
 							_('Error'), iconMask=wx.ICON_ERROR )
 	
@@ -2227,7 +2177,7 @@ class MainWin( wx.Frame ):
 		startList = []
 		nationCodes = set()
 		category = None
-		for bib, rider in race.riders.iteritems():
+		for bib, rider in six.iteritems(race.riders):
 			if rider.status == Finisher:
 				try:
 					firstTime = int(rider.firstTime + 0.1)
@@ -2260,8 +2210,8 @@ class MainWin( wx.Frame ):
 
 		html = replaceJsonVar( html, 'payload', payload )
 		html = html.replace( '<title>TTStartPage</title>', '<title>TT {} {} {}</title>'.format(
-				cgi.escape(race.title),
-				cgi.escape(race.date), cgi.escape(race.scheduledStart),
+				escape(race.title),
+				escape(race.date), escape(race.scheduledStart),
 			)
 		)
 		return html
@@ -2289,7 +2239,7 @@ class MainWin( wx.Frame ):
 		for fTemplate in ('TTCountdown.html', 'TTStartList.html'):
 			htmlFile = os.path.join(Utils.getHtmlFolder(), fTemplate)
 			try:
-				with io.open(htmlFile, 'r', encoding='utf-8') as fp:
+				with io.open(htmlFile, 'r') as fp:
 					html = fp.read()
 			except:
 				Utils.MessageOK(self, _('Cannot read HTML template file.  Check program installation.'),
@@ -2301,7 +2251,7 @@ class MainWin( wx.Frame ):
 			# Write out the results.
 			fname = os.path.splitext(self.fileName)[0] + ('_TTCountdown.html' if fTemplate == 'TTCountdown.html' else '_TTStartList.html')
 			try:
-				with io.open(fname, 'w', encoding='utf-8') as fp:
+				with io.open(fname, 'w') as fp:
 					fp.write( html )
 			except:
 				Utils.MessageOK(self, u'{} ({}).'.format(_('Cannot write HTML file'), fname),
@@ -2372,7 +2322,7 @@ class MainWin( wx.Frame ):
 		xml = doc.toprettyxml( indent = '', encoding = 'utf-8' )
 		doc.unlink()
 		try:
-			with open(fname, 'wb') as f:
+			with io.open(fname, 'w') as f:
 				f.write( xml )
 			Utils.MessageOK(self, u'{}\n\n    {}.'.format(_('Course written to GPX file'), fname), _('GPX Export'))
 		except Exception as e:
@@ -2415,7 +2365,7 @@ class MainWin( wx.Frame ):
 			# Read the html template.
 			htmlFile = os.path.join(Utils.getHtmlFolder(), 'CourseViewer.html')
 			try:
-				with io.open(htmlFile, 'r', encoding='utf-8') as fp:
+				with io.open(htmlFile, 'r') as fp:
 					html = fp.read()
 			except:
 				Utils.MessageOK(_('Cannot read HTML template file.  Check program installation.'),
@@ -2427,7 +2377,7 @@ class MainWin( wx.Frame ):
 		html = self.addCourseToHtmlStr( html )
 		fname = os.path.splitext(self.fileName)[0] + 'CoursePreview.html'
 		try:
-			with io.open(fname, 'w', encoding='utf-8') as fp:
+			with io.open(fname, 'w') as fp:
 				fp.write( html )
 			Utils.LaunchApplication( fname )
 			Utils.MessageOK(self, u'{}:\n\n   {}'.format(_('Course Preview written to'), fname), _('Html Write'))
@@ -2453,7 +2403,7 @@ class MainWin( wx.Frame ):
 		# Read the html template.
 		htmlFile = os.path.join(Utils.getHtmlFolder(), 'RawData.html')
 		try:
-			with io.open(htmlFile, 'r', encoding='utf-8') as fp:
+			with io.open(htmlFile, 'r') as fp:
 				html = fp.read()
 		except:
 			Utils.MessageOK(_('Cannot read HTML template file.  Check program installation.'),
@@ -2504,11 +2454,11 @@ class MainWin( wx.Frame ):
 					info['Name'] = Utils.CombineFirstLastName( info.get('FirstName', ''), info.get('LastName', '') )
 			
 			# Remove info that does not correspond to a rider in the race.
-			for num in [n for n in externalInfo.iterkeys() if n not in seen]:
+			for num in [n for n in six.iterkeys(externalInfo) if n not in seen]:
 				del externalInfo[num]
 			
 			# Remove extra info fields.
-			for num, info in externalInfo.iteritems():
+			for num, info in six.iteritems(externalInfo):
 				for f in ignoreFields:
 					try:
 						del info[f]
@@ -2525,7 +2475,7 @@ class MainWin( wx.Frame ):
 			hour, minute, second = timeComponents
 			raceTime = datetime.datetime( year, month, day, hour, minute, second )
 			title = u'{} Raw Data for {} Start on {}'.format( race.title, raceTime.strftime(localTimeFormat), raceTime.strftime(localDateFormat) )
-			html = html.replace( 'CrossMgr Race Results by Edward Sitarski', cgi.escape(title) )
+			html = html.replace( 'CrossMgr Race Results by Edward Sitarski', escape(title) )
 			html = replaceJsonVar( html, 'organizer', getattr(race, 'organizer', '') )
 			
 		html = replaceJsonVar( html, 'timestamp', now().ctime() )
@@ -2542,7 +2492,7 @@ class MainWin( wx.Frame ):
 		# Write out the results.
 		fname = os.path.splitext(self.fileName)[0] + 'RawData.html'
 		try:
-			with io.open(fname, 'w', encoding='utf-8') as fp:
+			with io.open(fname, 'w') as fp:
 				fp.write( html )
 			Utils.LaunchApplication( fname )
 			Utils.MessageOK(self, u'{}:\n\n   {}'.format(_('Html Raw Data written to'), fname), _('Html Write'))
@@ -2561,7 +2511,7 @@ class MainWin( wx.Frame ):
 		fname = os.path.splitext(self.fileName)[0] + '.json'
 		
 		try:
-			with open(fname, 'wb') as fp:
+			with open(fname, 'w') as fp:
 				json.dump( payload, fp, separators=(',',':') )
 		except Exception as e:
 			Utils.writeLog( 'menuExportResultsJSON: error "{}"'.format(e) )			
@@ -2644,7 +2594,7 @@ class MainWin( wx.Frame ):
 			race.geoTrack, race.geoTrackFName = geoTrack, geoTrackFName
 			distance = geoTrack.length if race.distanceUnit == race.UnitKm else geoTrack.length * 0.621371
 			if distance > 0.0:
-				for c in race.categories.itervalues():
+				for c in six.itervalues(race.categories):
 					c.distance = distance
 			race.showOval = False
 		if excelLink:
@@ -2675,7 +2625,7 @@ class MainWin( wx.Frame ):
 
 		# Try to open the file.
 		try:
-			with open(fileName, 'wb') as fp:
+			with open(fileName, 'w') as fp:
 				pass
 		except IOError:
 			Utils.MessageOK( self, u'{}\n\n    "{}"'.format(_('Cannot Open File'),fileName), _('Cannot Open File'), iconMask=wx.ICON_ERROR )
@@ -2696,7 +2646,7 @@ class MainWin( wx.Frame ):
 		importedCategories = False
 		if categoriesFile:
 			try:
-				with io.open(categoriesFile, 'r', encoding='utf-8') as fp:
+				with io.open(categoriesFile, 'r') as fp:
 					race.importCategories( fp )
 				importedCategories = True
 			except IOError:
@@ -2708,7 +2658,7 @@ class MainWin( wx.Frame ):
 		if not importedCategories:
 			race.categoriesImportFile = ''
 			race.setCategories( [{'name':u'{} {}-{}'.format(_('Category'), max(1, i*100), (i+1)*100-1),
-								  'catStr':u'{}-{}'.format(max(1, i*100), (i+1)*100-1)} for i in xrange(8)] )
+								  'catStr':u'{}-{}'.format(max(1, i*100), (i+1)*100-1)} for i in six.moves.range(8)] )
 		else:
 			race.categoriesImportFile = categoriesFile
 			
@@ -2759,7 +2709,7 @@ class MainWin( wx.Frame ):
 
 		# Try to open the file.
 		try:
-			with open(fileName, 'wb') as fp:
+			with open(fileName, 'w') as fp:
 				pass
 		except IOError:
 			Utils.MessageOK(self, u'{}\n\n    "{}".'.format(_('Cannot open file.'), fileName), _('Cannot Open File'), iconMask=wx.ICON_ERROR )
@@ -2789,7 +2739,7 @@ class MainWin( wx.Frame ):
 		importedCategories = False
 		if categoriesFile:
 			try:
-				with io.open(categoriesFile, 'r', encoding='utf-8') as fp:
+				with io.open(categoriesFile, 'r') as fp:
 					race.importCategories( fp )
 				importedCategories = True
 			except IOError:
@@ -2804,7 +2754,7 @@ class MainWin( wx.Frame ):
 			race.geoTrack, race.geoTrackFName = geoTrack, geoTrackFName
 			distance = geoTrack.lengthKm if race.distanceUnit == race.UnitKm else geoTrack.lengthMiles
 			if distance > 0.0:
-				for c in race.categories.itervalues():
+				for c in six.itervalues(race.categories):
 					c.distance = distance
 			race.showOval = False
 		if excelLink:
@@ -2893,7 +2843,7 @@ class MainWin( wx.Frame ):
 
 		# Try to open the file.
 		try:
-			with open(fileName, 'wb') as fp:
+			with open(fileName, 'w') as fp:
 				pass
 		except IOError:
 			Utils.MessageOK(self, u'{}\n\n    "{}".'.format(_('Cannot Open File'), fileName), _('Cannot Open File'), iconMask=wx.ICON_ERROR )
@@ -2972,10 +2922,10 @@ class MainWin( wx.Frame ):
 		try:
 			with open(fileName, 'rb') as fp, Model.LockRace() as race:
 				try:
-					race = pickle.load( fp )
+					race = pickle.load( fp, encoding='latin1', errors='replace' )
 				except:
 					fp.seek( 0 )
-					race = ModuleUnpickler( fp, module='CrossMgr' ).load()
+					race = ModuleUnpickler( fp, module='CrossMgr', encoding='latin1', errors='replace' ).load()
 				race.sortLap = None			# Remove results lap sorting to avoid confusion.
 				isFinished = race.isFinished()
 				race.tagNums = None
@@ -3005,12 +2955,13 @@ class MainWin( wx.Frame ):
 					exists = u''
 				
 				if not Utils.MessageOKCancel( self, u'{}.\n\n{}:\n\n\t{}{}\n\n{}'.format(
-					_("The FileName does not match the Event Name format"),
-					_("Going forward, this event will saved as"), eventFileName,
-					exists,
-					_('To change the File Name, change the event Date, Name or Race Number in Properties/General Properties'),
-					_('Unmatched Filename'),
-				)):
+						_("The FileName does not match the Event Name format"),
+						_("Going forward, this event will saved as"), eventFileName,
+						exists,
+						_('To change the File Name, change the event Date, Name or Race Number in Properties/General Properties')
+						),
+						_('Unmatched Filename'),
+					):
 					if fileNameSave:
 						self.openRace( fileNameSave )
 					else:
@@ -3132,7 +3083,7 @@ class MainWin( wx.Frame ):
 
 	def genTimes( self, regen = False ):
 		if regen:
-			for k, v in SimulateData().iteritems():
+			for k, v in six.iteritems(SimulateData()):
 				setattr( self, k, v )
 		else:
 			self.raceMinutes = SimulationLapTimes.raceMinutes
@@ -3145,7 +3096,7 @@ class MainWin( wx.Frame ):
 			]
 			
 			# Add some out-of-category numbers to test.
-			for e in xrange(10, 50, 10):
+			for e in six.moves.range(10, 50, 10):
 				self.lapTimes[e] = ( self.lapTimes[e][0], 1111+e )
 		
 		return self.lapTimes
@@ -3191,7 +3142,7 @@ class MainWin( wx.Frame ):
 		
 		# Test if we can write something there.
 		try:
-			with open(fName, 'wb') as fp:
+			with open(fName, 'w') as fp:
 				pass
 		except IOError:
 			Utils.MessageOK(self, u'{} "{}".'.format(_('Cannot open file'), fName), _('File Open Error'), iconMask=wx.ICON_ERROR)
@@ -3219,6 +3170,7 @@ class MainWin( wx.Frame ):
 		race.enableUSBCamera = True
 		race.minutes = self.raceMinutes
 		race.enableJChipIntegration = race.resetStartClockOnFirstTag = rfidResetStartClockOnFirstTag
+		race.minPossibleLapTime = 0.0	# Override any defaults so that laps will show up.
 		#race.photosAtRaceEndOnly = True
 		
 		# Prep the simulation data.
@@ -3243,7 +3195,7 @@ class MainWin( wx.Frame ):
 					numTimes[num].append( t )
 			
 			numRaceTimes = {}
-			for num, times in numTimes.iteritems():
+			for num, times in six.iteritems(numTimes):
 				times.sort()
 				numRaceTimes[num] = [t - times[0] for t in times[1:]]	# Convert race times to zero start.
 			
@@ -3252,7 +3204,7 @@ class MainWin( wx.Frame ):
 			nums = sorted( nums, reverse=True )				
 			numStartTime = {n:timeBeforeFirstRider + i*startGap for i, n in enumerate(nums)}	# Set start times for all competitors.
 			self.lapTimes = []
-			for num, raceTimes in numRaceTimes.iteritems():
+			for num, raceTimes in six.iteritems(numRaceTimes):
 				startTime = numStartTime[num]
 				race.getRider( num ).firstTime = startTime
 				self.lapTimes.extend( [(t + startTime, num) for t in raceTimes] )
@@ -3271,10 +3223,9 @@ class MainWin( wx.Frame ):
 			riderInfo = []
 			fnameInfo = os.path.join( Utils.getImageFolder(), 'NamesTeams.csv' )
 			try:
-				with open(fnameInfo) as fp:
+				with io.open(fnameInfo, encoding='iso-8859-1') as fp:
 					header = None
 					for r, line in enumerate(fp):
-						line = line.decode('iso-8859-1')
 						if not header:
 							header = line.split(',')
 							continue
@@ -3301,6 +3252,7 @@ class MainWin( wx.Frame ):
 
 		# Start the simulation.
 		self.showPageName( _('Record') if isTimeTrial else _('Chart') )
+		self.record.setTimeTrialInput( race.isTimeTrial )
 
 		ChipReader.chipReaderCur.reset( race.chipReaderType )
 
@@ -3398,7 +3350,7 @@ class MainWin( wx.Frame ):
 		if dlg.ShowModal() == wx.ID_OK:
 			categoriesFile = dlg.GetPath()
 			try:
-				with io.open(categoriesFile, 'r', encoding='utf-8') as fp, Model.LockRace() as race:
+				with io.open(categoriesFile, 'r') as fp, Model.LockRace() as race:
 					race.importCategories( fp )
 			except IOError:
 				Utils.MessageOK( self, u"{}:\n\n{}".format(_('Cannot open file'), categoriesFile), _("File Open Error"), iconMask=wx.ICON_ERROR)
@@ -3426,7 +3378,7 @@ class MainWin( wx.Frame ):
 		if dlg.ShowModal() == wx.ID_OK:
 			fname = dlg.GetPath()
 			try:
-				with io.open(fname, 'w', encoding='utf-8') as fp, Model.LockRace() as race:
+				with io.open(fname, 'w') as fp, Model.LockRace() as race:
 					race.exportCategories( fp )
 			except IOError:
 				Utils.MessageOK( self, u"{}:\n{}".format(_('Cannot open file'), fname), _("File Open Error"), iconMask=wx.ICON_ERROR)
@@ -3450,15 +3402,15 @@ class MainWin( wx.Frame ):
 		if data:
 			rowMax = max( len(c) for c in data )
 			colnames = ['Count'] + colnames
-			data = [['{}'.format(i) for i in xrange(1, rowMax+1)]] + data
+			data = [['{}'.format(i) for i in six.moves.range(1, rowMax+1)]] + data
 		with Model.LockRace() as race:
 			title = u'{}\n{}\n{}'.format( race.title, Utils.formatDate(race.date), _('Race Passings') )
 		export = ExportGrid( title, colnames, data )
 
 		wb = xlsxwriter.Workbook( xlFName )
-		formats = ExportGrid.getExcelFormatsXLSX(wb)
+		formats = ExportGrid.getExcelFormatsXLSX( wb )
 		sheetCur = wb.add_worksheet( 'Passings' )
-		export.toExcelSheet( formats, sheetCur )
+		export.toExcelSheetXLSX( formats, sheetCur )
 		
 		try:
 			wb.close()
@@ -3510,7 +3462,7 @@ class MainWin( wx.Frame ):
 
 		wb = xlsxwriter.Workbook( xlFName )
 		sheetCur = wb.add_worksheet( 'Combined Results' )
-		VTTAExport( sheetCur )
+		VTTAExport( wb, sheetCur )
 		
 		try:
 			wb.close()
@@ -3654,11 +3606,11 @@ class MainWin( wx.Frame ):
 			
 			url = 'http://www.{Destination}.com/?n=results&sn=upload&crossmgr={MD5}&name={RaceName}&date={RaceDate}&loc={Location}&presentedby={PresentedBy}'.format(
 				Destination = destination.lower(),
-				RaceName	= urllib.quote(unicode(raceName).encode('utf-8')),
-				RaceDate	= urllib.quote(unicode(raceDate).encode('utf-8')),
-				MD5			= hashlib.md5( race.title + raceDate ).hexdigest(),
-				Location	= urllib.quote(unicode(u', '.join([race.city, race.stateProv, race.country])).encode('utf-8')),
-				PresentedBy = urllib.quote(unicode(race.organizer).encode('utf-8')),
+				RaceName	= quote(six.text_type(raceName)),
+				RaceDate	= quote(six.text_type(raceDate)),
+				MD5			= hashlib.md5( (race.title + raceDate).encode() ).hexdigest(),
+				Location	= quote(six.text_type(u', '.join([race.city, race.stateProv, race.country]))),
+				PresentedBy = quote(six.text_type(race.organizer)),
 			)
 			webbrowser.open( url, new = 2, autoraise = True )
 		except Exception as e:
@@ -3703,7 +3655,7 @@ class MainWin( wx.Frame ):
 		try:
 			attr, name, menuItem, dialog = self.menuIdToWindowInfo[menuId]
 		except KeyError:
-			return
+			returnm
 		menuItem.Check( False )
 	
 	@logCall
@@ -3722,7 +3674,7 @@ class MainWin( wx.Frame ):
 
 	@logCall
 	def openMenuWindow( self, windowAttr ):
-		for attr, name, menuItem, dialog in self.menuIdToWindowInfo.itervalues():
+		for attr, name, menuItem, dialog in six.itervalues(self.menuIdToWindowInfo):
 			if windowAttr == attr:
 				dialog.Show( True )
 				wx.CallAfter( dialog.refresh )
@@ -3733,7 +3685,7 @@ class MainWin( wx.Frame ):
 		try:
 			webbrowser.open( getHelpURL('QuickStart.html') )
 		except Exception as e:
-			pass
+			logException( e, sys.exc_info() )
 	
 	@logCall
 	def menuHelpSearch( self, event ):
@@ -3744,28 +3696,28 @@ class MainWin( wx.Frame ):
 		try:
 			webbrowser.open( getHelpURL('Main.html') )
 		except Exception as e:
-			pass
+			logException( e, sys.exc_info() )
 	
 	@logCall
 	def onContextHelp( self, event ):
 		try:
 			webbrowser.open( getHelpURL(self.attrClassName[self.notebook.GetSelection()][2] + '.html') )
 		except Exception as e:
-			pass
+			logException( e, sys.exc_info() )
 		
 	@logCall
 	def menuWebIndexPage( self, event ):
 		try:
 			webbrowser.open( WebServer.GetCrossMgrHomePage(), new = 2, autoraise = True )
 		except Exception as e:
-			pass
+			logException( e, sys.exc_info() )
 	
 	@logCall
 	def menuWebQRCodePage( self, event ):
 		try:
 			webbrowser.open( WebServer.GetCrossMgrHomePage() + '/qrcode.html' , new = 2, autoraise = True )
 		except Exception as e:
-			pass
+			logException( e, sys.exc_info() )
 	
 	@logCall
 	def menuAbout( self, event ):
@@ -3859,7 +3811,7 @@ Computers fail, screw-ups happen.  Always use a manual backup.
 
 	def refreshWindows( self ):
 		try:
-			for d in (dialog for attr, name, menuItem, dialog in self.menuIdToWindowInfo.itervalues() if dialog.IsShown()):
+			for d in (dialog for attr, name, menuItem, dialog in six.itervalues(self.menuIdToWindowInfo) if dialog.IsShown()):
 				try:
 					wx.CallAfter( d.refresh )
 				except AttributeError:
@@ -3965,9 +3917,14 @@ Computers fail, screw-ups happen.  Always use a manual backup.
 				else:
 					Utils.writeLog( 'USB Camera Error: {}'.format(error) )
 		
-		self.numTimes = []
-		self.updateLater = None
+		del self.numTimes[:]
 		return True
+	
+	def processRfidRefresh( self ):
+		if self.processNumTimes():
+			self.refresh()
+			if Model.race and Model.race.ftpUploadDuringRace:
+				realTimeFtpPublish.publishEntry()		
 	
 	def processJChipListener( self ):
 		race = Model.race
@@ -4008,7 +3965,34 @@ Computers fail, screw-ups happen.  Always use a manual backup.
 			if race.isRunning() and race.startTime <= dt:
 				self.numTimes.append( (num, (dt - race.startTime).total_seconds()) )
 		
-		return self.processNumTimes()
+		# Ensure that we don't update too often if riders arrive in a bunch.
+		if not self.callLaterProcessRfidRefresh:
+			class ProcessRfidRefresh( wx.Timer ):
+				def __init__( self, *args, **kwargs ):
+					self.mainWin = kwargs.pop('mainWin')
+					super(ProcessRfidRefresh, self).__init__(*args, **kwargs)
+				def Notify( self ):
+					self.mainWin.processRfidRefresh()
+			self.callLaterProcessRfidRefresh = ProcessRfidRefresh( mainWin=self )
+		
+		#delayIntervals = (0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
+		delayIntervals = (0.1, 0.25, 0.5, 1.0)
+		if not self.callLaterProcessRfidRefresh.IsRunning():
+			# Start the timer for the first interval.
+			self.clprIndex = 0
+			self.clprTime = now() + datetime.timedelta( seconds=delayIntervals[0] )
+			if not self.callLaterProcessRfidRefresh.Start( int(delayIntervals[0]*1000.0), True ):
+				self.processRfidRefresh()
+		elif (		(self.clprTime - now()).total_seconds() > delayIntervals[self.clprIndex] / 2.0 and
+					self.clprIndex < len(delayIntervals)-1 ):
+			# If we get another read within the last 50% of the interval, increase the update to the next interval.
+			self.callLaterProcessRfidRefresh.Stop()
+			self.clprIndex += 1
+			self.clprTime += datetime.timedelta( seconds = delayIntervals[self.clprIndex] - delayIntervals[self.clprIndex-1] )
+			delayToGo = max( 10, int((self.clprTime - now()).total_seconds() * 1000.0) )
+			if not self.callLaterProcessRfidRefresh.Start( delayToGo, True ):
+				self.processRfidRefresh()
+		return False	# Never signal for an update.
 
 	def updateRaceClock( self, event = None ):
 		self.record.refreshAll()
@@ -4077,7 +4061,7 @@ def MainLoop():
 	
 	if 'WXMAC' in wx.Platform:
 		wx.Log.SetActiveTarget( LogPrintStackStderr() )
-	
+			
 	random.seed()
 
 	parser = ArgumentParser( prog="CrossMgr", description='Timing and Scoring Software' )

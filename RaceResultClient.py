@@ -4,14 +4,16 @@
 #
 # Copyright (C) Edward Sitarski, 2012.
 import re
+import io
 import os
+import six
 import sys
 import time
 import socket
 import random
 import datetime
 import threading
-from openpyxl.workbook import Workbook
+import xlwt
 
 #------------------------------------------------------------------------------	
 # CrossMgr's port and socket.
@@ -26,7 +28,7 @@ from RaceResult import EOL
 random.seed( 10101010 )
 seen = set()
 nums = []
-for i in xrange(25):
+for i in six.moves.range(25):
 	while 1:
 		x = random.randint(1,200)
 		if x not in seen:
@@ -274,33 +276,32 @@ Spin Doctors
 	firstNames = [line.split('.')[1].strip() for line in firstNames.split('\n') if line.strip()]
 	lastNames = [line.split('.')[1].strip() for line in lastNames.split('\n') if line.strip()]
 	teams = [line.strip() for line in teams.split('\n') if line.strip()]
-	bibs = range( 100, 100+starters )
+	bibs = list(range( 100, 100+starters ))
 	
 	random.shuffle( firstNames )
 	random.shuffle( lastNames )
 	random.shuffle( teams )
 	random.shuffle( bibs )
 	
-	for i in xrange(starters):
+	for i in six.moves.range(starters):
 		yield bibs[i], firstNames[i%len(firstNames)], lastNames[i&len(lastNames)], teams[i%len(teams)]
 		
 #------------------------------------------------------------------------------	
 # Write out as a .xlsx file with the number tag data.
 #
-wb = Workbook()
-ws = wb.get_active_sheet()
-ws.title = "RaceResultTest"
+wb = xlwt.Workbook()
+ws = wb.add_sheet( "RaceResultTest" )
 for col, label in enumerate('Bib#,LastName,FirstName,Team,Tag'.split(',')):
-	ws.cell( row = 0, column = col ).value = label
+	ws.write( 0, col, label )
 rdata = [d for d in getRandomData(len(tag))]
 rowCur = 1
-for r, (n, t) in enumerate(tag.iteritems()):
+for r, (n, t) in enumerate(tag.items()):
 	if t in ('1', '2'):
 		continue
 	
 	bib, firstName, lastName, Team = rdata[r]
 	for c, v in enumerate([n, lastName, firstName, Team, t]):
-		ws.cell( row = rowCur, column = c ).value = v
+		ws.write( rowCur, c, v )
 	rowCur += 1
 wb.save('RaceResultTest.xlsx')
 wb = None
@@ -308,7 +309,7 @@ wb = None
 #------------------------------------------------------------------------------	
 # Also write out as a .csv file.
 #
-with open('RaceResultTest.csv', 'w') as f:
+with io.open('RaceResultTest.csv', 'w') as f:
 	f.write( 'Bib#,Tag,dummy3,dummy4,dummy5\n' )
 	for n in nums:
 		f.write( '%d,%s\n' % (n, tag[n]) )
@@ -339,11 +340,11 @@ var = mean / varFactor				# Variance between riders.
 lapMax = 6
 for n in nums:
 	lapTime = random.normalvariate( mean, mean/(varFactor * 4.0) )
-	for lap in xrange(0, lapMax+1):
+	for lap in six.moves.range(0, lapMax+1):
 		numLapTimes.append( (n, lap, lapTime*lap) )
 numLapTimes.sort( key = lambda x: (x[1], x[2]) )	# Sort by lap, then race time.
 
-print 'len(numLapTimes)=', len(numLapTimes)
+six.print_( 'len(numLapTimes)=', len(numLapTimes) )
 
 dBase = datetime.datetime.now()
 dBase -= datetime.timedelta( seconds = 13*60+13.13 )	# Send the wrong time for testing purposes.
@@ -352,7 +353,7 @@ passings = []
 
 def sendData():
 	iPassing = 1
-	for iPassing in xrange(1,len(numLapTimes)):
+	for iPassing in six.moves.range(1,len(numLapTimes)):
 		n, lap, t = numLapTimes[iPassing]
 		dt = t - numLapTimes[iPassing-1][2]
 		time.sleep( dt )
@@ -372,26 +373,26 @@ while 1:
 	clientsocket.settimeout( 5 )
 	
 	def sendResponse( response ):
-		print response
-		clientsocket.sendall( bytes(response + EOL) )
+		print ( response )
+		clientsocket.sendall( u'{}{}'.format(response, EOL).encode() )
 	
-	print 'Connection from:', address
+	six.print_(  'Connection from:', address )
 	PROTOCOL = '1.1'
 
 	while 1:
 		try:
-			message = clientsocket.recv( 4096 ).strip()
+			message = clientsocket.recv( 4096 ).decode().strip()
 		except Exception as e:
 			break
 		if not message:
 			break
 			
-		print 'message:', message
+		print ( 'message:', message )
 		
 		cmd = message.split( ';', 1 )[0]
 		
 		if cmd == 'PASSINGS':
-			sendResponse( 'PASSINGS;{}'.format(len(passings)) )
+			sendResponse( 'PASSINGS;{};2112'.format(len(passings)) )
 			
 		elif cmd == 'SETTIME':
 			tFields = [int(f) for f in re.split( '[^0-9]', message.split(';', 1)[1] ) ]
@@ -449,5 +450,5 @@ while 1:
 				sys.exit()
 		
 		else:
-			print 'unknown command:', cmd
+			six.print_(  'unknown command:', cmd )
 

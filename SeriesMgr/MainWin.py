@@ -2,6 +2,7 @@ import wx
 from wx.lib.wordwrap import wordwrap
 import wx.adv as adv
 import sys
+import six
 import os
 import re
 import datetime
@@ -28,9 +29,9 @@ except:
 	localDateFormat = '%b %d, %Y'
 	localTimeFormat = '%I:%M%p'
 	
-import cPickle as pickle
+import six.moves.cPickle as pickle
 from argparse import ArgumentParser
-import StringIO
+StringIO = six.moves.StringIO
 
 import Dependencies
 
@@ -51,6 +52,7 @@ import Version
 from Printing			import SeriesMgrPrintout
 from ExportGrid			import ExportGrid, tag
 from SetGraphic			import SetGraphicDialog
+from ModuleUnpickler	import ModuleUnpickler
 import CmdLine
 
 #----------------------------------------------------------------------------------
@@ -158,7 +160,7 @@ class MainWin( wx.Frame ):
 		self.fileName = None
 		
 		# Setup the objects for the race clock.
-		self.timer = wx.Timer( self, id=wx.NewId() )
+		self.timer = wx.Timer( self, id=wx.ID_ANY )
 		self.secondCount = 0
 
 		# Default print options.
@@ -173,77 +175,71 @@ class MainWin( wx.Frame ):
 		#-----------------------------------------------------------------------
 		self.fileMenu = wx.Menu()
 
-		self.fileMenu.Append( wx.ID_NEW , "&New...", "Create a new Series" )
-		self.Bind(wx.EVT_MENU, self.menuNew, id=wx.ID_NEW )
+		item = self.fileMenu.Append( wx.ID_NEW , "&New...", "Create a new Series" )
+		self.Bind(wx.EVT_MENU, self.menuNew, item )
 
-		self.fileMenu.Append( wx.ID_OPEN , "&Open...", "Open an existing Series" )
-		self.Bind(wx.EVT_MENU, self.menuOpen, id=wx.ID_OPEN )
+		item = self.fileMenu.Append( wx.ID_OPEN , "&Open...", "Open an existing Series" )
+		self.Bind(wx.EVT_MENU, self.menuOpen, item )
 
-		self.fileMenu.Append( wx.ID_SAVE , "&Save\tCtrl+S", "Save Series" )
-		self.Bind(wx.EVT_MENU, self.menuSave, id=wx.ID_SAVE )
+		item = self.fileMenu.Append( wx.ID_SAVE , "&Save\tCtrl+S", "Save Series" )
+		self.Bind(wx.EVT_MENU, self.menuSave, item )
 
-		self.fileMenu.Append( wx.ID_SAVEAS , "Save &As...", "Save to a different filename" )
-		self.Bind(wx.EVT_MENU, self.menuSaveAs, id=wx.ID_SAVEAS )
+		item = self.fileMenu.Append( wx.ID_SAVEAS , "Save &As...", "Save to a different filename" )
+		self.Bind(wx.EVT_MENU, self.menuSaveAs, item )
 
 		self.fileMenu.AppendSeparator()
-		self.fileMenu.Append( wx.ID_PAGE_SETUP , "Page &Setup...", "Setup the print page" )
-		self.Bind(wx.EVT_MENU, self.menuPageSetup, id=wx.ID_PAGE_SETUP )
+		item = self.fileMenu.Append( wx.ID_PAGE_SETUP , "Page &Setup...", "Setup the print page" )
+		self.Bind(wx.EVT_MENU, self.menuPageSetup, item )
 
-		self.fileMenu.Append( wx.ID_PREVIEW , "Print P&review...\tCtrl+R", "Preview Results" )
-		self.Bind(wx.EVT_MENU, self.menuPrintPreview, id=wx.ID_PREVIEW )
+		item = self.fileMenu.Append( wx.ID_PREVIEW , "Print P&review...\tCtrl+R", "Preview Results" )
+		self.Bind(wx.EVT_MENU, self.menuPrintPreview, item )
 
-		self.fileMenu.Append( wx.ID_PRINT , "&Print...\tCtrl+P", "Print Results" )
-		self.Bind(wx.EVT_MENU, self.menuPrint, id=wx.ID_PRINT )
+		item = self.fileMenu.Append( wx.ID_PRINT , "&Print...\tCtrl+P", "Print Results" )
+		self.Bind(wx.EVT_MENU, self.menuPrint, item )
 
 		self.fileMenu.AppendSeparator()
 
 		'''
-		idCur = wx.NewId()
-		self.fileMenu.Append( idCur , "&Export to Excel...", "Export to an Excel Spreadsheet (.xls)" )
-		self.Bind(wx.EVT_MENU, self.menuExportToExcel, id=idCur )
+		item = self.fileMenu.Append( wx.ID_ANY, "&Export to Excel...", "Export to an Excel Spreadsheet (.xls)" )
+		self.Bind(wx.EVT_MENU, self.menuExportToExcel, item )
 		
-		idCur = wx.NewId()
-		self.fileMenu.Append( idCur , "Export to &HTML...", "Export to HTML (.html)" )
-		self.Bind(wx.EVT_MENU, self.menuExportToHtml, id=idCur )
+		item = self.fileMenu.Append( wx.ID_ANY, "Export to &HTML...", "Export to HTML (.html)" )
+		self.Bind(wx.EVT_MENU, self.menuExportToHtml, item )
 
 		self.fileMenu.AppendSeparator()
 		'''
 		
 		recent = wx.Menu()
-		self.fileMenu.Append(wx.ID_ANY, "&Recent Files", recent)
+		menu = self.fileMenu.AppendSubMenu( recent, _("&Recent Files") )
 		self.filehistory.UseMenu( recent )
 		self.filehistory.AddFilesToMenu()
 		
 		self.fileMenu.AppendSeparator()
 
-		self.fileMenu.Append( wx.ID_EXIT, "E&xit", "Exit" )
-		self.Bind(wx.EVT_MENU, self.menuExit, id=wx.ID_EXIT )
+		item = self.fileMenu.Append( wx.ID_EXIT, "E&xit", "Exit" )
+		self.Bind(wx.EVT_MENU, self.menuExit, item)
 		
 		self.Bind(wx.EVT_MENU_RANGE, self.menuFileHistory, id=wx.ID_FILE1, id2=wx.ID_FILE9)
 		
 		self.menuBar.Append( self.fileMenu, "&File" )
 
 		self.optionsMenu = wx.Menu()
-		idCur = wx.NewId()
-		self.optionsMenu.Append( idCur , _("Copy Log File to &Clipboard"), _("Copy Log File to &Clipboard") )
-		self.Bind(wx.EVT_MENU, self.menuCopyLogFileToClipboard, id=idCur )
+		item = self.optionsMenu.Append( wx.ID_ANY, _("Copy Log File to &Clipboard"), _("Copy Log File to &Clipboard") )
+		self.Bind(wx.EVT_MENU, self.menuCopyLogFileToClipboard, item )
 		
-		idCur = wx.NewId()
-		self.optionsMenu.Append( idCur , _("Set &Graphic..."), _("Set Graphic for Output") )
-		self.Bind(wx.EVT_MENU, self.menuSetGraphic, id=idCur )
+		item = self.optionsMenu.Append( wx.ID_ANY, _("Set &Graphic..."), _("Set Graphic for Output") )
+		self.Bind(wx.EVT_MENU, self.menuSetGraphic, item )
 		
 		self.menuBar.Append( self.optionsMenu, _("&Options") )
 
 		#-----------------------------------------------------------------------
 		
 		self.optionsMenu = wx.Menu()
-		idCur = wx.NewId()
-		self.optionsMenu.Append( idCur , _("Set &Root Folder"), _("Set Root Folder") )
-		self.Bind(wx.EVT_MENU, self.menuSetRootFolder, id=idCur )
+		item = self.optionsMenu.Append( wx.ID_ANY, _("Set &Root Folder"), _("Set Root Folder") )
+		self.Bind(wx.EVT_MENU, self.menuSetRootFolder, item )
 		
-		idCur = wx.NewId()
-		self.optionsMenu.Append( idCur , _("Delete All Races..."), _("Delete All Races") )
-		self.Bind(wx.EVT_MENU, self.menuDeleteAllRaces, id=idCur )
+		item = self.optionsMenu.Append( wx.ID_ANY, _("Delete All Races..."), _("Delete All Races") )
+		self.Bind(wx.EVT_MENU, self.menuDeleteAllRaces, item )
 		
 		self.menuBar.Append( self.optionsMenu, _("&Tools") )
 
@@ -287,18 +283,16 @@ class MainWin( wx.Frame ):
 		#-----------------------------------------------------------------------
 		self.helpMenu = wx.Menu()
 
-		idCur = wx.NewId()
-		self.helpMenu.Append( wx.ID_HELP , "&Help...", "Help about SeriesMgr..." )
-		self.Bind(wx.EVT_MENU, self.menuHelp, id=wx.ID_HELP )
+		item = self.helpMenu.Append( wx.ID_HELP , "&Help...", "Help about SeriesMgr..." )
+		self.Bind(wx.EVT_MENU, self.menuHelp, item )
 		
 		self.helpMenu.AppendSeparator()
 
-		self.helpMenu.Append( wx.ID_ABOUT , "&About...", "About SeriesMgr..." )
-		self.Bind(wx.EVT_MENU, self.menuAbout, id=wx.ID_ABOUT )
+		item = self.helpMenu.Append( wx.ID_ABOUT , "&About...", "About SeriesMgr..." )
+		self.Bind(wx.EVT_MENU, self.menuAbout, item )
 
-		idCur = wx.NewId()
-		self.helpMenu.Append( idCur , "&Tips at Startup...", "Enable/Disable Tips at Startup..." )
-		self.Bind(wx.EVT_MENU, self.menuTipAtStartup, id=idCur )
+		item = self.helpMenu.Append( wx.ID_ANY, "&Tips at Startup...", "Enable/Disable Tips at Startup..." )
+		self.Bind(wx.EVT_MENU, self.menuTipAtStartup, item )
 
 		self.menuBar.Append( self.helpMenu, "&Help" )
 
@@ -317,25 +311,11 @@ class MainWin( wx.Frame ):
 	def resetEvents( self ):
 		self.events.reset()
 		
-	def menuUndo( self, event ):
-		undo.doUndo()
-		self.refresh()
-		
-	def menuRedo( self, event ):
-		undo.doRedo()
-		self.refresh()
-		
 	def menuTipAtStartup( self, event ):
 		showing = self.config.ReadBool('showTipAtStartup', True)
 		if Utils.MessageOKCancel( self, 'Turn Off Tips at Startup?' if showing else 'Show Tips at Startup?', 'Tips at Startup' ):
 			self.config.WriteBool( 'showTipAtStartup', showing ^ True )
 
-	def menuChangeProperties( self, event ):
-		if not SeriesModel.model:
-			Utils.MessageOK(self, "You must have a valid Series.", "No Valid Race", iconMask=wx.ICON_ERROR)
-			return
-		ChangeProperties( self )
-				
 	def getDirName( self ):
 		return Utils.getDirName()
 		
@@ -364,7 +344,7 @@ class MainWin( wx.Frame ):
 			return None
 		try:
 			with open(graphicFName, 'rb') as f:
-				b64 = 'data:image/{};base64,{}'.format(fileType, base64.standard_b64encode(f.read()))
+				b64 = 'data:image/{};base64,{}'.format(fileType, base64.standard_b64encode(f.read()).decode())
 				return b64
 		except IOError:
 			pass
@@ -451,10 +431,7 @@ class MainWin( wx.Frame ):
 			grid = page.getGrid()
 			printout = SeriesMgrPrintout( title, grid )
 		except AttributeError:
-			if page == self.graphDraw:
-				printout = GraphDrawPrintout( title, page )
-			else:
-				return
+			return
 		
 		pdd = wx.PrintDialogData(self.printData)
 		pdd.EnablePageNumbers( 0 )
@@ -551,7 +528,7 @@ class MainWin( wx.Frame ):
 
 		title = self.getTitle()
 		
-		html = StringIO.StringIO()
+		html = StringIO()
 		
 		with tag(html, 'html'):
 			with tag(html, 'head'):
@@ -636,7 +613,7 @@ table.results tr td.fastest{
 		html = html.getvalue()
 		
 		try:
-			with open(htmlfileName, 'wb') as fp:
+			with open(htmlfileName, 'w') as fp:
 				fp.write( html )
 			webbrowser.open( htmlfileName, new = 2, autoraise = True )
 			#Utils.MessageOK(self, 'Html file written to:\n\n  [}'.format(htmlfileName), 'Html Write')
@@ -715,8 +692,6 @@ table.results tr td.fastest{
 		self.config.Flush()
 		
 	def openSeries( self, fileName ):
-		wait = wx.BusyCursor()
-		
 		if not fileName:
 			return
 		
@@ -727,10 +702,10 @@ table.results tr td.fastest{
 		try:
 			with open(fileName, 'rb') as fp:
 				try:
-					SeriesModel.model = pickle.load( fp )
+					SeriesModel.model = pickle.load( fp, encoding='latin1', errors='replace' )
 				except:
 					fp.seek( 0 )
-					SeriesModel.model = ModuleUnpickler( fp, module='SeriesMgr' ).load()
+					SeriesModel.model = ModuleUnpickler( fp, module='SeriesMgr', encoding='latin1', errors='replace' ).load()
 		except IOError:
 			Utils.MessageOK(self, 'Cannot Open File "{}".'.format(fileName), 'Cannot Open File', iconMask=wx.ICON_ERROR )
 			return

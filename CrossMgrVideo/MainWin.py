@@ -4,6 +4,7 @@ import wx.lib.intctrl
 import sys
 import os
 import re
+import six
 import time
 import math
 import threading
@@ -12,7 +13,7 @@ import atexit
 import time
 import platform
 import webbrowser
-from Queue import Queue, Empty
+from six.moves.queue import Queue, Empty
 import CamServer
 from roundbutton import RoundButton
 
@@ -23,11 +24,12 @@ now = datetime.now
 import Utils
 import CVUtil
 from SocketListener import SocketListener
-from Database import Database, DBWriter, DBReader
+from Database import Database, DBWriter
 from ScaledBitmap import ScaledBitmap
 from FinishStrip import FinishStripPanel
 from ManageDatabase import ManageDatabase
 from PhotoDialog import PhotoDialog
+from Clock import Clock
 from Version import AppVerName
 
 imageWidth, imageHeight = 640, 480
@@ -44,7 +46,7 @@ def getCloseFinishBitmaps( size=(16,16) ):
 		bitmap = wx.Bitmap( *size )
 		dc.SelectObject( bitmap )
 		dc.SetPen( wx.Pen(wx.Colour(0,0,0), 1) )
-		dc.SetBrush( wx.Brush(wx.Colour(*[int(c[i:i+2],16) for i in xrange(0,6,2)]) ) )
+		dc.SetBrush( wx.Brush(wx.Colour(*[int(c[i:i+2],16) for i in six.moves.range(0,6,2)]) ) )
 		dc.DrawRectangle( 0, 0, size[0]-1, size[1]-1 )
 		dc.SelectObject( wx.NullBitmap )
 		bm.append( bitmap )
@@ -77,7 +79,7 @@ class DateSelectDialog( wx.Dialog ):
 		self.triggerDatesList.InsertColumn( 1, 'Entries', format=wx.LIST_FORMAT_CENTRE, width=wx.LIST_AUTOSIZE_USEHEADER )
 		for i, (d, c) in enumerate(triggerDates):
 			self.triggerDatesList.InsertItem( i, d.strftime('%Y-%m-%d') )
-			self.triggerDatesList.SetItem( i, 1, unicode(c) )
+			self.triggerDatesList.SetItem( i, 1, six.text_type(c) )
 		
 		if self.triggerDates:
 			self.triggerDatesList.Select( 0 )
@@ -155,7 +157,7 @@ class ConfigDialog( wx.Dialog ):
 		pfgs = wx.FlexGridSizer( rows=0, cols=2, vgap=4, hgap=8 )
 		
 		pfgs.Add( wx.StaticText(self, label='Camera Device'+':'), flag=wx.ALIGN_CENTRE_VERTICAL|wx.ALIGN_RIGHT )
-		self.cameraDevice = wx.Choice( self, choices=[unicode(i) for i in xrange(8)] )
+		self.cameraDevice = wx.Choice( self, choices=[six.text_type(i) for i in six.moves.range(8)] )
 		self.cameraDevice.SetSelection( cameraDeviceNum )
 		pfgs.Add( self.cameraDevice )
 		
@@ -225,16 +227,19 @@ def CreateCaptureButtons( parent ):
 	snapshot.SetBackgroundColour( wx.WHITE )
 	snapshot.SetForegroundColour( snapshotEnableColour )
 	snapshot.SetFontToFitLabel( wx.Font(wx.FontInfo(10).Bold()) )
+	snapshot.SetToolTip( _('Record a Single Frame') )
 	
 	autoCapture = RoundButton( parent, label="AUTO\nCAPTURE", size=(90,90) )
 	autoCapture.SetBackgroundColour( wx.WHITE )
 	autoCapture.SetForegroundColour( autoCaptureEnableColour )
 	autoCapture.SetFontToFitLabel( wx.Font(wx.FontInfo(10).Bold()) )
+	autoCapture.SetToolTip( _('Capture Video for an Automatic Interval\nSet in "Config Auto Capture"') )
 	
 	capture = RoundButton( parent, label="CAPTURE", size=(90,90) )
 	capture.SetBackgroundColour( wx.WHITE )
 	capture.SetForegroundColour( captureEnableColour )
 	capture.SetFontToFitLabel( wx.Font(wx.FontInfo(10).Bold()) )
+	capture.SetToolTip( _('Capture Video\nwhile the Button is held down') )
 		
 	return snapshot, autoCapture, capture
 
@@ -254,7 +259,7 @@ class FocusDialog( wx.Dialog ):
 		
 		self.title = wx.StaticText(self, label='CrossMgr Video\nFocus Window', style=wx.ALIGN_RIGHT )
 		self.title.SetFont( wx.Font( (0,28), wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL ) )
-		self.explain = wx.StaticText(self, label='Click and Drag to Zoom in Photo')		
+		self.explain = wx.StaticText(self, label='Click and Drag to Zoom in Photo')
 		self.snapshot, self.autoCapture, self.capture = CreateCaptureButtons( self )
 		
 		btnSizer.Add( wx.StaticBitmap(self, wx.ID_ANY, self.logo) )
@@ -317,7 +322,7 @@ class TriggerDialog( wx.Dialog ):
 		ef = db.getTriggerEditFields( self.triggerId )
 		ef = ef or ['' for f in Database.triggerEditFields]
 		for e, v in zip(self.editFields, ef):
-			e.SetValue( unicode(v) )
+			e.SetValue( six.text_type(v) )
 	
 	def get( self ):
 		values = []
@@ -403,10 +408,7 @@ class MainWin( wx.Frame ):
 		self.tdCaptureBefore = tdCaptureBeforeDefault
 		self.tdCaptureAfter = tdCaptureAfterDefault
 
-		self.config = wx.Config(appName="CrossMgrVideo",
-						vendorName="SmartCyclingSolutions",
-						#style=wx.CONFIG_USE_LOCAL_FILE
-		)
+		self.config = wx.Config()
 		
 		self.requestQ = Queue()		# Select photos from photobuf.
 		self.dbWriterQ = Queue()	# Photos waiting to be written
@@ -430,6 +432,12 @@ class MainWin( wx.Frame ):
 		self.title = wx.StaticText(self, label='CrossMgr Video\nVersion {}'.format(AppVerName.split()[1]), style=wx.ALIGN_RIGHT )
 		self.title.SetFont( wx.Font( (0,28), wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL ) )
 		headerSizer.Add( self.title, flag=wx.ALL, border=10 )
+		
+		clock = Clock( self, size=(90,90) )
+		clock.SetBackgroundColour( self.GetBackgroundColour() )
+		clock.Start()
+
+		headerSizer.Add( clock, flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT, border=4 )
 		
 		#------------------------------------------------------------------------------
 		self.cameraDevice = wx.StaticText( self )
@@ -493,6 +501,7 @@ class MainWin( wx.Frame ):
 		
 		headerSizer.Add( fgs, flag=wx.ALIGN_CENTRE|wx.LEFT, border=4 )
 		headerSizer.AddStretchSpacer()
+		
 		headerSizer.Add( self.snapshot, flag=wx.ALIGN_CENTRE_VERTICAL|wx.LEFT, border=8 )
 		headerSizer.Add( self.autoCapture, flag=wx.ALIGN_CENTRE_VERTICAL|wx.LEFT, border=8 )
 		headerSizer.Add( self.capture, flag=wx.ALIGN_CENTRE_VERTICAL|wx.LEFT|wx.RIGHT, border=8 )
@@ -642,22 +651,22 @@ class MainWin( wx.Frame ):
 		return self.itemDataMap[data]
 	
 	def getTriggerRowFromID( self, id ):
-		for row in xrange(self.triggerList.GetItemCount()-1, -1, -1):
+		for row in six.moves.range(self.triggerList.GetItemCount()-1, -1, -1):
 			if self.itemDataMap[row][0] == id:
-				return i
+				return row
 		return None
 
 	def updateTriggerRow( self, row, fields ):
 		if 'last_name' in fields and 'first_name' in fields:
 			fields['name'] = u', '.join( n for n in (fields['last_name'], fields['first_name']) if n )
-		for k, v in fields.iteritems():
+		for k, v in six.iteritems(fields):
 			if k in self.fieldCol:
 				if k == 'bib':
 					v = u'{:>6}'.format(v)
 				elif k == 'frames':
-					v = unicode(v) if v else u''
+					v = six.text_type(v) if v else u''
 				else:
-					v = unicode(v)
+					v = six.text_type(v)
 				self.triggerList.SetItem( row, self.fieldCol[k], v )
 				
 	def updateTriggerRowID( self, id, fields ):
@@ -705,7 +714,7 @@ class MainWin( wx.Frame ):
 			
 			dtFinish = (ts-tsPrev).total_seconds()
 			itemImage = self.sm_close[min(len(self.sm_close)-1, int(len(self.sm_close) * dtFinish / closeFinishThreshold))]		
-			row = self.triggerList.InsertItem( sys.maxint, ts.strftime('%H:%M:%S.%f')[:-3], itemImage )
+			row = self.triggerList.InsertItem( 999999, ts.strftime('%H:%M:%S.%f')[:-3], itemImage )
 			
 			if not frames:
 				tsLower = min( tsLower, ts-timedelta(seconds=s_before) )
@@ -743,7 +752,7 @@ class MainWin( wx.Frame ):
 					del counts[id]
 			self.db.updateTriggerPhotoCounts( counts )
 			
-		for i in xrange(self.triggerList.GetColumnCount()):
+		for i in six.moves.range(self.triggerList.GetColumnCount()):
 			self.triggerList.SetColumnWidth(i, wx.LIST_AUTOSIZE)
 
 		if iTriggerRow is not None:
@@ -819,7 +828,7 @@ class MainWin( wx.Frame ):
 		)
 		
 	def onStartCapture( self, event ):
-		tNow = now()
+		tNow = self.tStartCapture = now()
 		
 		event.GetEventObject().SetForegroundColour( captureDisableColour )
 		wx.CallAfter( event.GetEventObject().Refresh )
@@ -835,7 +844,6 @@ class MainWin( wx.Frame ):
 				'last_name':u'Capture',
 			}
 		)
-		self.tStartCapture = tNow
 		self.camInQ.put( {'cmd':'start_capture', 'tStart':tNow-self.tdCaptureBefore} )
 	
 	def showLastTrigger( self ):
@@ -843,7 +851,7 @@ class MainWin( wx.Frame ):
 		if iTriggerRow < 0:
 			return
 		self.triggerList.EnsureVisible( iTriggerRow )
-		for r in xrange(self.triggerList.GetItemCount()-1):
+		for r in six.moves.range(self.triggerList.GetItemCount()-1):
 			self.triggerList.Select(r, 0)
 		self.triggerList.Select( iTriggerRow )		
 	
@@ -948,7 +956,7 @@ class MainWin( wx.Frame ):
 		
 	def doTriggerDelete( self, confirm=True ):
 		triggerInfo = self.getTriggerInfo( self.iTriggerSelect )
-		message = u', '.join( f for f in (triggerInfo['ts'].strftime('%H:%M:%S.%f')[:-3], unicode(triggerInfo['bib']),
+		message = u', '.join( f for f in (triggerInfo['ts'].strftime('%H:%M:%S.%f')[:-3], six.text_type(triggerInfo['bib']),
 			triggerInfo['name'], triggerInfo['team'], triggerInfo['wave'], triggerInfo['race_name']) if f )
 		if not confirm or wx.MessageDialog( self, u'{}:\n\n{}'.format(u'Confirm Delete', message), u'Confirm Delete',
 				style=wx.OK|wx.CANCEL|wx.ICON_QUESTION ).ShowModal() == wx.ID_OK:		
@@ -979,7 +987,7 @@ class MainWin( wx.Frame ):
 			message = self.messageQ.get()
 			assert len(message) == 2, 'Incorrect message length'
 			cmd, info = message
-			print 'Message:', '{}:  {}'.format(cmd, info) if cmd else info
+			six.print_( 'Message:', '{}:  {}'.format(cmd, info) if cmd else info )
 			#wx.CallAfter( self.messageManager.write, '{}:  {}'.format(cmd, info) if cmd else info )
 	
 	def delayRefreshTriggers( self ):
@@ -1005,7 +1013,7 @@ class MainWin( wx.Frame ):
 		self.eventThread = threading.Thread( target=self.processRequests )
 		self.eventThread.daemon = True
 		
-		self.dbWriterThread = threading.Thread( target=DBWriter, args=(self.dbWriterQ, lambda: wx.CallAfter(self.delayRefreshTriggers)) )
+		self.dbWriterThread = threading.Thread( target=DBWriter, args=(self.dbWriterQ, lambda: wx.CallAfter(self.delayRefreshTriggers), self.db.fname) )
 		self.dbWriterThread.daemon = True
 		
 		self.cameraThread.start()
@@ -1097,7 +1105,22 @@ class MainWin( wx.Frame ):
 		if hasattr(self, 'dbWriterThread'):
 			self.camInQ.put( {'cmd':'terminate'} )
 			self.dbWriterQ.put( ('terminate', ) )
-			self.dbWriterThread.join()
+			self.dbWriterThread.join( 2.0 )
+			
+	def setDBName( self, dbName ):
+		if dbName != self.db.fname:
+			if hasattr(self, 'dbWriterThread'):
+				self.dbWriterQ.put( ('terminate', ) )
+				self.dbWriterThread.join()
+			try:
+				self.db = Database( dbName )
+			except:
+				self.db = Database()
+			
+			self.dbWriterQ = Queue()
+			self.dbWriterThread = threading.Thread( target=DBWriter, args=(self.dbWriterQ, lambda: wx.CallAfter(self.delayRefreshTriggers), self.db.fname) )
+			self.dbWriterThread.daemon = True
+			self.dbWriterThread.start()
 	
 	def resetCamera( self, event=None ):
 		dlg = ConfigDialog( self, self.getCameraDeviceNum(), self.fps, self.getCameraResolution() )
@@ -1116,6 +1139,8 @@ class MainWin( wx.Frame ):
 		
 		if hasattr(self, 'camInQ'):
 			self.camInQ.put( {'cmd':'cam_info', 'info':self.getCameraInfo(),} )
+			
+		self.GetSizer().Layout()
 		return True
 	
 	def manageDatabase( self, event ):
@@ -1123,7 +1148,8 @@ class MainWin( wx.Frame ):
 		dlg = ManageDatabase( self, self.db.getsize(), self.db.fname, trigFirst, trigLast, title='Manage Database' )
 		if dlg.ShowModal() == wx.ID_OK:
 			work = wx.BusyCursor()
-			tsLower, tsUpper, vacuum = dlg.GetValues()
+			tsLower, tsUpper, vacuum, dbName = dlg.GetValues()
+			self.setDBName( dbName )
 			if tsUpper:
 				tsUpper = datetime.combine( tsUpper, time(23,59,59,999999) )
 			self.db.cleanBetween( tsLower, tsUpper )
@@ -1134,7 +1160,7 @@ class MainWin( wx.Frame ):
 		dlg.Destroy()
 	
 	def setCameraDeviceNum( self, num ):
-		self.cameraDevice.SetLabel( unicode(num) )
+		self.cameraDevice.SetLabel( six.text_type(num) )
 		
 	def setCameraResolution( self, width, height ):
 		self.cameraResolution.SetLabel( u'{}x{}'.format(width, height) )
@@ -1157,6 +1183,7 @@ class MainWin( wx.Frame ):
 		wx.Exit()
 		
 	def writeOptions( self ):
+		self.config.Write( 'DBName', self.db.fname )
 		self.config.Write( 'CameraDevice', self.cameraDevice.GetLabel() )
 		self.config.Write( 'CameraResolution', self.cameraResolution.GetLabel() )
 		self.config.Write( 'FPS', self.targetFPS.GetLabel() )
@@ -1165,6 +1192,7 @@ class MainWin( wx.Frame ):
 		self.config.Flush()
 	
 	def readOptions( self ):
+		self.setDBName( self.config.Read('DBName', '') )
 		self.cameraDevice.SetLabel( self.config.Read('CameraDevice', u'0') )
 		self.cameraResolution.SetLabel( self.config.Read('CameraResolution', u'640x480') )
 		self.targetFPS.SetLabel( self.config.Read('FPS', u'30.000') )

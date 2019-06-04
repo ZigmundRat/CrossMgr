@@ -1,11 +1,14 @@
 import wx
 import os
+import six
 import sys
 import copy
 import bisect
 import datetime
 import wx.lib.intctrl
 import wx.lib.buttons
+import wx.lib.agw.flatnotebook as flatnotebook
+
 from collections import defaultdict
 
 import Utils
@@ -30,7 +33,7 @@ def MakeKeypadButton( parent, id=wx.ID_ANY, label='', style = 0, size=(-1,-1), f
 	return btn
 
 # backspace, delete, comma, return, digits
-validKeyCodes = set( [8, 127, 44, 13] + [x for x in xrange(48, 48+10)] )
+validKeyCodes = set( [8, 127, 44, 13] + [x for x in six.moves.range(48, 48+10)] )
 
 class Keypad( wx.Panel ):
 	def __init__( self, parent, controller, id = wx.ID_ANY ):
@@ -38,7 +41,7 @@ class Keypad( wx.Panel ):
 		self.SetBackgroundColour( wx.WHITE )
 		self.controller = controller
 		
-		fontPixels = 43
+		fontPixels = 36
 		font = wx.Font((0,fontPixels), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
 		dc = wx.WindowDC( self )
 		dc.SetFont( font )
@@ -78,7 +81,7 @@ class Keypad( wx.Panel ):
 		self.num[-1].Bind( wx.EVT_BUTTON, lambda event, aValue = 0 : self.onNumPress(event, aValue) )
 		gbs.Add( self.num[0], pos=(3+rowCur,0), span=(1,2), flag=wx.EXPAND )
 
-		for i in xrange(0, 9):
+		for i in six.moves.range(0, 9):
 			self.num.append( MakeKeypadButton( self.keypadPanel, label=u'&{}'.format(i+1), style=numButtonStyle, size=(wNum,hNum), font = font) )
 			self.num[-1].Bind( wx.EVT_BUTTON, lambda event, aValue = i+1 : self.onNumPress(event, aValue) )
 			j = 8-i
@@ -120,7 +123,7 @@ class Keypad( wx.Panel ):
 		self.showTouchScreen ^= True
 		self.keypadPanel.Show( self.showTouchScreen )
 		self.GetSizer().Layout()
-		self.GetParent().GetParent().SetSashPosition( SplitterMaxPos if self.showTouchScreen else SplitterMinPos )
+		self.GetParent().GetParent().GetParent().SetSashPosition( SplitterMaxPos if self.showTouchScreen else SplitterMinPos )
 		try:
 			self.GetParent().GetSizer().Layout()
 		except:
@@ -225,9 +228,6 @@ def getLapInfo( lap, lapsTotal, tCur, tNext, leader ):
 	return info
 
 class NumKeypad( wx.Panel ):
-	SwitchToTimeTrialEntryMessage = _('Switch to Time Trial Entry')
-	SwitchToNumberEntryMessage = _('Switch to Regular Number Entry')
-
 	def __init__( self, parent, id = wx.ID_ANY ):
 		wx.Panel.__init__(self, parent, id)
 		
@@ -254,11 +254,16 @@ class NumKeypad( wx.Panel ):
 		
 		#-------------------------------------------------------------------------------
 		# Create the edit field, numeric keypad and buttons.
-		self.keypad = Keypad( panel, self )
-		horizontalMainSizer.Add( self.keypad, 0, flag=wx.TOP|wx.LEFT|wx.EXPAND, border = 4 )
+		self.notebook = wx.Notebook( panel, style=wx.NB_BOTTOM )
+		self.notebook.SetBackgroundColour( wx.WHITE )
 		
-		self.timeTrialRecord = TimeTrialRecord( panel, self )
-		self.timeTrialRecord.Show( False )
+		self.keypad = Keypad( self.notebook, self )
+		self.timeTrialRecord = TimeTrialRecord( self.notebook, self )
+		
+		self.notebook.AddPage( self.keypad, _("Bib"), select=True )
+		self.notebook.AddPage( self.timeTrialRecord, _("TimeTrial") )
+		horizontalMainSizer.Add( self.notebook, 0, flag=wx.TOP|wx.LEFT|wx.EXPAND, border = 4 )
+		
 		self.horizontalMainSizer = horizontalMainSizer
 		
 		#------------------------------------------------------------------------------
@@ -268,20 +273,11 @@ class NumKeypad( wx.Panel ):
 		self.raceTime = wx.StaticText( panel, label = u'0:00')
 		self.raceTime.SetFont( font )
 		self.raceTime.SetDoubleBuffered(True)
-		
-		self.keypadBitmap = wx.Bitmap( os.path.join(Utils.getImageFolder(), 'keypad.png'), wx.BITMAP_TYPE_PNG )
-		self.ttRecordBitmap = wx.Bitmap( os.path.join(Utils.getImageFolder(), 'stopwatch.png'), wx.BITMAP_TYPE_PNG )
-		
-		self.keypadTimeTrialToggleButton = wx.BitmapButton( panel, bitmap = self.ttRecordBitmap )
-		self.isKeypadState = True
-		self.keypadTimeTrialToggleButton.Bind( wx.EVT_BUTTON, self.swapKeypadTimeTrialRecord )
-		self.keypadTimeTrialToggleButton.SetToolTip(wx.ToolTip(self.SwitchToTimeTrialEntryMessage))
-		
+				
 		verticalSubSizer = wx.BoxSizer( wx.VERTICAL )
 		horizontalMainSizer.Add( verticalSubSizer )
 		
 		hs = wx.BoxSizer( wx.HORIZONTAL )
-		hs.Add( self.keypadTimeTrialToggleButton, flag=wx.LEFT | wx.ALIGN_CENTRE_VERTICAL, border = 8 )
 		hs.Add( self.raceTime, flag=wx.LEFT | wx.ALIGN_CENTRE_VERTICAL, border=100-40-8 )
 		verticalSubSizer.Add( hs, flag=wx.ALIGN_LEFT | wx.ALIGN_CENTRE_VERTICAL | wx.ALL, border = 2 )
 		
@@ -394,44 +390,19 @@ class NumKeypad( wx.Panel ):
 		return not mainWin or mainWin.isShowingPage(self)
 	
 	def isKeypadInputMode( self ):
-		return self.isKeypadState
+		return self.notebook.GetSelection() == 0
 		
 	def isTimeTrialInputMode( self ):
-		return not self.isKeypadInputMode()
+		return self.notebook.GetSelection() == 1
 	
-	def swapKeypadTimeTrialRecord( self, event = None ):
-		if self.isKeypadState:
-			self.keypad.Show( False )
-			self.timeTrialRecord.Show( True )
+	def setTimeTrialInput( self, isTimeTrial=True ):
+		page = 1 if isTimeTrial else 0
+		if self.notebook.GetSelection() != page:
+			self.notebook.SetSelection( page )
 			self.timeTrialRecord.refresh()
-			self.horizontalMainSizer.Replace( self.keypad, self.timeTrialRecord )
-			self.keypadTimeTrialToggleButton.SetBitmapLabel( self.keypadBitmap )
-			self.keypadTimeTrialToggleButton.SetToolTip(wx.ToolTip(self.SwitchToNumberEntryMessage))
-			wx.CallAfter( self.timeTrialRecord.Refresh )
-			wx.CallLater( 100, self.timeTrialRecord.grid.SetFocus )
-		else:
-			self.keypad.Show( True )
-			self.timeTrialRecord.Show( False )
-			self.horizontalMainSizer.Replace( self.timeTrialRecord, self.keypad )
-			self.keypadTimeTrialToggleButton.SetBitmapLabel( self.ttRecordBitmap )
-			self.keypadTimeTrialToggleButton.SetToolTip(wx.ToolTip(self.SwitchToTimeTrialEntryMessage))
-			wx.CallAfter( self.keypad.Refresh )
-			wx.CallLater( 100, self.keypad.numEdit.SetFocus )
-		self.isKeypadState = not self.isKeypadState
-		self.horizontalMainSizer.Layout()
-		self.GetSizer().Layout()
-		wx.CallAfter( self.Refresh )
 		
-	def setKeypadInput( self, b = True ):
-		if b:
-			if not self.isKeypadInputMode():
-				self.swapKeypadTimeTrialRecord()
-		else:
-			if not self.isTimeTrialInputMode():
-				self.swapKeypadTimeTrialRecord()
-	
-	def setTimeTrialInput( self, b = True ):
-		self.setKeypadInput( not b )
+	def swapKeypadTimeTrialRecord( self ):
+		self.notebook.SetSelection( 1 - self.notebook.GetSelection() )
 	
 	def refreshRaceHUD( self ):
 		race = Model.race
@@ -447,7 +418,7 @@ class NumKeypad( wx.Panel ):
 		
 		def getNoDataCategoryLap( category ):
 			offset = race.categoryStartOffset(category)
-			tLapStart = offset if tCur >= offset else None
+			tLapStart = offset if tCur and tCur >= offset else None
 			cn = race.getNumLapsFromCategory( category )
 			if cn and tCur and tCur > offset + 30.0:
 				cn -= 1
@@ -627,7 +598,7 @@ class NumKeypad( wx.Panel ):
 			# Add rider entries who have been read by RFID but have not completed the first lap.
 			results = list(results)
 			resultNums = set( rr.num for rr in results )
-			for a in race.riders.itervalues():
+			for a in six.itervalues(race.riders):
 				if a.status == Finisher and a.num not in resultNums and a.firstTime is not None:
 					category = getCategory( a.num )
 					if category and t >= a.firstTime and t >= race.getStartOffset(a.num):
@@ -672,12 +643,12 @@ class NumKeypad( wx.Panel ):
 		if not catLapCount:
 			return
 			
-		catLapList = [(category, lap, count) for (category, lap), count in catLapCount.iteritems()]
+		catLapList = [(category, lap, count) for (category, lap), count in six.iteritems(catLapCount)]
 		catLapList.sort( key=lambda x: (x[0].getStartOffsetSecs(), x[0].fullname, -x[1]) )
 		
 		def appendListRow( row = tuple(), colour = None, bold = None ):
-			r = self.lapCountList.InsertItem( sys.maxint, u'{}'.format(row[0]) if row else u'' )
-			for c in xrange(1, len(row)):
+			r = self.lapCountList.InsertItem( 999999, u'{}'.format(row[0]) if row else u'' )
+			for c in six.moves.range(1, len(row)):
 				self.lapCountList.SetItem( r, c, u'{}'.format(row[c]) )
 			if colour is not None:
 				item = self.lapCountList.GetItem( r )
@@ -693,8 +664,8 @@ class NumKeypad( wx.Panel ):
 		
 		appendListRow( (
 							_('Total'),
-							u'{}/{}'.format(sum(count for count in catLapCount.itervalues()),
-											sum(count for count in catCount.itervalues()))
+							u'{}/{}'.format(sum(count for count in six.itervalues(catLapCount)),
+											sum(count for count in six.itervalues(catCount)))
 						),
 						colour=wx.BLUE,
 						bold=True )
@@ -769,8 +740,6 @@ class NumKeypad( wx.Panel ):
 		race = Model.race
 		enable = bool(race and race.isRunning())
 		if self.isEnabled != enable:
-			self.keypad.Enable( enable )
-			self.timeTrialRecord.Enable( enable )
 			self.isEnabled = enable
 		if not enable and self.isKeypadInputMode():
 			self.keypad.numEdit.SetValue( '' )
@@ -798,8 +767,6 @@ class NumKeypad( wx.Panel ):
 		
 		if self.isKeypadInputMode():
 			wx.CallLater( 100, self.keypad.numEdit.SetFocus )
-		if self.isTimeTrialInputMode():
-			wx.CallAfter( self.timeTrialRecord.refresh )
 	
 if __name__ == '__main__':
 	Utils.disable_stdout_buffering()

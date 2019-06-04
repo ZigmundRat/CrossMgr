@@ -1,4 +1,5 @@
 import wx
+import six
 import bisect
 import Model
 import Utils
@@ -47,55 +48,12 @@ class Recommendations( wx.Panel ):
 		bs.Add(self.grid, 1, wx.GROW|wx.ALL, 5)
 		self.SetSizer(bs)
 		bs.SetSizeHints(self)
-
-	'''
-	def doRightClick( self, event ):
-		if self.isEmpty:
-			return
-			
-		self.rowPopup = event.GetRow()
-		self.colPopup = event.GetCol()
-		numSelect = self.getCellNum( self.rowPopup, self.colPopup )
-		if not numSelect:
-			return
-			
-		self.doNumSelect( event )
-				
-		if not hasattr(self, 'popupInfo'):
-			self.popupInfo = [
-				('Results', 	wx.NewId(), self.OnPopupResults),
-				('RiderDetail',wx.NewId(), self.OnPopupRiderDetail),
-				
-				('Correct...',	wx.NewId(), self.OnPopupCorrect),
-				('Insert...',	wx.NewId(), self.OnPopupSplit),
-				('Delete...',	wx.NewId(), self.OnPopupDelete)
-			]
-			self.numEditActions = 2
-			for p in self.popupInfo:
-				self.Bind( wx.EVT_MENU, p[2], id=p[1] )
-
-		isInterp = self.history[self.colPopup][self.rowPopup].interp
-		
-		race = Model.getRace()
-		menu = wx.Menu()
-		for i, p in enumerate(self.popupInfo):
-			if i >= self.numEditActions and isInterp:		# Disallow editing of interpreted entries
-				continue
-			elif i == self.numEditActions and not isInterp:
-				menu.AppendSeparator()
-			elif p[0] == 'Record' and not race.isRunning():
-				continue
-			menu.Append( p[1], p[0] )
-		
-		self.PopupMenu( menu )
-		menu.Destroy()
-	'''
 				
 	def updateColours( self ):
 		self.textColour = {}
 		self.backgroundColour = {}
 		c = 0
-		for r in xrange(self.grid.GetNumberRows()):
+		for r in six.moves.range(self.grid.GetNumberRows()):
 			value = self.grid.GetCellValue( r, c )
 			if not value:
 				break				
@@ -190,10 +148,10 @@ class Recommendations( wx.Panel ):
 			colnames = [ _('Num'), _('Name'), _('Issue'), _('Recommendation') ]
 			data = [[],[], [], []]
 			def append( num = u'', name = u'', issue = u'', recommendation = u'' ):
-				data[0].append( unicode(num) )
-				data[1].append( unicode(name) )
-				data[2].append( unicode(issue) )
-				data[3].append( unicode(recommendation) )
+				data[0].append( six.text_type(num) )
+				data[1].append( six.text_type(name) )
+				data[2].append( six.text_type(issue) )
+				data[3].append( six.text_type(recommendation) )
 			
 			self.isEmpty = False
 
@@ -288,18 +246,18 @@ class Recommendations( wx.Panel ):
 				
 				# Find the maximum recorded lap for each category.
 				categoryMaxLapNonInterp, categoryMaxLapInterp = {}, {}
-				for num, maxLap in riderMaxLapNonInterp.iteritems():
+				for num, maxLap in six.iteritems(riderMaxLapNonInterp):
 					riderCat = race.getCategory( num )
 					if riderCat:
 						categoryMaxLapNonInterp[riderCat] = max( categoryMaxLapNonInterp.get(riderCat, 0), maxLap )
-				for num, maxLap in riderMaxLapInterp.iteritems():
+				for num, maxLap in six.iteritems(riderMaxLapInterp):
 					riderCat = race.getCategory( num )
 					if riderCat:
 						categoryMaxLapInterp[riderCat] = max( categoryMaxLapInterp.get(riderCat, 0), maxLap )
 				
 				# Check if all the riders in a particular category did not complete the maximum number of laps.
 				raceLaps = race.getRaceLaps()
-				for category, maxNonInterpLap in categoryMaxLapNonInterp.iteritems():
+				for category, maxNonInterpLap in six.iteritems(categoryMaxLapNonInterp):
 					maxCatLaps = (race.getNumLapsFromCategory(category) or raceLaps)
 					try:
 						if maxNonInterpLap < maxCatLaps and categoryMaxLapInterp[category] > maxNonInterpLap:
@@ -327,7 +285,7 @@ class Recommendations( wx.Panel ):
 						# Check for unreported DNFs.
 						try:
 							riderEntriesCur = riderEntries[num]
-							iLast = (i for i in xrange(len(riderEntriesCur), 0, -1) if not riderEntriesCur[i-1].interp).next()
+							iLast = next(i for i in six.moves.range(len(riderEntriesCur), 0, -1) if not riderEntriesCur[i-1].interp)
 							if iLast != len(riderEntriesCur) and race.isFinished():
 								append( num, getName(num),
 										_('DNF'),

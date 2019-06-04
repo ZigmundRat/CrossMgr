@@ -1,8 +1,8 @@
 import wx
 import os
+import six
 import time
 import subprocess
-import cStringIO as StringIO
 from AddPhotoHeader import AddPhotoHeader
 from ScaledBitmap import ScaledBitmap, GetScaleRatio
 from ComputeSpeed import ComputeSpeed
@@ -82,7 +82,7 @@ class PhotoDialog( wx.Dialog ):
 	def __init__( self, parent, id=wx.ID_ANY, size=wx.DefaultSize,
 		style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX ):
 			
-		super(PhotoDialog, self).__init__( parent, id, size=size, style=style, title=_('Photo') )
+		super(PhotoDialog, self).__init__( parent, id, size=size, style=style, title=_('Photo: ***Left-click and Drag in the Photo to Zoom***') )
 		
 		self.clear()
 		
@@ -103,10 +103,8 @@ class PhotoDialog( wx.Dialog ):
 		self.playerRewind.Bind( wx.EVT_BUTTON, lambda e: self.playRewind() )
 		self.playerReverse = wx.Button( self, style=wx.BU_EXACTFIT, label=u'\u25C0' )
 		self.playerReverse.Bind( wx.EVT_BUTTON, lambda e: self.playReverse() )
-		self.player = wx.Button( self, style=wx.BU_EXACTFIT, label=u'\u25B6' )
-		self.player.Bind( wx.EVT_BUTTON, lambda e: self.play() )
-		self.playerReverse = wx.Button( self, style=wx.BU_EXACTFIT, label=u'\u25C0' )
-		self.playerReverse.Bind( wx.EVT_BUTTON, lambda e: self.playReverse() )
+		self.playerForward = wx.Button( self, style=wx.BU_EXACTFIT, label=u'\u25B6' )
+		self.playerForward.Bind( wx.EVT_BUTTON, lambda e: self.play() )
 		self.playerStop = wx.Button( self, style=wx.BU_EXACTFIT, label=u'\u25A0' )
 		self.playerStop.Bind( wx.EVT_BUTTON, lambda e: self.playStop() )		
 		self.playerForwardToEnd = wx.Button( self, style=wx.BU_EXACTFIT, label=u'\u23E9' )
@@ -119,7 +117,7 @@ class PhotoDialog( wx.Dialog ):
 				
 		btnsizer.Add( self.playerRewind, flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=2)
 		btnsizer.Add( self.playerReverse, flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=0)
-		btnsizer.Add( self.player, flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=0)
+		btnsizer.Add( self.playerForward, flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=0)
 		btnsizer.Add( self.playerStop, flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=0)
 		btnsizer.Add( self.playerForwardToEnd, flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=0)
 		btnsizer.Add( self.frameLeft, flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=4)

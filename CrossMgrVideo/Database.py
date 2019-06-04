@@ -1,17 +1,18 @@
 import wx
 import os
 import sys
+import six
 import time
 from datetime import datetime, timedelta
 import sqlite3
 import CVUtil
 from collections import defaultdict
 
-from Queue import Queue, Empty
+from six.moves.queue import Queue, Empty
 
 import unicodedata
 def removeDiacritic( s ):
-	return unicodedata.normalize('NFKD', unicode(s)).encode('ascii', 'ignore')
+	return unicodedata.normalize('NFKD', u'{}'.format(s)).encode('ascii', 'ignore').decode()
 
 now = datetime.now
 
@@ -40,14 +41,14 @@ class Database( object ):
 	triggerFieldsInput = triggerFieldsAll[1:-3]	# ignore note, mph and frames
 	triggerFieldsUpdate = ('wave','race_name',)
 	triggerEditFields = ('bib', 'first_name', 'last_name', 'team', 'wave', 'race_name', 'note',)
-			
+	
 	def __init__( self, fname=None, initTables=True, fps=30 ):
 		self.fname = (fname or os.path.join( os.path.expanduser("~"), 'CrossMgrVideo.sqlite3' ) )
 		self.fps = fps
 		
 		'''
 		try:
-			print 'database bytes: {}'.format( os.stat(self.fname).st_size )
+			six.print_( 'database bytes: {}'.format( os.stat(self.fname).st_size ) )
 		except:
 			pass
 		'''
@@ -172,7 +173,7 @@ class Database( object ):
 			self.lastUpdate = now()
 	
 	def updateTriggerRecord( self, id, data ):
-		data = [(f,v) for f,v in data.iteritems()]
+		data = [(f,v) for f,v in six.iteritems(data)]
 		with self.conn:
 			self.conn.execute( 'UPDATE trigger SET {} WHERE id=?'.format(','.join('{}=?'.format(f) for f,v in data)),
 				[v for f,v in data] + [id]
@@ -257,8 +258,8 @@ class Database( object ):
 			) }
 			if not triggers:
 				return counts
-			tsLowerPhoto = min( tsBefore for tsBefore,tsAfter in triggers.itervalues() )
-			tsUpperPhoto = max( tsAfter  for tsBefore,tsAfter in triggers.itervalues() )
+			tsLowerPhoto = min( tsBefore for tsBefore,tsAfter in six.itervalues(triggers) )
+			tsUpperPhoto = max( tsAfter  for tsBefore,tsAfter in six.itervalues(triggers) )
 			rangeSecs = (tsUpperPhoto - tsLowerPhoto).total_seconds()
 			if rangeSecs == 0.0:
 				return counts
@@ -268,9 +269,9 @@ class Database( object ):
 			bucketSecs = (rangeSecs + 0.001) / bucketMax	# Ensure the timestamps equal to tsUpperPhoto go into the last bucket.
 			def tsToB( ts ):
 				return int((ts - tsLowerPhoto).total_seconds() / bucketSecs)
-			buckets = [[] for b in xrange(bucketMax)]
-			for id, (tsBefore,tsAfter) in triggers.iteritems():
-				for b in xrange(tsToB(tsBefore), tsToB(tsAfter)+1):
+			buckets = [[] for b in six.moves.range(bucketMax)]
+			for id, (tsBefore,tsAfter) in six.iteritems(triggers):
+				for b in six.moves.range(tsToB(tsBefore), tsToB(tsAfter)+1):
 					buckets[b].append(id)
 					
 			# Increment the count for every trigger intersecting this photo in the bucket.
@@ -285,7 +286,7 @@ class Database( object ):
 	def updateTriggerPhotoCounts( self, counts ):
 		with self.conn:
 			self.conn.executemany( 'UPDATE trigger SET frames=? WHERE id=? AND frames!=?',
-				[(count, id, count) for id, count in counts.iteritems()]
+				[(count, id, count) for id, count in six.iteritems(counts)]
 			)
 	
 	def getLastPhotos( self, count ):
@@ -414,14 +415,15 @@ class Database( object ):
 tsJpgs = []
 tsTriggers = []
 def flush( db, triggerWriteCB = None ):
-	db.write( tsTriggers, tsJpgs )
-	if tsTriggers and triggerWriteCB:
-		triggerWriteCB()
+	if db:
+		db.write( tsTriggers, tsJpgs )
+		if tsTriggers and triggerWriteCB:
+			triggerWriteCB()
 	del tsTriggers[:]
 	del tsJpgs[:]
 		
-def DBWriter( q, triggerWriteCB=None ):
-	db = Database()
+def DBWriter( q, triggerWriteCB=None, fname=None ):
+	db = Database( fname=fname )
 	
 	keepGoing = True
 	while keepGoing:
@@ -453,8 +455,8 @@ def DBWriter( q, triggerWriteCB=None ):
 		
 	flush( db )
 	
-def DBReader( q, callback ):
-	db = Database( initTables=False )
+def DBReader( q, callback, fname=None ):
+	db = Database( initTables=False, fname=fname  )
 	
 	keepGoing = True
 	while keepGoing:
@@ -477,13 +479,13 @@ if __name__ == '__main__':
 	d = Database()
 	
 	ts = d.getLastTimestamp(datetime(2000,1,1), datetime(2200,1,1))
-	print ts
+	six.print_( ts )
 	
 	def printTriggers():
 		qTriggers = 'SELECT {} FROM trigger ORDER BY ts LIMIT 8'.format(','.join(d.triggerFieldsInput))
-		print '*******************'
+		six.print_( '*******************' )
 		for row in d.conn.execute(qTriggers):
-			print removeDiacritic(u','.join( u'{}'.format(v) for v in row ))
+			six.print_( removeDiacritic(u','.join( u'{}'.format(v) for v in row )) )
 	
 	# Create existing duplicates all the triggers.
 	tsTriggers = d.conn.execute('SELECT {} FROM trigger'.format(','.join(d.triggerFieldsInput))).fetchall()
@@ -501,16 +503,16 @@ if __name__ == '__main__':
 	d.write( tsTriggers, None )
 	printTriggers()
 	
-	print d.getTriggerDates()
+	six.print_( d.getTriggerDates() )
 	
 		
 	'''
-	tsTriggers = [((time.sleep(0.1) and False) or now(), 100+i, u'', u'', u'', u'', u'') for i in xrange(100)]
+	tsTriggers = [((time.sleep(0.1) and False) or now(), 100+i, u'', u'', u'', u'', u'') for i in six.moves.range(100)]
 	
-	tsJpgs = [((time.sleep(0.01) and False) or now(), b'asdfasdfasdfasdfasdf') for i in xrange(100)]
+	tsJpgs = [((time.sleep(0.01) and False) or now(), b'asdfasdfasdfasdfasdf') for i in six.moves.range(100)]
 	d.write( tsTriggers, tsJpgs )
 	d.write( [], tsJpgs )
 		
-	print len(d.getTriggers( now() - timedelta(seconds=5), now() ))
-	print len(d.getPhotos( now() - timedelta(seconds=5), now() ))
+	six.print_( len(d.getTriggers( now() - timedelta(seconds=5), now() )) )
+	six.print_( len(d.getPhotos( now() - timedelta(seconds=5), now() )) )
 	'''

@@ -1,6 +1,7 @@
 import wx
 import os
 import re
+import six
 import xlwt
 import xlsxwriter
 import uuid
@@ -12,9 +13,10 @@ from GetResults import GetResults, GetCategoryDetails
 from ReadSignOnSheet import ReportFields
 from FitSheetWrapper import FitSheetWrapper, FitSheetWrapperXLSX
 import qrcode
-import urllib
+from six.moves.urllib.parse import quote
 import Flags
 import ImageIO
+
 # from reportlab.lib.pagesizes import letter, A4
 
 #---------------------------------------------------------------------------
@@ -76,8 +78,8 @@ def drawQRCode( url, dc, x, y, size ):
 	dc.SetBrush( wx.BLACK_BRUSH )
 	dc.SetPen( wx.TRANSPARENT_PEN )
 	squareSize = float(size) / float(qr.modules_count)
-	offset = [int(squareSize*i + 0.5) for i in xrange(qr.modules_count+1)];
-	for row in xrange(qr.modules_count):
+	offset = [int(squareSize*i + 0.5) for i in range(qr.modules_count+1)];
+	for row in range(qr.modules_count):
 		for col, v in enumerate(qr.modules[row]):
 			if v:
 				dc.DrawRectangle( x + offset[col], y + offset[row], offset[col+1] - offset[col], offset[row+1] - offset[row] )
@@ -110,7 +112,7 @@ class ExportGrid( object ):
 			return
 		
 		nameCol = []
-		for r in xrange(max(len(self.data[iLast]), len(self.data[iFirst]))):
+		for r in range(max(len(self.data[iLast]), len(self.data[iFirst]))):
 			try:
 				last = self.data[iLast][r]
 			except IndexError:
@@ -225,7 +227,7 @@ class ExportGrid( object ):
 		with Model.LockRace() as race:
 			url = getattr( race, 'urlFull', None )
 		if url and url.startswith( 'http://' ):
-			url = urllib.quote( url[7:] )
+			url = quote( url[7:] )
 			
 		qrWidth = 0
 		if url:
@@ -292,7 +294,7 @@ class ExportGrid( object ):
 			if col == 0:
 				yLine = yPix - hSpace/8
 				dc.SetPen( wx.Pen(wx.Colour(200,200,200)) )
-				for r in xrange(max(len(cData) for cData in dataDraw) + 1):
+				for r in range(max(len(cData) for cData in dataDraw) + 1):
 					dc.DrawLine( borderPix, yLine + r * textHeight, widthPix - borderPix, yLine + r * textHeight )
 				dc.SetPen( wx.BLACK_PEN )
 			
@@ -408,7 +410,7 @@ class ExportGrid( object ):
 		with Model.LockRace() as race:
 			url = getattr( race, 'urlFull', None )
 		if url and url.startswith( 'http://' ):
-			url = urllib.quote( url[7:] )
+			url = quote( url[7:] )
 		qrWidth = 0
 		if url:
 			url = url.replace( '%20', ' ' )
@@ -449,9 +451,9 @@ class ExportGrid( object ):
 		table = [headers]
 		
 		# Get the table data.
-		for r in xrange(max(len(col) for col in dataDraw)):
+		for r in range(max(len(col) for col in dataDraw)):
 			row = []
-			for c in xrange(len(dataDraw)):
+			for c in range(len(dataDraw)):
 				try:
 					v = dataDraw[c][r]
 				except IndexError:
@@ -476,7 +478,7 @@ class ExportGrid( object ):
 			if codeCol is None:
 				continue
 			flagStatus = {}
-			for r in xrange(1, len(table)):
+			for r in range(1, len(table)):
 				ioc = table[r][codeCol].strip()[:3].upper()
 				flagFName = Flags.GetFlagFName( ioc )
 				if ioc not in flagStatus:
@@ -510,7 +512,6 @@ class ExportGrid( object ):
 		yPixMax = yPix + tableHeight
 		if url:
 			yPix = yPixMax + textHeight
-			url = unicode(url).encode('windows-1252', 'ignore')
 			write_link( widthPix - borderPix - pdf.get_string_width(url), yPix+h/2, url, url )
 		
 		# Put CrossMgr branding at the bottom of the page.
@@ -532,7 +533,6 @@ class ExportGrid( object ):
 				s = u'{} {} / {}'.format(_('Page'), pageNumber, pageNumberTotal)
 			else:
 				s = u'{} {}'.format(_('Page'), pageNumber)
-			s = unicode(s).encode( 'windows-1252' )
 			write_text( widthPix - pdf.get_string_width(s) - borderPix, yFooter, s )
 			
 	def toExcelSheet( self, sheet ):
@@ -798,11 +798,11 @@ class ExportGrid( object ):
 			lapsMax = len(leader.lapTimes or [])
 			
 		if leader.lapTimes and showLapTimes:
-			self.colnames.extend( [u'{} {}'.format(_('Lap'),lap) for lap in xrange(1, lapsMax+1) \
+			self.colnames.extend( [u'{} {}'.format(_('Lap'),lap) for lap in range(1, lapsMax+1) \
 					if lap % showLapsFrequency == 0 or lap == 1 or lap == lapsMax] )
 		
 		highPrecision = Model.highPrecisionTimes()
-		data = [ [] for i in xrange(len(self.colnames)) ]
+		data = [ [] for i in range(len(self.colnames)) ]
 		colsMax = len(self.colnames)
 		rrFields = (['pos', 'num'] +
 					infoFields +
@@ -824,15 +824,15 @@ class ExportGrid( object ):
 			elif f in ('clockStartTime', 'startTime', 'finishTime'):
 				for row, rr in enumerate(results):
 					if f == 'finishTime' and rr.status != Finisher:
-						data[col].append( '' )
+						data[col].append( u'' )
 						continue
 						
 					sfTime = getattr( rr, f, None )
-					if sfTime is not None and (f != 'finishTime' and rr.status == Finisher):
+					if sfTime is not None:
 						data[col].append( Utils.formatTimeCompressed(sfTime, highPrecision) )
 						continue
 						
-					data[col].append( '' )
+					data[col].append( u'' )
 			elif f == 'factor':
 				for row, rr in enumerate(results):
 					factor = getattr( rr, f, None )
@@ -859,18 +859,18 @@ class ExportGrid( object ):
 							break
 				
 				# Pad out the rest of the columns.
-				for i in xrange(len(rr.lapTimes), lapsMax):
+				for i in range(len(rr.lapTimes), lapsMax):
 					lap = i + 1
 					if lap % showLapsFrequency == 0 or lap == 1 or lap == lapsMax:
 						try:
-							data[iCol].append( '' )
+							data[iCol].append( u'' )
 							iCol += 1
 						except IndexError as e:
 							break
 		
 		self.data = data
-		self.infoColumns     = set( xrange(2, 2+len(infoFields)) ) if infoFields else set()
-		self.leftJustifyCols = set( xrange(2, 2+len(infoFields)) ) if infoFields else set()
+		self.infoColumns     = set( range(2, 2+len(infoFields)) ) if infoFields else set()
+		self.leftJustifyCols = set( range(2, 2+len(infoFields)) ) if infoFields else set()
 		try:
 			self.leftJustifyCols.remove( self.colnames.index('Age') )
 		except ValueError:
@@ -891,7 +891,7 @@ class ExportGrid( object ):
 				lastTime = 'xxx'
 				timeCol = self.data[iTime]
 				speedCol = self.data[iSpeed] if iSpeed >= 0 else None
-				for i in xrange(0, len(timeCol)):
+				for i in range(0, len(timeCol)):
 					curTime = timeCol[i]
 					if curTime == lastTime:
 						timeCol[i] = sameValue
@@ -906,7 +906,7 @@ class ExportGrid( object ):
 			if iGap > 0:
 				lastGap = 'xxx'
 				gapCol = self.data[iGap]
-				for i in xrange(0, len(gapCol)):
+				for i in range(0, len(gapCol)):
 					curGap = gapCol[i]
 					if curGap and not curGap.startswith('-') and curGap == lastGap:
 						gapCol[i] = sameValue

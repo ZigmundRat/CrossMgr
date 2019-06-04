@@ -10,6 +10,7 @@ import wx
 import wx.lib.agw.thumbnailctrl as TC
 import os
 import sys
+import six
 import math
 import types
 import threading
@@ -30,7 +31,8 @@ def getRiderName( info ):
 def getFileKey( f ):
 	bib, raceTime, count, photoTime = Utils.ParsePhotoFName(f)
 	return raceTime
-	
+
+'''
 def CmpThumb(first, second):
 	"""
 	Compares two thumbnails by race time, not bib number.
@@ -42,6 +44,7 @@ def CmpThumb(first, second):
 
 # Monkey Patch thumbnail sort by time.
 TC.CmpThumb = CmpThumb
+'''
 	
 def ListDirectory(self, directory, fileExtList):
 	"""
@@ -148,28 +151,28 @@ class PhotoViewerDialog( wx.Dialog ):
 		self.toolbar.Bind( wx.EVT_TOOL, self.OnToolBar )
 		
 		bitmap = wx.Bitmap( os.path.join(Utils.getImageFolder(), 'Refresh.png'), wx.BITMAP_TYPE_PNG )
-		self.refreshID = wx.NewId()
-		self.toolbar.AddTool( self.refreshID, _('Refresh Photos'), bitmap )
+		item = self.toolbar.AddTool( wx.ID_ANY, _('Refresh Photos'), bitmap )
+		self.refreshID = item.GetId()
 		
 		bitmap = wx.Bitmap( os.path.join(Utils.getImageFolder(), 'ClipboardPlus.png'), wx.BITMAP_TYPE_PNG )
-		self.copyToClipboardID = wx.NewId()
-		self.toolbar.AddTool( self.copyToClipboardID, _('Copy Photo to Clipboard...'), bitmap )
+		item = self.toolbar.AddTool( wx.ID_ANY, _('Copy Photo to Clipboard...'), bitmap )
+		self.copyToClipboardID = item.GetId()
 		
 		bitmap = wx.Bitmap( os.path.join(Utils.getImageFolder(), 'FileBrowser.png'), wx.BITMAP_TYPE_PNG )
-		self.showFilesID = wx.NewId()
-		self.toolbar.AddTool( self.showFilesID, _('Show Files...'), bitmap )
+		item = self.toolbar.AddTool( wx.ID_ANY, _('Show Files...'), bitmap )
+		self.showFilesID = item.GetId()
 		
 		bitmap = wx.Bitmap( os.path.join(Utils.getImageFolder(), 'Printer.png'), wx.BITMAP_TYPE_PNG )
-		self.printID = wx.NewId()
-		self.toolbar.AddTool( self.printID, _('Print Photo...'), bitmap )
+		item = self.toolbar.AddTool( wx.ID_ANY, _('Print Photo...'), bitmap )
+		self.printID = item.GetId()
 		
 		bitmap = wx.Bitmap( os.path.join(Utils.getImageFolder(), 'camera_toolbar.png'), wx.BITMAP_TYPE_PNG )
-		self.takePhotoID = wx.NewId()
-		self.toolbar.AddTool( self.takePhotoID, _('Photo Test'), bitmap )
+		item = self.toolbar.AddTool( wx.ID_ANY, _('Photo Test'), bitmap )
+		self.takePhotoID = item.GetId()
 		
 		#bitmap = wx.Bitmap( os.path.join(Utils.getImageFolder(), 'CheckeredFlagIcon.png'), wx.BITMAP_TYPE_PNG )
-		#self.finishStripID = wx.NewId()
-		#self.toolbar.AddTool( self.finishStripID, _('Composite Finish Photo'), bitmap )
+		#item = self.toolbar.AddTool( wx.ID_ANY, _('Composite Finish Photo'), bitmap )
+		#self.finishStripID = item.GetId()
 		
 		#self.closeButton = wx.Button( self, wx.ID_CANCEL, 'Close' )
 		#self.Bind(wx.EVT_BUTTON, self.OnClose, self.closeButton )
@@ -411,8 +414,8 @@ class PhotoViewerDialog( wx.Dialog ):
 		
 		if self.num is not None and t is not None:
 			# Select the photo specified by the bib and time.
-			fnames = [os.path.basename(GetPhotoFName(dir, num, t, i)) for i in xrange(2)]
-			for i in xrange(itemCount):
+			fnames = [os.path.basename(GetPhotoFName(dir, num, t, i)) for i in six.moves.range(2)]
+			for i in six.moves.range(itemCount):
 				fnameToMatch = self.thumbs.GetItem(i).GetFileName()
 				if any( f in fnameToMatch for f in fnames ):
 					break
@@ -420,7 +423,7 @@ class PhotoViewerDialog( wx.Dialog ):
 		elif tClosest is not None:
 			tDeltaBest = 1000.0*24.0*60.0*60.0
 			iBest = None
-			for i in xrange(itemCount):
+			for i in six.moves.range(itemCount):
 				tDelta = abs( getFileKey(self.thumbs.GetItem(i).GetFileName()) - tClosest )
 				if tDelta < tDeltaBest:
 					iBest = i
