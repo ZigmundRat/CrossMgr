@@ -4,8 +4,7 @@ import wx.grid as gridlib
 import os
 import io
 import cgi
-import six
-from six.moves.urllib.parse import quote
+from urllib.parse import quote
 import sys
 import urllib
 import base64
@@ -33,6 +32,21 @@ def getHeaderNames():
 	return HeaderNamesTemplate + ['Points' if SeriesModel.model.scoreByPoints else 'Time', 'Gap']
 
 #----------------------------------------------------------------------------------
+
+def toFloat( n ):
+	try:
+		return float(n)
+	except:
+		pass
+	try:
+		return float(n.split()[0])
+	except:
+		pass
+	try:
+		return float(n.split(',')[0])
+	except:
+		pass
+	return -1.0
 
 def getHeaderGraphicBase64():
 	if Utils.mainWin:
@@ -97,7 +111,7 @@ def getHtml( htmlfileName=None, seriesFileName=None ):
 	html = io.open( htmlfileName, 'w', encoding='utf-8', newline='' )
 	
 	def write( s ):
-		html.write( six.text_type(s) )
+		html.write( '{}'.format(s) )
 	
 	with tag(html, 'html'):
 		with tag(html, 'head'):
@@ -423,7 +437,7 @@ function sortTableId( iTable, iCol ) {
 								'name':"categorySelect",
 								'onclick':"selectCategory({});".format(iTable)} ):
 							with tag(html, 'span'):
-								write( six.text_type(cgi.escape(categoryName)) )
+								write( '{}'.format(cgi.escape(categoryName)) )
 			for iTable, categoryName in enumerate(categoryNames):
 				results, races = GetModelInfo.GetCategoryResultsTeam(
 					categoryName,
@@ -432,7 +446,7 @@ function sortTableId( iTable, iCol ) {
 					teamPointsForRank,
 					useMostEventsCompleted=model.useMostEventsCompleted,
 					numPlacesTieBreaker=model.numPlacesTieBreaker )
-				results = [rr for rr in results if rr[1] > 0]
+				results = [rr for rr in results if toFloat(rr[1]) > 0.0]
 				
 				headerNames = HeaderNames + [u'{}'.format(r[1]) for r in races]
 				
@@ -452,7 +466,7 @@ function sortTableId( iTable, iCol ) {
 									with tag(html, 'th', colAttr):
 										with tag(html, 'span', dict(id='idUpDn{}_{}'.format(iTable,iHeader)) ):
 											pass
-										write( six.text_type(cgi.escape(col).replace('\n', '<br/>\n')) )
+										write( '{}'.format(cgi.escape(col).replace('\n', '<br/>\n')) )
 								for iRace, r in enumerate(races):
 									# r[0] = RaceData, r[1] = RaceName, r[2] = RaceURL, r[3] = Race
 									with tag(html, 'th', {
@@ -463,24 +477,24 @@ function sortTableId( iTable, iCol ) {
 											pass
 										if r[2]:
 											with tag(html,'a',dict(href=u'{}?raceCat={}'.format(r[2], quote(categoryName.encode('utf8')))) ):
-												write( six.text_type(cgi.escape(r[1]).replace('\n', '<br/>\n')) )
+												write( '{}'.format(cgi.escape(r[1]).replace('\n', '<br/>\n')) )
 										else:
-											write( six.text_type(cgi.escape(r[1]).replace('\n', '<br/>\n')) )
+											write( '{}'.format(cgi.escape(r[1]).replace('\n', '<br/>\n')) )
 										if r[0]:
 											write( u'<br/>' )
 											with tag(html, 'span', {'class': 'smallFont'}):
-												write( six.text_type(r[0].strftime('%b %d, %Y')) )
+												write( '{}'.format(r[0].strftime('%b %d, %Y')) )
 						with tag(html, 'tbody'):
 							for pos, (team, result, gap, rrs) in enumerate(results):
 								with tag(html, 'tr', {'class':'odd'} if pos % 2 == 1 else {} ):
 									with tag(html, 'td', {'class':'rightAlign'}):
-										write( six.text_type(pos+1) )
+										write( '{}'.format(pos+1) )
 									with tag(html, 'td'):
-										write( six.text_type(team or u'') )
+										write( '{}'.format(team or u'') )
 									with tag(html, 'td', {'class':'rightAlign'}):
-										write( six.text_type(result or '') )
+										write( '{}'.format(result or '') )
 									with tag(html, 'td', {'class':'rightAlign noprint'}):
-										write( six.text_type(gap or '') )
+										write( '{}'.format(gap or '') )
 									for rt in rrs:
 										with tag(html, 'td', {'class': 'centerAlign noprint'}):
 											write( formatTeamResults(scoreByPoints, rt) )
@@ -778,7 +792,7 @@ class TeamResults(wx.Panel):
 			useMostEventsCompleted=model.useMostEventsCompleted,
 			numPlacesTieBreaker=model.numPlacesTieBreaker,
 		)
-		results = [rr for rr in results if rr[1] > 0]
+		results = [rr for rr in results if toFloat(rr[1]) > 0.0]
 		
 		headerNames = HeaderNames + [u'{}\n{}'.format(r[1],r[0].strftime('%Y-%m-%d') if r[0] else u'') for r in races]
 		
@@ -786,10 +800,10 @@ class TeamResults(wx.Panel):
 		self.setColNames( headerNames )
 		
 		for row, (team, points, gap, rrs) in enumerate(results):
-			self.grid.SetCellValue( row, 0, six.text_type(row+1) )
-			self.grid.SetCellValue( row, 1, six.text_type(team) )
-			self.grid.SetCellValue( row, 2, six.text_type(points) )
-			self.grid.SetCellValue( row, 3, six.text_type(gap) )
+			self.grid.SetCellValue( row, 0, '{}'.format(row+1) )
+			self.grid.SetCellValue( row, 1, '{}'.format(team) )
+			self.grid.SetCellValue( row, 2, '{}'.format(points) )
+			self.grid.SetCellValue( row, 3, '{}'.format(gap) )
 			for q, rt in enumerate(rrs):
 				self.grid.SetCellValue( row, 4 + q, formatTeamResults(scoreByPoints, rt) )
 				
@@ -871,7 +885,7 @@ class TeamResults(wx.Panel):
 		teamPointsForRank = { r.getFileName(): r.teamPointStructure for r in model.races }
 		
 		wb = xlwt.Workbook()
-
+		
 		for categoryName in categoryNames:
 			results, races = GetModelInfo.GetCategoryResultsTeam(
 				categoryName,
@@ -881,7 +895,7 @@ class TeamResults(wx.Panel):
 				useMostEventsCompleted=model.useMostEventsCompleted,
 				numPlacesTieBreaker=model.numPlacesTieBreaker,
 			)
-			results = [rr for rr in results if rr[1] > 0]
+			results = [rr for rr in results if toFloat(rr[1]) > 0.0]
 			
 			headerNames = HeaderNames + [r[1] for r in races]
 			

@@ -1,0 +1,5704 @@
+# Spanish translations for PROJECT.
+# Copyright (C) 2017 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+# edwar <edward.sitarski@gmal.com>, 2019.
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2019-07-03 19:04-0400\n"
+"PO-Revision-Date: 2019-07-05 10:03-0400\n"
+"Last-Translator: edwar <edward.sitarski@gmal.com>\n"
+"Language-Team: es <LL@li.org>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: Actions.py:22 Actions.py:97 MainWin.py:665 MainWin.py:3256
+msgid "Record"
+msgstr "Grabar"
+
+#: Actions.py:66
+msgid "Start Race at Time:"
+msgstr "Iniciar carrera en el tiempo:"
+
+#: Actions.py:76
+msgid "Automatically Start Race at:"
+msgstr "Iniciar automáticamente la carrera en:"
+
+#: Actions.py:90
+msgid "After Start, Switch to:"
+msgstr "Después de comenzar, cambie a:"
+
+#: Actions.py:96 MainWin.py:664 MainWin.py:1143 MainWin.py:2577 MainWin.py:2669
+#: MainWin.py:2680 MainWin.py:2768 MainWin.py:2774 MainWin.py:2947
+msgid "Actions"
+msgstr "Comportamiento"
+
+#: Actions.py:98 ForecastHistory.py:261 ForecastHistory.py:351
+#: ForecastHistory.py:398 ForecastHistory.py:439 Gantt.py:146 Gantt.py:497
+#: History.py:169 History.py:307 MainWin.py:666 MainWin.py:1168 MainWin.py:1671
+#: MainWin.py:2523 MainWin.py:2914 MainWin.py:2947 MainWin.py:3153 MainWin.py:3436
+#: MainWin.py:3461 MainWin.py:3592 MainWin.py:3635
+msgid "Results"
+msgstr "Resultados"
+
+#: Actions.py:99 ForecastHistory.py:262 ForecastHistory.py:323
+#: ForecastHistory.py:354 ForecastHistory.py:399 ForecastHistory.py:442
+#: MainWin.py:668 MainWin.py:3396 Primes.py:104 Results.py:330 Results.py:440
+msgid "Passings"
+msgstr "Pases"
+
+#: Actions.py:100 ForecastHistory.py:236 ForecastHistory.py:260
+#: ForecastHistory.py:348 ForecastHistory.py:397 ForecastHistory.py:436
+#: Gantt.py:145 History.py:170 MainWin.py:669 Results.py:331 RiderDetail.py:1513
+#: Search.py:107 Situation.py:560
+msgid "RiderDetail"
+msgstr "Detalles del ciclista"
+
+#: Actions.py:101 ForecastHistory.py:263 ForecastHistory.py:357
+#: ForecastHistory.py:400 ForecastHistory.py:445 MainWin.py:670 MainWin.py:1381
+#: MainWin.py:3256
+msgid "Chart"
+msgstr "Gráfico"
+
+#: Actions.py:102 MainWin.py:676 MainWin.py:2286 Properties.py:1260
+msgid "Animation"
+msgstr "Animación"
+
+#: Actions.py:103 MainWin.py:671
+msgid "Recommendations"
+msgstr "Recomendaciones"
+
+#: Actions.py:104 CatPredicate.py:227 Categories.py:35 Categories.py:440
+#: MainWin.py:672 MainWin.py:1696
+msgid "Categories"
+msgstr "Las categorías"
+
+#: Actions.py:105 MainWin.py:673 MainWin.py:3586 Properties.py:1499
+#: ReadSignOnSheet.py:413
+msgid "Properties"
+msgstr "Propiedades"
+
+#: Actions.py:106 MainWin.py:675
+msgid "Primes"
+msgstr "Primes"
+
+#: Actions.py:107 MainWin.py:677
+msgid "Situation"
+msgstr "Situación"
+
+#: Actions.py:108 MainWin.py:678
+msgid "LapCounter"
+msgstr "ContadordeVueltas"
+
+#: Actions.py:117
+msgid "Start at Above Time"
+msgstr "Comenzar en el tiempo anterior"
+
+#: Actions.py:120
+msgid "Start in 30s"
+msgstr "Comienzo en 30s"
+
+#: Actions.py:122
+msgid "Start in 60s"
+msgstr "Comienzo en 60s"
+
+#: Actions.py:179 Actions.py:180
+msgid "Scheduled Start Time is in the Past"
+msgstr "La hora de inicio programada es en el pasado"
+
+#: Actions.py:179
+msgid "Please enter a Scheduled Start Time in the Future."
+msgstr "Por favor, introduzca una hora de inicio programada en el futuro."
+
+#: Actions.py:202 Actions.py:378
+msgid "Start Race"
+msgstr "Iniciar carrera"
+
+#: Actions.py:203 Actions.py:389
+msgid "Finish Race"
+msgstr "Terminar la carrera"
+
+#: Actions.py:242 Properties.py:328
+msgid "Chip Timing Options"
+msgstr "Opciones de tiempo de chip"
+
+#: Actions.py:251
+msgid "Properties Shortcut"
+msgstr "Acceso directo de propiedades"
+
+#: Actions.py:254
+msgid "Start Race Automatically at Future Time"
+msgstr "Iniciar carrera automáticamente en tiempo futuro"
+
+#: Actions.py:278 JChipSetup.py:95
+msgid "Checklist:"
+msgstr "Lista de verificación:"
+
+#: Actions.py:320 MainWin.py:1172 MainWin.py:1178
+msgid "You must have a valid race.  Open or New a race first."
+msgstr "Debes tener una carrera válida. Abrir o Nuevo una carrera primero."
+
+#: Actions.py:320 MainWin.py:1050 MainWin.py:1128 MainWin.py:1172 MainWin.py:1178
+msgid "No Valid Race"
+msgstr "Ninguna carrera valida"
+
+#: Actions.py:356
+msgid "Cannot Start. Excel Sheet read failure."
+msgstr "No se puede empezar. Falla de lectura de la hoja de Excel."
+
+#: Actions.py:356
+msgid "The Excel file is either unconfigured or unreadable."
+msgstr "El archivo de Excel no está configurado o es ilegible."
+
+#: Actions.py:357
+msgid "Excel Sheet Read "
+msgstr "Hoja de Excel Leer "
+
+#: Actions.py:366
+msgid "Cannot Start.  Excel Sheet missing Tag column."
+msgstr "No se puede empezar. Hoja de Excel falta la columna de la RFID etiqueta."
+
+#: Actions.py:366
+msgid "The Excel file must contain a Tag column to use RFID."
+msgstr "El archivo de Excel debe contener una columna de etiqueta para usar RFID."
+
+#: Actions.py:367
+msgid "Excel Sheet missing Tag column"
+msgstr "Hoja de Excel falta Columna de RFID etiqueta"
+
+#: Actions.py:378
+msgid ""
+"Start Race Now?\n"
+"\n"
+msgstr ""
+"¿Comenzar la carrera ahora? \n"
+"\n"
+
+#: Actions.py:389
+msgid "Finish Race Now?"
+msgstr "¿Terminar la carrera ahora?"
+
+#: AlienImport.py:29 ChipImport.py:60 ChipImport.py:74 ImpinjImport.py:32
+#: ImpinjImport.py:69 OrionImport.py:17 OrionImport.py:23 RaceResultImport.py:21
+#: RaceResultImport.py:29 RaceResultImport.py:36
+msgid "line"
+msgstr "línea"
+
+#: AlienImport.py:29 ImpinjImport.py:32 OrionImport.py:17 RaceResultImport.py:21
+msgid "unrecognised input"
+msgstr "entrada no reconocida"
+
+#: Animation.py:519 GeoAnimation.py:1073
+msgid "Laps of"
+msgstr "Vueltas de"
+
+#: Animation.py:520 GeoAnimation.py:1074 Primes.py:398 Situation.py:153
+msgid "Laps to go"
+msgstr "Vueltas para ir"
+
+#: Animation.py:543 FtpUploadProgress.py:42 GeoAnimation.py:1097
+msgid "of"
+msgstr "de"
+
+#: Animation.py:544 GeoAnimation.py:1098 NumKeypad.py:214 RaceHUD.py:362
+msgid "to go"
+msgstr "ir"
+
+#: Animation.py:569 Situation.py:791
+msgid "Leaders"
+msgstr "Lideres"
+
+#: Announcer.py:218 ExportGrid.py:788 Results.py:775 RiderDetail.py:68
+#: RiderDetail.py:289
+msgid "Finish"
+msgstr "Terminar"
+
+#: Announcer.py:220
+msgid "laps to go"
+msgstr "vueltas para ir"
+
+#: BatchPublishAttrs.py:8
+msgid "Html"
+msgstr "Html"
+
+#: BatchPublishAttrs.py:8
+msgid "as .html file"
+msgstr "como archivo .html"
+
+#: BatchPublishAttrs.py:10
+msgid "Index Html"
+msgstr "Índice Html"
+
+#: BatchPublishAttrs.py:10
+msgid "index.html for all CrossMgr races in folder"
+msgstr "index.html para todas las carreras de CrossMgr en la carpeta"
+
+#: BatchPublishAttrs.py:12
+msgid "Pdf"
+msgstr "Pdf"
+
+#: BatchPublishAttrs.py:12
+msgid "as .pdf file"
+msgstr "como archivo .pdf"
+
+#: BatchPublishAttrs.py:14 Categories.py:302
+msgid "Excel"
+msgstr "Sobresalir"
+
+#: BatchPublishAttrs.py:14 BatchPublishAttrs.py:20
+msgid "as .xlsx file"
+msgstr ""
+
+#: BatchPublishAttrs.py:16
+msgid "USAC"
+msgstr "USAC"
+
+#: BatchPublishAttrs.py:16
+msgid "as .xls upload file"
+msgstr "como archivo .xls subir"
+
+#: BatchPublishAttrs.py:18
+msgid "UCI"
+msgstr "UCI"
+
+#: BatchPublishAttrs.py:18
+msgid "as .xlsx upload file"
+msgstr ""
+
+#: BatchPublishAttrs.py:20
+msgid "VTTA"
+msgstr "VTTA"
+
+#: BatchPublishAttrs.py:22
+msgid "WebScorer"
+msgstr "WebScorer"
+
+#: BatchPublishAttrs.py:22
+msgid "as .txt upload file"
+msgstr "como archivo de carga .txt"
+
+#: BatchPublishAttrs.py:24
+msgid "Facebook"
+msgstr "Facebook"
+
+#: BatchPublishAttrs.py:24
+msgid "as .png upload files in Facebook folder"
+msgstr "como .png subir archivos en la carpeta de Facebook"
+
+#: CameraTest.py:49
+msgid "Camera Test"
+msgstr "Prueba de camara"
+
+#: CameraTest.py:58
+msgid "Take Snapshot"
+msgstr "Tomar instantáneas"
+
+#: CameraTest.py:75
+msgid "Camera Resolution"
+msgstr "Resolucion de la camara"
+
+#: CameraTest.py:97
+msgid "Camera Failed: Unknown Error."
+msgstr "Falló la cámara: error desconocido."
+
+#: CameraTest.py:119
+msgid "Cannot access photo image."
+msgstr "No se puede acceder a la imagen de la foto."
+
+#: CameraTest.py:119 PhotoViewer.py:363
+msgid "Camera Error"
+msgstr "Error de camara"
+
+#: CameraTest.py:126
+msgid "Save Photo as PNG File:"
+msgstr "Guardar foto como archivo PNG:"
+
+#: CameraTest.py:143
+msgid "Cannot save photo:"
+msgstr "No se puede guardar la foto:"
+
+#: CameraTest.py:144
+msgid "Save Error"
+msgstr "Guardar error"
+
+#: CatPredicate.py:190 Categories.py:36 Categories.py:313
+msgid "Numbers"
+msgstr "Números"
+
+#: CatPredicate.py:200 Categories.py:36 Categories.py:312 Printing.py:31
+#: ReadSignOnSheet.py:40
+msgid "Gender"
+msgstr "Género"
+
+#: CatPredicate.py:210 ReadSignOnSheet.py:40 RiderDetail.py:1017
+#: RiderDetail.py:1254
+msgid "Age"
+msgstr "Años"
+
+#: CatPredicate.py:221
+msgid "to"
+msgstr "a"
+
+#: CatPredicate.py:242 Categories.py:36 MainWin.py:2662 NumKeypad.py:366
+#: ReadSignOnSheet.py:40 Recommendations.py:202 Recommendations.py:268
+#: Recommendations.py:353 Recommendations.py:385 RiderDetail.py:310
+#: Situation.py:725
+msgid "Category"
+msgstr "Categoría"
+
+#: Categories.py:19 FixCategories.py:19
+msgid "All"
+msgstr "Todos"
+
+#: Categories.py:35
+msgid "Start on"
+msgstr "Comienza en"
+
+#: Categories.py:36 RaceDB.py:134
+msgid "Start Time"
+msgstr "Hora de inicio"
+
+#: Categories.py:36 Recommendations.py:215 Recommendations.py:266
+msgid "Laps"
+msgstr "Vueltas"
+
+#: Categories.py:36 Categories.py:318 Categories.py:778 Categories.py:779
+#: Properties.py:512
+msgid "Distance"
+msgstr "Distancia"
+
+#: Categories.py:36 Categories.py:76 ExportGrid.py:742
+msgid "Starters"
+msgstr "Entrantes"
+
+#: Categories.py:136 FtpWriteFile.py:445 MainWin.py:1510 MainWin.py:1546
+#: PhotoViewer.py:282
+msgid "There was a printer problem."
+msgstr "Hubo un problema con la impresora."
+
+#: Categories.py:136 FtpWriteFile.py:445 MainWin.py:1510 MainWin.py:1546
+#: PhotoViewer.py:282
+msgid "Check your printer setup."
+msgstr "Compruebe la configuración de su impresora."
+
+#: Categories.py:136 FtpWriteFile.py:445 MainWin.py:1510 MainWin.py:1546
+#: PhotoViewer.py:282
+msgid "Printer Error"
+msgstr "Error de impresora"
+
+#: Categories.py:201 Categories.py:230 Printing.py:47 Pulled.py:90
+msgid "Start Wave"
+msgstr "Inicio ola"
+
+#: Categories.py:203 Categories.py:230 Printing.py:47
+msgid "Component"
+msgstr "Componente"
+
+#: Categories.py:230 Gantt.py:152 Primes.py:39 Printing.py:47 RiderDetail.py:1074
+msgid "Custom"
+msgstr "Personalizado"
+
+#: Categories.py:231 EditEntry.py:402 ExportGrid.py:806 ForecastHistory.py:99
+#: ForecastHistory.py:107 Gantt.py:358 Gantt.py:487 GanttChart.py:200
+#: HistogramPanel.py:43 NumKeypad.py:214 RaceHUD.py:362 Results.py:309
+#: Results.py:676 Results.py:730 Results.py:825 RiderDetail.py:600
+#: RiderDetail.py:1030 Situation.py:152 WebScorerExport.py:81
+msgid "Lap"
+msgstr "Vuelta"
+
+#: Categories.py:231 Situation.py:156 Situation.py:794
+msgid "Race"
+msgstr "Carrera"
+
+#: Categories.py:248
+msgid "Activate All"
+msgstr "Activar todo"
+
+#: Categories.py:254
+msgid "New"
+msgstr "Nuevo"
+
+#: Categories.py:258 ForecastHistory.py:256 Model.py:987 RiderDetail.py:533
+msgid "Delete"
+msgstr "Borrar"
+
+#: Categories.py:274
+msgid "Set Gpx Distance"
+msgstr "Establecer Gpx Distancia"
+
+#: Categories.py:280
+msgid "Bib Exceptions"
+msgstr "Excepciones babero"
+
+#: Categories.py:292
+msgid "Normalize"
+msgstr "Normalizar"
+
+#: Categories.py:298
+msgid "Print"
+msgstr "Impresión"
+
+#: Categories.py:309
+msgid "Category Type"
+msgstr "Tipo de categoría"
+
+#: Categories.py:310
+msgid "Active"
+msgstr "Activo"
+
+#: Categories.py:311 ExportGrid.py:132 ExportGrid.py:798 ForecastHistory.py:100
+#: ForecastHistory.py:109 Primes.py:391 Printing.py:30 Recommendations.py:148
+#: RiderDetail.py:272
+msgid "Name"
+msgstr "Nombre"
+
+#: Categories.py:314
+msgid ""
+"Start\n"
+"Offset"
+msgstr ""
+"Inicio\n"
+"Despecho"
+
+#: Categories.py:315
+msgid ""
+"Race\n"
+"Laps"
+msgstr ""
+"Vueltas\n"
+"de Carrera"
+
+#: Categories.py:316
+msgid ""
+"Race\n"
+"Minutes"
+msgstr ""
+"Carrera\n"
+"Minutos"
+
+#: Categories.py:317
+msgid ""
+"Lapped\n"
+"Riders\n"
+"Continue"
+msgstr ""
+"Corredores\n"
+"lapeados\n"
+"continúan"
+
+#: Categories.py:319
+msgid ""
+"Dist.\n"
+"By"
+msgstr ""
+"Dist.\n"
+"Por"
+
+#: Categories.py:320
+msgid ""
+"First\n"
+"Lap\n"
+"Dist."
+msgstr ""
+"Primero\n"
+"Vuelta\n"
+"Dist."
+
+#: Categories.py:321
+msgid ""
+"80%\n"
+"Lap\n"
+"Time"
+msgstr ""
+"80%\n"
+"Vuelta\n"
+"Tiempo"
+
+#: Categories.py:322
+msgid ""
+"CrossMgr\n"
+"Estimated\n"
+"Laps"
+msgstr ""
+"CrossMgr\n"
+"Vueltas\n"
+"Estimadas"
+
+#: Categories.py:323 Properties.py:860
+msgid "Publish"
+msgstr "Publicar"
+
+#: Categories.py:324 RaceDB.py:349 RaceDB.py:378
+msgid "Upload"
+msgstr "Subir"
+
+#: Categories.py:325
+msgid "Series"
+msgstr "Serie"
+
+#: Categories.py:328
+msgid "Name Copy"
+msgstr "Copia de nombre"
+
+#: Categories.py:374
+msgid "Open"
+msgstr "Abierto"
+
+#: Categories.py:374
+msgid "Men"
+msgstr "Hombres"
+
+#: Categories.py:374
+msgid "Women"
+msgstr "Mujer"
+
+#: Categories.py:446 MainWin.py:1739 MainWin.py:3420 MainWin.py:3449
+#: MainWin.py:3474 UnmatchedTagsGantt.py:82
+msgid "Excel file written to"
+msgstr "Archivo de Excel escrito en"
+
+#: Categories.py:446 MainWin.py:1739 MainWin.py:3420 MainWin.py:3449
+#: MainWin.py:3474 UnmatchedTagsGantt.py:82
+msgid "Excel Write"
+msgstr "Excel Escribir"
+
+#: Categories.py:450 MainWin.py:1744 MainWin.py:3424 MainWin.py:3452
+#: MainWin.py:3477 MainWin.py:3500 MainWin.py:3508 MainWin.py:3621 MainWin.py:3651
+#: UnmatchedTagsGantt.py:86
+msgid "Cannot write"
+msgstr "No puede escribir"
+
+#: Categories.py:451 MainWin.py:1745 UnmatchedTagsGantt.py:87
+msgid "Check if this spreadsheet is already open."
+msgstr "Compruebe si esta hoja de cálculo ya está abierta."
+
+#: Categories.py:452 MainWin.py:1746 MainWin.py:3426 MainWin.py:3452
+#: MainWin.py:3477 MainWin.py:3500 MainWin.py:3508 UnmatchedTagsGantt.py:88
+msgid "If so, close it, and try again."
+msgstr "Si es así, ciérralo y vuelve a intentarlo."
+
+#: Categories.py:454 MainWin.py:1748 MainWin.py:3428 MainWin.py:3453
+#: MainWin.py:3478 MainWin.py:3501 MainWin.py:3509 UnmatchedTagsGantt.py:90
+msgid "Excel File Error"
+msgstr "Error de archivo de Excel"
+
+#: Categories.py:461
+msgid "Set the GPX distance for all Categories?"
+msgstr "Establecer la distancia GPX para todas las categorías?"
+
+#: Categories.py:461
+msgid "Set GPX Distance"
+msgstr "Establecer la distancia GPX"
+
+#: Categories.py:595
+msgid "You must select a Category first"
+msgstr "Debes seleccionar una Categoría primero"
+
+#: Categories.py:595
+msgid "Select a Category"
+msgstr "Seleccione una categoría"
+
+#: Categories.py:606
+msgid ""
+"Add Bib Exceptions (comma separated).\n"
+"This will add the given list of Bibs to this category,\n"
+"and remove them from other categories."
+msgstr ""
+"Agregar excepciones de babero (separados por comas).\n"
+"Esto agregará la lista dada de baberos a esta categoría,\n"
+"y los eliminará de otras categorías."
+
+#: Categories.py:610
+msgid "Add Bib Exceptions"
+msgstr "Añadir excepciones babero"
+
+#: Categories.py:722
+msgid "CategoryName"
+msgstr "Nombre de la categoría"
+
+#: Categories.py:732 Categories.py:736
+msgid "Delete Category"
+msgstr "Eliminar Categoría"
+
+#: ChangeRaceStartTime.py:24
+msgid "Tap for NOW"
+msgstr "Toque para AHORA"
+
+#: ChangeRaceStartTime.py:34
+msgid "New Race Start Time (24hr clock):"
+msgstr "Nueva hora de inicio de carrera (24 horas):"
+
+#: ChangeRaceStartTime.py:60
+msgid "Cannot change Time Trial Start Time"
+msgstr "No se puede cambiar el tiempo de inicio de prueba"
+
+#: ChangeRaceStartTime.py:60
+msgid "There are already recorded results."
+msgstr "Ya hay resultados registrados."
+
+#: ChangeRaceStartTime.py:61
+msgid "Cannot change Start Time"
+msgstr "No se puede cambiar la hora de inicio"
+
+#: ChangeRaceStartTime.py:73
+msgid "Are you Sure you want to change the Race Start to Later?"
+msgstr "¿Estás seguro de que quieres cambiar el inicio de carrera para más tarde?"
+
+#: ChangeRaceStartTime.py:73
+msgid "(you can always undo)."
+msgstr "(siempre se puede deshacer)."
+
+#: ChangeRaceStartTime.py:73
+msgid "Are you sure?"
+msgstr "¿Estás seguro?"
+
+#: Checklist.py:153
+msgid "Task"
+msgstr "Tarea"
+
+#: Checklist.py:154 ForecastHistory.py:96 ForecastHistory.py:106 Gantt.py:136
+#: Gantt.py:358 Properties.py:837 RiderDetail.py:77 RiderDetail.py:338
+#: RiderDetail.py:535 RiderDetail.py:1067
+msgid "Note"
+msgstr "Nota"
+
+#: ChipImport.py:20
+msgid "Cannot Import into a Running Race."
+msgstr "No se puede importar en una carrera en progreso"
+
+#: ChipImport.py:20
+msgid ""
+"Wait until you have a complete data set, then import the full data into a New "
+"race."
+msgstr ""
+"Espere hasta que tenga un conjunto de datos completo, luego importe los datos "
+"completos a una Nueva carrera."
+
+#: ChipImport.py:21
+msgid "Cannot Import into Running Race"
+msgstr "No se puede importar a carrera en progreso"
+
+#: ChipImport.py:60
+msgid "time is before race start"
+msgstr "el tiempo es antes de que comience la carrera"
+
+#: ChipImport.py:74
+msgid "tag missing from Excel sheet"
+msgstr "etiqueta que falta en la hoja de Excel"
+
+#: ChipImport.py:81
+msgid "No matching tags found in Excel link.  Import aborted."
+msgstr ""
+"No se encontraron etiquetas coincidentes en el enlace de Excel. Importación "
+"abortada."
+
+#: ChipImport.py:115
+msgid "Import"
+msgstr "Importar"
+
+#: ChipImport.py:122
+msgid "Import Data File"
+msgstr "Importar archivo de datos"
+
+#: ChipImport.py:124
+msgid "You must first \"New\" a race and fill in the details."
+msgstr "Primero debes \"Nuevo\\' una carrera y completar los detalles."
+
+#: ChipImport.py:125
+msgid ""
+"You must also configure a \"Tag\" field in your Sign-On Excel Sheet and link the "
+"sheet to the race."
+msgstr ""
+"También debe configurar un campo \"Etiqueta\" en su Hoja de Excel de inicio de "
+"sesión y vincular la hoja a la carrera."
+
+#: ChipImport.py:126
+msgid ""
+"This is required so CrossMgr can link the tags in the import file back to rider "
+"numbers and info."
+msgstr ""
+"Esto es necesario para que CrossMgr pueda vincular las etiquetas del archivo de "
+"importación con los números de usuario y la información."
+
+#: ChipImport.py:128
+msgid "Race Data:"
+msgstr "Datos de la carrera:"
+
+#: ChipImport.py:129
+msgid ""
+"If the first chip read is NOT the start of the race, you will need to enter the "
+"start time manually."
+msgstr ""
+"Si la primera lectura de la ficha NO es el comienzo de la carrera, deberá "
+"ingresar la hora de inicio manualmente."
+
+#: ChipImport.py:130
+msgid "Otherwise the import will use the first chip read as the race start."
+msgstr ""
+"De lo contrario, la importación usará el primer chip leído como el inicio de la "
+"carrera."
+
+#: ChipImport.py:132
+msgid "TimeTrial Data:"
+msgstr "Datos de Contrarreloj:"
+
+#: ChipImport.py:133
+msgid ""
+"The first chip read for each rider will be interpreted as the rider's start time."
+msgstr ""
+"El primer chip que se lea para cada usuario se interpretará como la hora de "
+"inicio del usuario."
+
+#: ChipImport.py:135
+msgid "Warning: Importing from chip data could replace all the data in this race."
+msgstr ""
+"Advertencia: la importación de datos de chip podría reemplazar todos los datos "
+"en esta carrera."
+
+#: ChipImport.py:136
+msgid "Proceed with caution."
+msgstr "Proceda con precaución."
+
+#: ChipImport.py:141
+msgid "Data File"
+msgstr "Archivo de datos"
+
+#: ChipImport.py:151 Properties.py:1527 Properties.py:1536
+msgid "Browse"
+msgstr "Vistazo"
+
+#: ChipImport.py:156
+msgid "Data Is:"
+msgstr "Los datos son:"
+
+#: ChipImport.py:160
+msgid "Data Policy:"
+msgstr "Política de datos:"
+
+#: ChipImport.py:162
+msgid "Clear All Existing Data Before Import"
+msgstr "Borrar todos los datos existentes antes de importar"
+
+#: ChipImport.py:163
+msgid "Merge New Data with Existing"
+msgstr "Fusionar nuevos datos con los existentes"
+
+#: ChipImport.py:169
+msgid "Import Data Time Adjustment:"
+msgstr "Ajuste de tiempo de importación de datos:"
+
+#: ChipImport.py:171
+msgid "Behind"
+msgstr "Detrás"
+
+#: ChipImport.py:171
+msgid "Ahead"
+msgstr "Adelante"
+
+#: ChipImport.py:180
+msgid "Race Start Time (if NOT first recorded time):"
+msgstr "Hora de inicio de la carrera (si NO se registró por primera vez):"
+
+#: ChipImport.py:196
+msgid "Data will be imported for a Time Trial"
+msgstr "Los datos serán importados por un Time Trial"
+
+#: ChipImport.py:198
+msgid "Data will be imported for a Race"
+msgstr "Los datos serán importados para una carrera."
+
+#: ChipImport.py:254
+msgid "Import file"
+msgstr "Importar archivo"
+
+#: ChipImport.py:270
+msgid "Could not open data file for import"
+msgstr "No se pudo abrir el archivo de datos para la importación"
+
+#: ChipImport.py:271 MainWin.py:2633 MainWin.py:2717 MainWin.py:2720
+#: MainWin.py:2851 MainWin.py:3006
+msgid "Cannot Open File"
+msgstr "No puede abrir el archivo"
+
+#: ChipImport.py:283
+msgid "Cannot Merge into Unstarted Race."
+msgstr "No se puede unir en una carrera no iniciada."
+
+#: ChipImport.py:283
+msgid "Clear All Existing Data is allowed."
+msgstr "Borrar todos los datos existentes está permitido."
+
+#: ChipImport.py:284
+msgid "Import Merge Failed"
+msgstr "Falló la fusión de importación"
+
+#: ChipImport.py:315
+msgid "Import File contains errors"
+msgstr "Importar archivo contiene errores"
+
+#: ChipImport.py:315
+msgid "All errors have been copied to the clipboard"
+msgstr "Todos los errores han sido copiados al portapapeles."
+
+#: ChipImport.py:316
+msgid "Import Warning"
+msgstr "Advertencia de importación"
+
+#: ChipImport.py:319
+msgid "Import Successful"
+msgstr "Importación exitosa"
+
+#: CrossResultsExport.py:51
+msgid "\"LastName\" must be linked to a column in the Excel sheetl"
+msgstr "\"Apellido\" debe estar vinculado a una columna en la hoja de Excel"
+
+#: CrossResultsExport.py:117 FinishStrip.py:493 MainWin.py:1364
+#: WebScorerExport.py:145
+msgid "Success"
+msgstr "Éxito"
+
+#: DNSManager.py:27 Gantt.py:37 HistogramPanel.py:36 History.py:45 Pulled.py:93
+#: RaceAnimation.py:49 Recommendations.py:26 Results.py:106
+msgid "Category:"
+msgstr "Categoría:"
+
+#: DNSManager.py:31 Printing.py:68 Printing.py:163
+msgid "Select All"
+msgstr "Seleccionar todo"
+
+#: DNSManager.py:34
+msgid "Deselect All"
+msgstr "Deseleccionar todo"
+
+#: DNSManager.py:37
+msgid "DNS Selected"
+msgstr "DNS seleccionado"
+
+#: DNSManager.py:63
+msgid "Potential DNS Entrants (use Shift-Click and Ctrl-Click to multi-select)"
+msgstr ""
+"Posibles participantes en el DNS (use Shift-Click y Ctrl-Click para hacer una "
+"selección múltiple)"
+
+#: DNSManager.py:86
+msgid "No entrants selected to DNS"
+msgstr "Ningún participante seleccionado a DNS"
+
+#: DNSManager.py:92
+msgid "DNS the following entrants?"
+msgstr "DNS los siguientes entrantes?"
+
+#: DNSManager.py:94
+msgid "DNS Entrants"
+msgstr "Entrantes de DNS"
+
+#: DNSManager.py:202 MainWin.py:862
+msgid "&Help"
+msgstr "&Ayuda"
+
+#: DNSManager.py:205 RiderDetail.py:1526
+msgid "&Close (Ctrl-Q)"
+msgstr "&Cerrar (Ctrl-Q)"
+
+#: EditEntry.py:25 EditEntry.py:166 EditEntry.py:241 EditEntry.py:311
+msgid "Rider Lap"
+msgstr "Vuelta del jinete"
+
+#: EditEntry.py:26 EditEntry.py:31 EditEntry.py:167 EditEntry.py:242
+#: EditEntry.py:312 EditEntry.py:403
+msgid "Race Time"
+msgstr "Tiempo de carrera"
+
+#: EditEntry.py:29 EditEntry.py:169 Gantt.py:486 GanttChart.py:199
+#: RiderDetail.py:1029
+msgid "Rider"
+msgstr "Jinete"
+
+#: EditEntry.py:34
+msgid "24 hr Clock Time:"
+msgstr "24 horas de reloj:"
+
+#: EditEntry.py:44 Gantt.py:359 RiderDetail.py:670 RiderDetail.py:1151
+msgid "Lap Note"
+msgstr "Nota de vuelta"
+
+#: EditEntry.py:96
+msgid "Cannot Enter Clock Time Before Race Start."
+msgstr "No se puede ingresar la hora del reloj antes del inicio de la carrera."
+
+#: EditEntry.py:96
+msgid "(reminder: clock time is in 24-hour format)"
+msgstr "(recordatorio: la hora del reloj está en formato de 24 horas)"
+
+#: EditEntry.py:97 EditEntry.py:108
+msgid "Time Entry Error"
+msgstr "Error de entrada de tiempo"
+
+#: EditEntry.py:105
+msgid "Cannot enter a time that is before the Category Start Offset"
+msgstr ""
+"No se puede ingresar una hora anterior al desplazamiento de inicio de categoría"
+
+#: EditEntry.py:106
+msgid "All times earlier than the Start Offset are ignored."
+msgstr "Todas las veces anteriores a la compensación de inicio se ignoran."
+
+#: EditEntry.py:107
+msgid "Please enter a time after the Start Offset."
+msgstr "Por favor, ingrese un tiempo después de la compensación de inicio."
+
+#: EditEntry.py:153
+msgid "Earlier"
+msgstr "Más temprano"
+
+#: EditEntry.py:153
+msgid "Later"
+msgstr "Luego"
+
+#: EditEntry.py:155
+msgid "Shift Direction"
+msgstr "Dirección del cambio"
+
+#: EditEntry.py:172
+msgid "Shift Time"
+msgstr "Hora de turno"
+
+#: EditEntry.py:219
+msgid "Was"
+msgstr "Estaba"
+
+#: EditEntry.py:219
+msgid "Now"
+msgstr "Ahora"
+
+#: EditEntry.py:244 Model.py:984
+msgid "Original"
+msgstr "Original"
+
+#: EditEntry.py:249
+msgid "Before Entry"
+msgstr "Antes de la entrada"
+
+#: EditEntry.py:249
+msgid "After Entry"
+msgstr "Despues de la entrada"
+
+#: EditEntry.py:250 ForecastHistory.py:255
+msgid "Insert"
+msgstr "Insertar"
+
+#: EditEntry.py:253 RiderDetail.py:243
+msgid "Number"
+msgstr "Número"
+
+#: EditEntry.py:314
+msgid "Num1:"
+msgstr "Num1:"
+
+#: EditEntry.py:319
+msgid "Num2:"
+msgstr "Num2:"
+
+#: EditEntry.py:401 ExportGrid.py:786 ForecastHistory.py:95 ForecastHistory.py:105
+#: Gantt.py:265 Gantt.py:285 Gantt.py:304 Gantt.py:358 Gantt.py:384 History.py:249
+#: History.py:271 MainWin.py:940 MainWin.py:945 MainWin.py:950 MainWin.py:961
+#: MainWin.py:1029 NumKeypad.py:58 NumKeypad.py:263 Primes.py:388 Pulled.py:107
+#: ReadSignOnSheet.py:889 ReadSignOnSheet.py:905 ReadSignOnSheet.py:918
+#: ReadTTStartTimesSheet.py:386 ReadTTStartTimesSheet.py:402
+#: ReadTTStartTimesSheet.py:406 Results.py:243 Results.py:244 Results.py:781
+#: Results.py:799 RiderDetail.py:670 RiderDetail.py:708 RiderDetail.py:827
+#: RiderDetail.py:866 RiderDetail.py:1006 RiderDetail.py:1009 RiderDetail.py:1012
+#: RiderDetail.py:1014 RiderDetail.py:1110 RiderDetail.py:1127 RiderDetail.py:1148
+#: Situation.py:592 Situation.py:617 Situation.py:695 TimeTrialRecord.py:74
+msgid "Bib"
+msgstr "Babero"
+
+#: EditEntry.py:404
+msgid "Clock Time"
+msgstr "Hora del reloj"
+
+#: EditEntry.py:405 MainWin.py:961 RiderDetail.py:603 RiderDetail.py:708
+msgid "Confirm Delete"
+msgstr "Confirmar eliminación"
+
+#: EditEntry.py:405
+msgid "Delete Entry"
+msgstr "Eliminar la entrada"
+
+#: EditEntry.py:461
+msgid "and Enter Last Lap Time at"
+msgstr "y entrar en la última vuelta en"
+
+#: EditEntry.py:549 ExportGrid.py:743 ForecastHistory.py:258 ForecastHistory.py:394
+#: Recommendations.py:291 Utils.py:158
+msgid "DNF"
+msgstr "DNF"
+
+#: EditEntry.py:549
+msgid "Confirm Did Not FINISH"
+msgstr "Confirmar no terminó"
+
+#: EditEntry.py:553 ForecastHistory.py:395
+msgid "Pull"
+msgstr "Halar"
+
+#: EditEntry.py:553
+msgid "Confirm PULL Rider"
+msgstr "Confirmar PULL Rider"
+
+#: EditEntry.py:557 Recommendations.py:326 Utils.py:158
+msgid "DNS"
+msgstr "DNS"
+
+#: EditEntry.py:557
+msgid "Confirm Did Not START"
+msgstr "Confirmar no se ha iniciado"
+
+#: EditEntry.py:561 Utils.py:158
+msgid "DQ"
+msgstr "DQ"
+
+#: EditEntry.py:561
+msgid "Confirm Disqualify"
+msgstr "Confirmar Descalificar"
+
+#: ExportGrid.py:27
+msgid "Powered by CrossMgr (sites.google.com/site/crossmgrsoftware)"
+msgstr "Desarrollado por CrossMgr (sites.google.com/site/crossmgrsoftware)"
+
+#: ExportGrid.py:109
+msgid "Last Name"
+msgstr "Apellido"
+
+#: ExportGrid.py:110
+msgid "First Name"
+msgstr "Nombre de pila"
+
+#: ExportGrid.py:257 ExportGrid.py:445 ReadSignOnSheet.py:42 Results.py:839
+msgid "UCICode"
+msgstr "Código UCI"
+
+#: ExportGrid.py:263 ExportGrid.py:447 ReadSignOnSheet.py:42 Results.py:844
+msgid "NatCode"
+msgstr "NatCode"
+
+#: ExportGrid.py:279 ExportGrid.py:334 ExportGrid.py:439 ExportGrid.py:574
+#: ExportGrid.py:596 ExportGrid.py:661 ExportGrid.py:683 ExportGrid.py:794
+#: ExportGrid.py:895 Results.py:654
+msgid "Speed"
+msgstr "Velocidad"
+
+#: ExportGrid.py:354 ExportGrid.py:356 ExportGrid.py:533 ExportGrid.py:535
+msgid "Page"
+msgstr "Página"
+
+#: ExportGrid.py:741 NumKeypad.py:666
+msgid "Total"
+msgstr "Total"
+
+#: ExportGrid.py:744 Recommendations.py:313
+msgid "Lapped"
+msgstr "Lapeado"
+
+#: ExportGrid.py:766
+msgid "1st lap"
+msgstr "1a vuelta"
+
+#: ExportGrid.py:767
+msgid "more laps of"
+msgstr "más vueltas de"
+
+#: ExportGrid.py:771
+msgid "laps of"
+msgstr "vueltas de"
+
+#: ExportGrid.py:774 ExportGrid.py:776
+msgid "winner"
+msgstr "ganador"
+
+#: ExportGrid.py:786 Results.py:242 Results.py:681 Results.py:781
+msgid "Pos"
+msgstr "Pos"
+
+#: ExportGrid.py:788 Situation.py:159 Situation.py:795
+msgid "Clock"
+msgstr "Reloj"
+
+#: ExportGrid.py:788 ForecastHistory.py:636 ForecastHistory.py:712 MainWin.py:264
+#: MainWin.py:276 Model.py:2341 NumKeypad.py:216 RaceHUD.py:364
+#: Recommendations.py:384 Results.py:775 RiderDetail.py:65 RiderDetail.py:277
+msgid "Start"
+msgstr "comienzo"
+
+#: ExportGrid.py:789
+msgid "ElapsedTime"
+msgstr "Tiempo transcurrido"
+
+#: ExportGrid.py:789
+msgid "Factor %"
+msgstr "Factor%"
+
+#: ExportGrid.py:790 ExportGrid.py:900 FinishStrip.py:435 ForecastHistory.py:97
+#: NumKeypad.py:215 RaceHUD.py:363 Recommendations.py:334 Recommendations.py:342
+#: Results.py:473 Results.py:681 Results.py:775 TimeTrialRecord.py:74
+#: UnmatchedTagsGantt.py:68
+msgid "Time"
+msgstr "Hora"
+
+#: ExportGrid.py:791 ExportGrid.py:916 ForecastHistory.py:98 Results.py:681
+#: Situation.py:792
+msgid "Gap"
+msgstr "Brecha"
+
+#: ExportGrid.py:796
+msgid "Prize"
+msgstr "Premio"
+
+#: FinishStrip.py:419
+msgid "Direction"
+msgstr "Dirección"
+
+#: FinishStrip.py:420
+msgid "Right to Left"
+msgstr "De derecha a izquierda"
+
+#: FinishStrip.py:420
+msgid "Left to Right"
+msgstr "De izquierda a derecha"
+
+#: FinishStrip.py:427
+msgid "Copy to Clipboard"
+msgstr "Copiar al portapapeles"
+
+#: FinishStrip.py:430 TimeTrialRecord.py:134
+msgid "Save"
+msgstr "Salvar"
+
+#: FinishStrip.py:441
+msgid "Pixels/Sec"
+msgstr "Píxeles / seg"
+
+#: FinishStrip.py:443
+msgid "Scale"
+msgstr "Escala"
+
+#: FinishStrip.py:445
+msgid "Clip"
+msgstr "Acortar"
+
+#: FinishStrip.py:493
+msgid "Successfully copied to clipboard"
+msgstr "Copiado con éxito al portapapeles"
+
+#: FinishStrip.py:495
+msgid "Unable to open the clipboard"
+msgstr "No se puede abrir el portapapeles"
+
+#: FinishStrip.py:495 FtpWriteFile.py:506 FtpWriteFile.py:514 MainWin.py:1352
+#: MainWin.py:1366 MainWin.py:2106 MainWin.py:2115 MainWin.py:2331 MainWin.py:2720
+#: MainWin.py:3605 MainWin.py:3606 MainWin.py:3644 MainWin.py:3645 RaceDB.py:426
+#: ReadSignOnSheet.py:405
+msgid "Error"
+msgstr "Error"
+
+#: FinishStrip.py:500
+msgid "Save Finish as"
+msgstr "Guardar Finalizar como"
+
+#: FinishStrip.py:501
+msgid "files"
+msgstr "archivos"
+
+#: FinishStrip.py:503
+msgid "Default.cmn"
+msgstr "Default.cmn"
+
+#: FinishStrip.py:588 Primes.py:102
+msgid "Finish Strip"
+msgstr "Tira de acabado"
+
+#: ForecastHistory.py:101 ForecastHistory.py:110 RaceDB.py:320
+msgid "Wave"
+msgstr "Ola"
+
+#: ForecastHistory.py:108
+msgid "ETA"
+msgstr "ETA"
+
+#: ForecastHistory.py:120 ForecastHistory.py:178
+msgid "Recorded"
+msgstr "Grabado"
+
+#: ForecastHistory.py:170 ForecastHistory.py:677
+msgid "Expected (click Bib to record entry)"
+msgstr "Esperado (haga clic en Bib para grabar la entrada)"
+
+#: ForecastHistory.py:252 RiderDetail.py:531
+msgid "Correct"
+msgstr "Correcto"
+
+#: ForecastHistory.py:253 Gantt.py:150 Model.py:989 RiderDetail.py:1072
+msgid "Split"
+msgstr "División"
+
+#: ForecastHistory.py:254 RiderDetail.py:532
+msgid "Shift"
+msgstr "Cambio"
+
+#: ForecastHistory.py:644 ForecastHistory.py:716
+msgid "Lead"
+msgstr "Dirigir"
+
+#: ForecastHistory.py:646
+msgid "miss"
+msgstr "perder"
+
+#: ForecastHistory.py:675
+msgid "Expected"
+msgstr "Esperado"
+
+#: ForecastHistory.py:675
+msgid "before race leader"
+msgstr "antes del líder de la carrera"
+
+#: FtpUploadProgress.py:8 FtpUploadProgress.py:15 FtpUploadProgress.py:41
+msgid "Ftp Update Progress"
+msgstr "Ftp Update Progress"
+
+#: FtpUploadProgress.py:36
+msgid "KB to go"
+msgstr "KB para ir"
+
+#: FtpUploadProgress.py:42
+msgid "Uploading"
+msgstr "Subiendo"
+
+#: FtpWriteFile.py:268 Model.py:1059
+msgid "by"
+msgstr "por"
+
+#: FtpWriteFile.py:309
+msgid "Ftp Publish Results"
+msgstr "Ftp publicar resultados"
+
+#: FtpWriteFile.py:319
+msgid "Upload Photos to Path"
+msgstr "Subir fotos a la ruta"
+
+#: FtpWriteFile.py:324
+msgid "Automatically Upload Results During Race"
+msgstr "Sube automáticamente los resultados durante la carrera"
+
+#: FtpWriteFile.py:332
+msgid "Print Results URL as a QR Code..."
+msgstr "Imprimir URL de resultados como un código QR ..."
+
+#: FtpWriteFile.py:345
+msgid "Ftp Host Name"
+msgstr "Nombre de host Ftp"
+
+#: FtpWriteFile.py:348
+msgid "Upload files to Path"
+msgstr "Subir archivos a la ruta"
+
+#: FtpWriteFile.py:354
+msgid "User"
+msgstr "Usuario"
+
+#: FtpWriteFile.py:357
+msgid "Password"
+msgstr "Contraseña"
+
+#: FtpWriteFile.py:366
+msgid "URL Path (optional)"
+msgstr "Ruta URL (opcional)"
+
+#: FtpWriteFile.py:369
+msgid "Published Results URL"
+msgstr "URL de resultados publicados"
+
+#: FtpWriteFile.py:395
+msgid "Test FTP Connection"
+msgstr "Probar la conexión FTP"
+
+#: FtpWriteFile.py:398
+msgid "Do FTP Upload Now"
+msgstr "Hacer FTP subir ahora"
+
+#: FtpWriteFile.py:414
+msgid "Ftp Test Failed"
+msgstr "Falló la prueba de ftp"
+
+#: FtpWriteFile.py:416
+msgid "Ftp Test Successful"
+msgstr "Prueba de ftp exitosa"
+
+#: FtpWriteFile.py:506
+msgid "Missing host name."
+msgstr "Falta el nombre del host."
+
+#: FtpWriteFile.py:506 FtpWriteFile.py:514 MainWin.py:2115 MainWin.py:2117
+msgid "Ftp Upload Failed"
+msgstr "Falló la carga de FTP"
+
+#: FtpWriteFile.py:514
+msgid "Ftp Upload Failed."
+msgstr "Falló la carga de FTP."
+
+#: Gantt.py:40
+msgid "Show Full Names"
+msgstr "Mostrar nombres completos"
+
+#: Gantt.py:42
+msgid "Group by Start Wave"
+msgstr "Agrupar por Start Wave"
+
+#: Gantt.py:125 RiderDetail.py:526 RiderDetail.py:1058
+msgid "Add Missing Last Lap"
+msgstr "Añadir Missing Last Lap"
+
+#: Gantt.py:127 RiderDetail.py:1060
+msgid "Pull after Lap End"
+msgstr "Tirar después de Lap End"
+
+#: Gantt.py:128 RiderDetail.py:1061
+msgid "DNF after Lap End"
+msgstr "DNF después de Lap End"
+
+#: Gantt.py:130
+msgid "Correct Lap End Time"
+msgstr "Tiempo de final de vuelta correcto"
+
+#: Gantt.py:130
+msgid "Change number or lap end time"
+msgstr "Cambiar número o tiempo de vuelta"
+
+#: Gantt.py:131 RiderDetail.py:1064
+msgid "Shift Lap End Time"
+msgstr "Cambio de tiempo de vuelta de vuelta"
+
+#: Gantt.py:131 RiderDetail.py:1064
+msgid "Move lap end time earlier/later"
+msgstr "Mueve el tiempo de vuelta de vuelta antes / después"
+
+#: Gantt.py:132 RiderDetail.py:1065
+msgid "Delete Lap End Time"
+msgstr "Eliminar tiempo de finalización de vuelta"
+
+#: Gantt.py:134
+msgid "Mass Pull after Lap End Time"
+msgstr "Tirar en masa después del final de la vuelta"
+
+#: Gantt.py:134
+msgid "Pull Rider and all Riders after at Lap End"
+msgstr ""
+"\n"
+"Tirar del ciclista y todos los ciclistas al final de la vuelta"
+
+#: Gantt.py:136 RiderDetail.py:1067
+msgid "Add/Edit lap Note"
+msgstr "Añadir / Editar nota de vuelta"
+
+#: Gantt.py:138 Gantt.py:304 Gantt.py:305 Gantt.py:339 RiderDetail.py:632
+msgid "Turn off Autocorrect"
+msgstr "Desactivar la autocorrección"
+
+#: Gantt.py:140 Results.py:339
+msgid "Swap with Rider before"
+msgstr "Intercambiar con Rider antes"
+
+#: Gantt.py:141 Results.py:340
+msgid "Swap with Rider after"
+msgstr "Swap con Rider despues"
+
+#: Gantt.py:143 RiderDetail.py:1069
+msgid "Show Lap Details"
+msgstr "Mostrar detalles de la vuelta"
+
+#: Gantt.py:145 Results.py:331
+msgid "Show RiderDetail Dialog"
+msgstr "Mostrar el diálogo de RiderDetail"
+
+#: Gantt.py:146 History.py:169
+msgid "Switch to Results tab"
+msgstr "Cambiar a la pestaña Resultados"
+
+#: Gantt.py:150 RiderDetail.py:1072
+msgid "Splits"
+msgstr "Divisiones"
+
+#: Gantt.py:166 Results.py:354
+msgid "before"
+msgstr "antes de"
+
+#: Gantt.py:166 Results.py:354
+msgid "after"
+msgstr "después"
+
+#: Gantt.py:178 RiderDetail.py:1094
+msgid "Add Missing Split"
+msgstr "Añadir división perdida"
+
+#: Gantt.py:214 RiderDetail.py:981
+msgid "Add Missing Splits"
+msgstr "Añadir Splits perdidos"
+
+#: Gantt.py:214 RiderDetail.py:981
+msgid "Missing Splits to Add:"
+msgstr "Faltan divisiones para agregar:"
+
+#: Gantt.py:266 Gantt.py:385
+msgid "Pull Rider after lap"
+msgstr "Pull Rider tras vuelta"
+
+#: Gantt.py:267 History.py:251 RiderDetail.py:1112 Situation.py:594
+msgid "Pull Rider"
+msgstr "Pull Rider"
+
+#: Gantt.py:286
+msgid "DNF Rider after lap"
+msgstr "DNF Rider tras vuelta"
+
+#: Gantt.py:287 History.py:273 RiderDetail.py:1129 Situation.py:619
+msgid "DNF Rider"
+msgstr "DNF Rider"
+
+#: Gantt.py:334 RiderDetail.py:627
+msgid "Cannot add Last Lap unless Rider is Finisher"
+msgstr "No se puede agregar la última vuelta a menos que Rider sea Finisher"
+
+#: Gantt.py:334 RiderDetail.py:627
+msgid "Cannot add Last Lap"
+msgstr "No se puede agregar la última vuelta"
+
+#: Gantt.py:339 RiderDetail.py:632
+msgid "Turn off Autocorrect first?"
+msgstr "¿Desactivar Autocorrección primero?"
+
+#: Gantt.py:386
+msgid "And, Pull all riders ranked lower after lap"
+msgstr ""
+"\n"
+"Y, tira todos los corredores clasificados más bajos después de la vuelta"
+
+#: Gantt.py:387 MainWin.py:1032 MainWin.py:1371 RiderDetail.py:869
+msgid "Continue"
+msgstr "Continuar"
+
+#: Gantt.py:389
+msgid "Mass Pull"
+msgstr "Tirar en masa"
+
+#: Gantt.py:401
+msgid "Cannot apply Mass Pull to rider with unknown category."
+msgstr ""
+"\n"
+"No se puede tirar en masa al ciclista con categoría desconocida."
+
+#: Gantt.py:402
+msgid "Unknown Category"
+msgstr "Categoría desconocida"
+
+#: Gantt.py:468
+msgid "Lap Start down from leader"
+msgstr "Inicio de vuelta del líder"
+
+#: Gantt.py:474
+msgid "Lap End down from leader"
+msgstr "Lap End abajo del líder"
+
+#: Gantt.py:480 Gantt.py:488 GanttChart.py:201 RiderDetail.py:1031
+msgid "Lap Start"
+msgstr "Inicio de vuelta"
+
+#: Gantt.py:483 Gantt.py:489 GanttChart.py:202 RiderDetail.py:1032
+msgid "Lap End"
+msgstr "Final de vuelta"
+
+#: Gantt.py:490 GanttChart.py:203 RiderDetail.py:1033
+msgid "Lap Time"
+msgstr "Tiempo de vuelta"
+
+#: Gantt.py:493 RiderDetail.py:1035
+msgid "Lap Details"
+msgstr "Detalles de la vuelta"
+
+#: Gantt.py:528
+msgid "Total Entries"
+msgstr "Entradas totales"
+
+#: Gantt.py:529 Recommendations.py:367
+msgid "Projected"
+msgstr "Proyectado"
+
+#: Gantt.py:530
+msgid "Edited"
+msgstr "Editado"
+
+#: Gantt.py:531
+msgid "Projected or Edited"
+msgstr "Proyectado o editado"
+
+#: Gantt.py:532 MainWin.py:4038 Primes.py:100
+msgid "Photos"
+msgstr "Las fotos"
+
+#: GanttChartPanel.py:613 Utils.py:158
+msgid "PUL"
+msgstr "PUL"
+
+#: GetResults.py:114 GetResults.py:606 Model.py:2480 NumKeypad.py:678
+msgid "lap"
+msgstr "regazo"
+
+#: GetResults.py:114 GetResults.py:606 Model.py:2480 NumKeypad.py:678
+msgid "laps"
+msgstr "vueltas"
+
+#: GetResults.py:462 GetResults.py:603
+msgid "REL"
+msgstr "REL"
+
+#: GpxImport.py:21
+msgid ""
+"Import a GPX File containing coordinates for the course.\n"
+"Continue if you want to load or change the GPX course file."
+msgstr ""
+"Importe un archivo GPX que contenga las coordenadas del curso.\n"
+"Continúe si desea cargar o cambiar el archivo del curso GPX."
+
+#: GpxImport.py:26 GpxImport.py:34
+msgid "Remove GPX Course"
+msgstr "Eliminar curso GPX"
+
+#: GpxImport.py:34
+msgid "Permanently Remove GPX Course?"
+msgstr "¿Desea eliminar permanentemente el curso GPX?"
+
+#: GpxImport.py:38
+msgid "No GPX Course"
+msgstr "No hay curso de GPX"
+
+#: GpxImport.py:44
+msgid "Existing GPX file:"
+msgstr "Archivo GPX existente:"
+
+#: GpxImport.py:46 GpxImport.py:149 Properties.py:528
+msgid "Number of Coords"
+msgstr "Número de Coords"
+
+#: GpxImport.py:47 GpxImport.py:152
+msgid "Lap Length"
+msgstr "Longitud de vuelta"
+
+#: GpxImport.py:47
+msgid "miles"
+msgstr "millas"
+
+#: GpxImport.py:48 GpxImport.py:155
+msgid "Total Elevation Gain"
+msgstr "Ganancia de elevación total"
+
+#: GpxImport.py:49 Properties.py:523
+msgid "Course Type"
+msgstr "Tipo de curso"
+
+#: GpxImport.py:49 GpxImport.py:191
+msgid "Point to Point"
+msgstr "Punto a punto"
+
+#: GpxImport.py:49 GpxImport.py:191
+msgid "Loop"
+msgstr "Lazo"
+
+#: GpxImport.py:63
+msgid "Specify the GPX File containing coordinates for the course."
+msgstr "Especifique el archivo GPX que contiene las coordenadas del curso."
+
+#: GpxImport.py:75
+msgid "Course is a Loop"
+msgstr "El curso es un bucle"
+
+#: GpxImport.py:75
+msgid "Course is Point-to-Point"
+msgstr "El curso es punto a punto"
+
+#: GpxImport.py:77
+msgid "Read \"elevation.csv\" File (in same folder as GPX file)"
+msgstr "Leer \"elevation.csv \" Archivo (en la misma carpeta que el archivo GPX)"
+
+#: GpxImport.py:115
+msgid ""
+"This GPX file does not contain times.\n"
+"\n"
+"Race times will be calculated based on distance and elevation."
+msgstr ""
+"Este archivo GPX no contiene tiempos.\n"
+"\n"
+"Los tiempos de carrera se calcularán según la distancia y la elevación."
+
+#: GpxImport.py:118
+msgid "Use times in the GPX file for more realistic animation"
+msgstr "Use los tiempos en el archivo GPX para una animación más realista."
+
+#: GpxImport.py:143 ReadSignOnSheet.py:297
+msgid "Summary"
+msgstr "Resumen"
+
+#: GpxImport.py:146
+msgid "GPX File"
+msgstr "Archivo GPX"
+
+#: GpxImport.py:158
+msgid "Course is"
+msgstr "El curso es"
+
+#: GpxImport.py:162
+msgid "Set Category Distances to GPX Lap Length"
+msgstr "Establece las Distancias de la Categoría a GPX Longitud de Vuelta"
+
+#: GpxImport.py:201
+msgid "Import GPX Course File"
+msgstr "Importar archivo de curso GPX"
+
+#: GpxImport.py:270
+msgid "Please specify a GPX file."
+msgstr "Por favor, especifique un archivo GPX."
+
+#: GpxImport.py:273 MainWin.py:2655 MainWin.py:2748 MainWin.py:3150 MainWin.py:3358
+#: MainWin.py:3386 ReadSignOnSheet.py:474 ReadTTStartTimesSheet.py:290
+msgid "Cannot open file"
+msgstr "No puede abrir el archivo"
+
+#: GpxImport.py:274 GpxImport.py:308 ReadSignOnSheet.py:476
+#: ReadTTStartTimesSheet.py:290
+msgid "Please check the file name and/or its read permissions."
+msgstr "Por favor verifique el nombre del archivo y / o sus permisos de lectura."
+
+#: GpxImport.py:276 GpxImport.py:310 MainWin.py:2655 MainWin.py:2748
+#: MainWin.py:3150 MainWin.py:3358 MainWin.py:3386 ReadSignOnSheet.py:478
+#: ReadTTStartTimesSheet.py:291
+msgid "File Open Error"
+msgstr "Error de abrir archivo"
+
+#: GpxImport.py:286
+msgid "Read Error"
+msgstr "Error de lectura"
+
+#: GpxImport.py:286
+msgid "Is this GPX file properly formatted?"
+msgstr "¿Es este archivo GPX formateado correctamente?"
+
+#: GpxImport.py:294
+msgid "Import Failed"
+msgstr "Error de importación"
+
+#: GpxImport.py:294
+msgid "GPX file contains fewer than two points."
+msgstr "El archivo GPX contiene menos de dos puntos."
+
+#: GpxImport.py:295
+msgid "File Format Error"
+msgstr "Error de formato de archivo"
+
+#: GpxImport.py:307
+msgid "Cannot Open Elevation File"
+msgstr "No se puede abrir el archivo de elevación"
+
+#: GpxImport.py:316
+msgid "Elevation File Error"
+msgstr "Error de archivo de elevación"
+
+#: GpxImport.py:317 MainWin.py:2657 MainWin.py:2750 MainWin.py:3360
+msgid "File Read Error"
+msgstr "Error de lectura de archivo"
+
+#: HelpSearch.py:74
+msgid "Search Text:"
+msgstr "Buscar texto:"
+
+#: HistogramPanel.py:44 HistogramPanel.py:123
+msgid "Last"
+msgstr "Último"
+
+#: HistogramPanel.py:50
+msgid "Bin by"
+msgstr "Bin por"
+
+#: HistogramPanel.py:51 RiderDetail.py:1430
+msgid "Auto"
+msgstr "Auto"
+
+#: HistogramPanel.py:51
+msgid "1 second"
+msgstr "1 segundo"
+
+#: HistogramPanel.py:51
+msgid "30 seconds"
+msgstr "30 segundos"
+
+#: HistogramPanel.py:51
+msgid "1 minute"
+msgstr "1 minuto"
+
+#: HistogramPanel.py:51
+msgid "5 minutes"
+msgstr "5 minutos"
+
+#: HistogramPanel.py:56
+msgid "Bin width"
+msgstr "Ancho de la papelera"
+
+#: History.py:49
+msgid "Sync Category"
+msgstr "Categoría de sincronización"
+
+#: History.py:53 Primes.py:54
+msgid "Position"
+msgstr "Posición"
+
+#: History.py:57 Results.py:119
+msgid "Race Times"
+msgstr "Tiempos de carrera"
+
+#: History.py:61 Results.py:114
+msgid "Lap Times"
+msgstr "Tiempos de vuelta"
+
+#: History.py:65
+msgid "Time Down per Lap"
+msgstr "Tiempo hacia abajo por vuelta"
+
+#: History.py:69
+msgid "Names"
+msgstr "Los nombres"
+
+#: History.py:170 Situation.py:560
+msgid "Show RiderDetail tab"
+msgstr "Mostrar pestaña RiderDetail"
+
+#: History.py:172 Results.py:335
+msgid "Correct..."
+msgstr "Correcto..."
+
+#: History.py:172
+msgid "Change number or time"
+msgstr "Cambio de numero o tiempo"
+
+#: History.py:173 Results.py:336
+msgid "Shift..."
+msgstr "Cambio..."
+
+#: History.py:173
+msgid "Move time earlier/later"
+msgstr "Mueve el tiempo antes / después"
+
+#: History.py:174
+msgid "Insert..."
+msgstr "Insertar..."
+
+#: History.py:174
+msgid "Insert a number before/after existing entry"
+msgstr "Inserte un número antes / después de la entrada existente"
+
+#: History.py:176 Results.py:337
+msgid "Delete..."
+msgstr "Borrar..."
+
+#: History.py:176
+msgid "Delete an entry"
+msgstr "Borrar una entrada"
+
+#: History.py:177
+msgid "Split..."
+msgstr "División..."
+
+#: History.py:177
+msgid "Split an entry into two"
+msgstr "Dividir una entrada en dos."
+
+#: History.py:179
+msgid "Swap with Entry before"
+msgstr "Intercambiar con entrada antes"
+
+#: History.py:180
+msgid "Swap with Entry after"
+msgstr "Intercambiar con entrada despues"
+
+#: History.py:182 RiderDetail.py:528
+msgid "Pull After Lap"
+msgstr "Tirar después de vuelta"
+
+#: History.py:182 RiderDetail.py:528
+msgid "Pull After lap"
+msgstr "Tirar tras vuelta"
+
+#: History.py:183 RiderDetail.py:529
+msgid "DNF After Lap"
+msgstr "DNF después de la vuelta"
+
+#: History.py:183 RiderDetail.py:529
+msgid "DNF After lap"
+msgstr "DNF después de la vuelta"
+
+#: History.py:250 RiderDetail.py:1111
+msgid "Pull after lap"
+msgstr "Tirar tras vuelta"
+
+#: History.py:272 RiderDetail.py:1128
+msgid "DNF after lap"
+msgstr "DNF después de la vuelta"
+
+#: ImpinjImport.py:69 OrionImport.py:23 RaceResultImport.py:29
+msgid "invalid time"
+msgstr "tiempo invalido"
+
+#: JChipSetup.py:52
+msgid "Chip Reader Setup"
+msgstr "Configuración de lector de chip"
+
+#: JChipSetup.py:59
+msgid "Accept RFID Reader Data During Race"
+msgstr "Aceptar datos del lector RFID durante la carrera"
+
+#: JChipSetup.py:65 JChipSetup.py:368
+msgid "Start RFID Test"
+msgstr "Iniciar prueba RFID"
+
+#: JChipSetup.py:86
+msgid "Make sure the RFID receiver is plugged into the network."
+msgstr "Asegúrese de que el receptor RFID esté conectado a la red."
+
+#: JChipSetup.py:87
+msgid ""
+"If you are using Impinj/Alien, make sure the CrossMgrImpinj or CrossMgrAlien "
+"bridge programs are running."
+msgstr ""
+"Si está utilizando Impinj / Alien, asegúrese de que los programas de puente "
+"CrossMgrImpinj o CrossMgrAlien se estén ejecutando."
+
+#: JChipSetup.py:88
+msgid "You must have the Sign-On Excel sheet ready and linked before your race."
+msgstr ""
+"Debes tener la hoja de inicio de sesión de Excel lista y vinculada antes de tu "
+"carrera."
+
+#: JChipSetup.py:89
+msgid "You must configure a \"Tag\" field in your Sign-On Excel Sheet."
+msgstr ""
+"Debe configurar un campo \"Etiqueta \" en su hoja de Excel de inicio de sesión."
+
+#: JChipSetup.py:90
+msgid "Run this test before each race."
+msgstr "Ejecutar esta prueba antes de cada carrera."
+
+#: JChipSetup.py:93
+msgid ""
+"CrossMgr supports the JChip, RaceResult, Ultra, Impinj and Alien RFID readers."
+msgstr ""
+"CrossMgr admite los lectores RFID JChip, RaceResult, Ultra, Impinj y Alien."
+
+#: JChipSetup.py:94
+msgid "For more details, consult the documentation for your reader."
+msgstr "Para más detalles, consulte la documentación de su lector."
+
+#: JChipSetup.py:104
+msgid "Reader Configuration:"
+msgstr "Configuración del lector:"
+
+#: JChipSetup.py:111 Properties.py:339
+msgid "Reader Type"
+msgstr "Tipo de lector"
+
+#: JChipSetup.py:113 Properties.py:337
+msgid "JChip/Impinj/Alien"
+msgstr "JChip / Impinj / Alien"
+
+#: JChipSetup.py:113 Properties.py:337
+msgid "RaceResult"
+msgstr "RaceResult"
+
+#: JChipSetup.py:113 Properties.py:337
+msgid "Ultra"
+msgstr "Ultra"
+
+#: JChipSetup.py:120
+msgid "or"
+msgstr "o"
+
+#: JChipSetup.py:123
+msgid "AutoDetect"
+msgstr "Detección automática"
+
+#: JChipSetup.py:131
+msgid "Remote IP Address:"
+msgstr "Dirección IP remota:"
+
+#: JChipSetup.py:138
+msgid "Remote Port:"
+msgstr "Puerto remoto:"
+
+#: JChipSetup.py:142
+msgid ""
+"If using JChip, see \"7  Setting of Connections\" in JChip \"Control Panel Soft "
+"Manual\" for more details."
+msgstr ""
+"Si usa JChip, vea \"Configuración de conexiones\" en JChip \"Manual suave del "
+"panel de control\" para más detalles."
+
+#: JChipSetup.py:147
+msgid "Messages:"
+msgstr "Mensajes:"
+
+#: JChipSetup.py:246 JChipSetup.py:247
+msgid "AutoDetect Error"
+msgstr "Error de autodetección"
+
+#: JChipSetup.py:253 JChipSetup.py:254
+msgid "AutoDetect Failure"
+msgstr "Fallo de autodetección"
+
+#: JChipSetup.py:253
+msgid "Reader not found."
+msgstr "Lector no encontrado."
+
+#: JChipSetup.py:279
+msgid ""
+"No active race.  Cannot perform RFID test.  \"New\" or \"Open\" a race first."
+msgstr ""
+"No hay carrera activa. No se puede realizar la prueba de RFID. \"Nuevo\" o "
+"\"Abrir\" una carrera primero."
+
+#: JChipSetup.py:279 JChipSetup.py:284
+msgid "Cannot Perform RFID Test"
+msgstr "No se puede realizar la prueba de RFID"
+
+#: JChipSetup.py:284
+msgid "Cannot perform RFID test while race is running."
+msgstr ""
+"No se puede realizar la prueba RFID mientras la carrera se está ejecutando."
+
+#: JChipSetup.py:289
+msgid "CrossMgr will not be able to associate chip Tags with Bib numbers."
+msgstr "CrossMgr no podrá asociar etiquetas de chip con números de Bib."
+
+#: JChipSetup.py:290
+msgid "You may proceed with the test, but you need to fix the Excel sheet."
+msgstr "Puede continuar con la prueba, pero necesita arreglar la hoja de Excel."
+
+#: JChipSetup.py:291 MainWin.py:1192 MainWin.py:1208 MainWin.py:1224
+#: MainWin.py:1240 MainWin.py:1256 MainWin.py:1272
+msgid "See documentation for details."
+msgstr "Consulte la documentación para más detalles."
+
+#: JChipSetup.py:293 MainWin.py:1195 MainWin.py:1211 MainWin.py:1227
+#: MainWin.py:1243 MainWin.py:1259 MainWin.py:1275
+msgid "Problems with Excel sheet."
+msgstr "Problemas con la hoja de Excel."
+
+#: JChipSetup.py:293
+msgid "Reason:"
+msgstr "Razón:"
+
+#: JChipSetup.py:294 JChipSetup.py:300 MainWin.py:1196 MainWin.py:1212
+#: MainWin.py:1228 MainWin.py:1244 MainWin.py:1260 MainWin.py:1276
+msgid "Excel Link Problem"
+msgstr "Problema de enlace de Excel"
+
+#: JChipSetup.py:299
+msgid "All Tag entries in the Excel sheet are blank."
+msgstr "Todas las entradas de etiquetas en la hoja de Excel están en blanco."
+
+#: JChipSetup.py:347
+msgid "listening for RFID connection..."
+msgstr "escuchando la conexión RFID ..."
+
+#: JChipSetup.py:349
+msgid "receiver name"
+msgstr "nombre del destinatario"
+
+#: JChipSetup.py:366
+msgid "No test running."
+msgstr "No hay prueba en ejecución."
+
+#: LapCounter.py:35 LapCounter.py:42
+msgid "Lap Counter Options"
+msgstr "Opciones de contador de vuelta"
+
+#: LapCounter.py:46 Printing.py:32
+msgid "Type"
+msgstr "Tipo"
+
+#: LapCounter.py:47 Properties.py:1259
+msgid "Lap Counter"
+msgstr "Contador de vueltas"
+
+#: LapCounter.py:47
+msgid "Countdown Timer"
+msgstr "Contador regresivo"
+
+#: LapCounter.py:51
+msgid "Foregrounds"
+msgstr "Primeros planos"
+
+#: LapCounter.py:59
+msgid "Backgrounds"
+msgstr "Antecedentes"
+
+#: LapCounter.py:68
+msgid "Show Lap Elapsed Time"
+msgstr "Mostrar lapso de tiempo transcurrido"
+
+#: LapCounter.py:71
+msgid "Lap Cycle"
+msgstr "Ciclo de vuelta"
+
+#: LapCounter.py:77
+msgid "Seconds before Leader's ETA to change Lap Counter"
+msgstr "Segundos antes de la ETA del líder para cambiar el contador de vueltas"
+
+#: LapCounter.py:228
+msgid "Lock in Laps to Go"
+msgstr "Bloqueo en vueltas para ir"
+
+#: LapCounter.py:229
+msgid "Options"
+msgstr "Opciones"
+
+#: LapCounter.py:301
+msgid "min"
+msgstr "min"
+
+#: MainWin.py:180
+msgid "No tips available."
+msgstr "No hay consejos disponibles."
+
+#: MainWin.py:228
+msgid "Simulation"
+msgstr "Simulación"
+
+#: MainWin.py:235
+msgid "Simulate Race"
+msgstr "Simular raza"
+
+#: MainWin.py:237
+msgid "This will simulate a race using randomly generated data."
+msgstr "Esto simulará una carrera utilizando datos generados aleatoriamente."
+
+#: MainWin.py:238
+msgid "It is a good illustration of CrossMgr's functionality with real time data."
+msgstr ""
+"Es una buena ilustración de la funcionalidad de CrossMgr con datos en tiempo "
+"real."
+
+#: MainWin.py:240
+msgid "The simulation takes about 8 minutes."
+msgstr "La simulación dura unos 8 minutos."
+
+#: MainWin.py:241
+msgid "In the Time Trial simulation, riders start on 15 second intervals."
+msgstr ""
+"En la simulación Time Trial, los corredores comienzan en intervalos de 15 "
+"segundos."
+
+#: MainWin.py:243
+msgid "The race will be written to"
+msgstr "La carrera se escribirá a"
+
+#: MainWin.py:245 Properties.py:1352 Properties.py:1632 RiderDetail.py:852
+msgid "Continue?"
+msgstr "¿Continuar?"
+
+#: MainWin.py:258
+msgid "Mass Start Race"
+msgstr "Carrera de inicio en masa"
+
+#: MainWin.py:261
+msgid "Simulate RFID Reset Start Clock on First Read"
+msgstr ""
+
+#: MainWin.py:273 Model.py:1241 Model.py:2342 Properties.py:195 RaceDB.py:311
+msgid "Time Trial"
+msgstr "Contrarreloj"
+
+#: MainWin.py:362
+msgid "&New..."
+msgstr "&Nuevo..."
+
+#: MainWin.py:362
+msgid "Create a new race"
+msgstr "Crear una nueva carrera"
+
+#: MainWin.py:365
+msgid "New Nex&t..."
+msgstr "Nuevo Nex&t ..."
+
+#: MainWin.py:365
+msgid "Create a new race starting from the current race"
+msgstr "Crea una nueva carrera a partir de la actual."
+
+#: MainWin.py:370
+msgid "New from&RaceDB Excel..."
+msgstr "Nuevo de&RaceDB Excel ..."
+
+#: MainWin.py:370
+msgid "Create a new race from RaceDB Excel output"
+msgstr "Crea una nueva carrera desde la salida RaceDB Excel."
+
+#: MainWin.py:374
+msgid "&Open..."
+msgstr "&Abierto..."
+
+#: MainWin.py:374
+msgid "Open a race"
+msgstr "Abrir una carrera"
+
+#: MainWin.py:377
+msgid "Open N&ext..."
+msgstr "Abierto N&ext ..."
+
+#: MainWin.py:377
+msgid "Open the next race starting from the current race"
+msgstr "Abre la próxima carrera a partir de la carrera actual."
+
+#: MainWin.py:381
+msgid "Open from RaceDB Server..."
+msgstr "Abrir desde el servidor RaceDB ..."
+
+#: MainWin.py:381
+msgid "Open a Race directly from RaceDB server"
+msgstr "Abre una carrera directamente desde el servidor RaceDB"
+
+#: MainWin.py:384
+msgid "Upload Results to RaceDB Server..."
+msgstr "Cargar resultados al servidor RaceDB ..."
+
+#: MainWin.py:384
+msgid "Upload Results to RaceDB server"
+msgstr "Cargar resultados al servidor RaceDB"
+
+#: MainWin.py:389
+msgid "&Restore from Original Input..."
+msgstr "&Restaurar desde entrada original ..."
+
+#: MainWin.py:389 MainWin.py:1132
+msgid "Restore from Original Input"
+msgstr "Restaurar desde la entrada original"
+
+#: MainWin.py:396
+msgid "Recent Fil&es"
+msgstr "Archivos recientes"
+
+#: MainWin.py:403
+msgid "&Close Race"
+msgstr "&Cerrar carrera"
+
+#: MainWin.py:403
+msgid "Close this race without exiting CrossMgr"
+msgstr "Cierra esta carrera sin salir de CrossMgr."
+
+#: MainWin.py:407
+msgid "E&xit"
+msgstr "Salida"
+
+#: MainWin.py:407
+msgid "Exit CrossMgr"
+msgstr "Salir de CrossMgr"
+
+#: MainWin.py:412
+msgid "&File"
+msgstr "&Expediente"
+
+#: MainWin.py:417
+msgid "Page&Setup..."
+msgstr "Página y configuración ..."
+
+#: MainWin.py:417
+msgid "Setup the print page"
+msgstr "Configurar la página de impresión"
+
+#: MainWin.py:420
+msgid "P&review Print Results..."
+msgstr "P&revisión Imprimir Resultados ..."
+
+#: MainWin.py:420
+msgid "Preview the printed results on screen"
+msgstr "Vista previa de los resultados impresos en pantalla"
+
+#: MainWin.py:426
+msgid "&Print Results..."
+msgstr "&Imprimir resultados ..."
+
+#: MainWin.py:426
+msgid "Print the results to a printer"
+msgstr "Imprime los resultados a una impresora"
+
+#: MainWin.py:430
+msgid "Print P&odium Results..."
+msgstr "Imprimir P&odium Resultados ..."
+
+#: MainWin.py:430
+msgid "Print the top position results to a printer"
+msgstr "Imprima los resultados de la posición superior en una impresora"
+
+#: MainWin.py:434
+msgid "Print C&ategories..."
+msgstr "Imprimir C&ategories ..."
+
+#: MainWin.py:434 Printing.py:60
+msgid "Print Categories"
+msgstr "Imprimir Categorías"
+
+#: MainWin.py:440
+msgid "&Batch Publish Files..."
+msgstr "&Batch Publicar archivos ..."
+
+#: MainWin.py:440
+msgid "Publish Multiple Results File Formats"
+msgstr "Publicar múltiples formatos de archivos de resultados"
+
+#: MainWin.py:517
+msgid "&Publish"
+msgstr "&Publicar"
+
+#: MainWin.py:521
+msgid "&Undo\tCtrl+Z"
+msgstr "&Deshacer\\tCtrl+Z"
+
+#: MainWin.py:521
+msgid "Undo the last edit"
+msgstr "Deshacer la última edición"
+
+#: MainWin.py:527
+msgid "&Redo\tCtrl+Y"
+msgstr "&Rehacer\tCtrl+Y"
+
+#: MainWin.py:527
+msgid "Redo the last edit"
+msgstr "Rehacer la última edición"
+
+#: MainWin.py:534
+msgid "&Find...\tCtrl+F"
+msgstr "&Buscar...\tCtrl+Z"
+
+#: MainWin.py:534
+msgid "Find a Rider"
+msgstr "Encontrar un jinete"
+
+#: MainWin.py:539
+msgid "&Delete Bib Number..."
+msgstr "&Eliminar número de babero..."
+
+#: MainWin.py:539
+msgid "Delete Bib Number..."
+msgstr "Eliminar número de babero ..."
+
+#: MainWin.py:542
+msgid "&Swap Bib Numbers..."
+msgstr "&Intercambiar números de babero ..."
+
+#: MainWin.py:542
+msgid "Swap Bib Numbers..."
+msgstr "Intercambiar números de babero ..."
+
+#: MainWin.py:545
+msgid "&Change Bib Number..."
+msgstr "&Cambiar número de babero ..."
+
+#: MainWin.py:545
+msgid "Change Bib Number..."
+msgstr "Cambiar número de babero ..."
+
+#: MainWin.py:548
+msgid "&Add Missing Bib Number..."
+msgstr "&Agregar número de babero faltante ..."
+
+#: MainWin.py:548
+msgid "Add Missing Bib Number..."
+msgstr "Añadir número de babero faltante ..."
+
+#: MainWin.py:552
+msgid "&Change \"Autocorrect\"..."
+msgstr "&Cambiar \"Autocorrección \" ..."
+
+#: MainWin.py:552
+msgid "Change \"Autocorrect\"..."
+msgstr "Cambiar \"Autocorrección \" ..."
+
+#: MainWin.py:555
+msgid "&Edit"
+msgstr "&Editar"
+
+#: MainWin.py:560
+msgid "&Link to External Excel Data..."
+msgstr "&Enlace a datos externos de Excel ..."
+
+#: MainWin.py:560
+msgid "Link to information in an Excel spreadsheet"
+msgstr "Enlace a la información en una hoja de cálculo de Excel"
+
+#: MainWin.py:567
+msgid "&Add DNS from External Excel Data..."
+msgstr "&Agregar DNS de datos externos de Excel ..."
+
+#: MainWin.py:567
+msgid "Add DNS..."
+msgstr "Añadir DNS ..."
+
+#: MainWin.py:570
+msgid "&Open Excel Spreadsheet..."
+msgstr "&Abrir hoja de cálculo de Excel ..."
+
+#: MainWin.py:570
+msgid "Open Excel Spreadsheet..."
+msgstr "Abrir hoja de cálculo de Excel ..."
+
+#: MainWin.py:576
+msgid "&Import Time Trial Start Times..."
+msgstr "&Import Time Time Start Times ..."
+
+#: MainWin.py:576
+msgid "Import Time Trial Start Times"
+msgstr "Importar tiempo de inicio de prueba de tiempo"
+
+#: MainWin.py:612
+msgid "&Import Categories from File..."
+msgstr "&Importar categorías desde archivo ..."
+
+#: MainWin.py:612
+msgid "Import Categories from File"
+msgstr "Importar categorías desde archivo"
+
+#: MainWin.py:615
+msgid "&Export Categories to File..."
+msgstr "&Exportar categorías a archivo ..."
+
+#: MainWin.py:615
+msgid "Export Categories to File"
+msgstr "Exportar categorías a archivo"
+
+#: MainWin.py:620
+msgid "Export Passings to Excel..."
+msgstr "Exportar pases a Excel ..."
+
+#: MainWin.py:620
+msgid "Export Passings to Excel File"
+msgstr "Exportar pases a un archivo de Excel"
+
+#: MainWin.py:623
+msgid "Export Raw Data as&HTML..."
+msgstr "Exportar datos sin formato como y HTML ..."
+
+#: MainWin.py:623
+msgid "Export raw data as HTML (.html)"
+msgstr "Exportar datos en bruto como HTML (.html)"
+
+#: MainWin.py:626
+msgid "Export Results as&JSON..."
+msgstr "Exportar resultados como&JSON ..."
+
+#: MainWin.py:626
+msgid "Export results as JSON (.json)"
+msgstr "Exportar resultados como JSON (.json)"
+
+#: MainWin.py:629
+msgid "&DataMgmt"
+msgstr "&DataMgmt"
+
+#: MainWin.py:667
+msgid "Pulled"
+msgstr "Sacado"
+
+#: MainWin.py:674
+msgid "Prizes"
+msgstr "Premios"
+
+#: MainWin.py:679
+msgid "Announcer"
+msgstr "Contador"
+
+#: MainWin.py:680
+msgid "Histogram"
+msgstr "Histograma"
+
+#: MainWin.py:700
+msgid "Chip Reader&Setup..."
+msgstr "Chip Reader y configuración ..."
+
+#: MainWin.py:700
+msgid "Configure and Test the Chip Reader"
+msgstr "Configurar y probar el lector de chips"
+
+#: MainWin.py:705
+msgid "Import JChip File..."
+msgstr "Importar archivo JChip ..."
+
+#: MainWin.py:705
+msgid "JChip Formatted File"
+msgstr "Archivo con formato JChip"
+
+#: MainWin.py:708
+msgid "Import Impinj File..."
+msgstr "Importar archivo Impinj ..."
+
+#: MainWin.py:708
+msgid "Impinj Formatted File"
+msgstr "Archivo con formato Impinj"
+
+#: MainWin.py:711
+msgid "Import Ipico File..."
+msgstr "Importar archivo Ipico ..."
+
+#: MainWin.py:711
+msgid "Ipico Formatted File"
+msgstr "Ipico Formateado Archivo"
+
+#: MainWin.py:714
+msgid "Import Alien File..."
+msgstr "Importar archivo de Alien ..."
+
+#: MainWin.py:714
+msgid "Alien Formatted File"
+msgstr "Archivo Alien Formateado"
+
+#: MainWin.py:717
+msgid "Import Orion File..."
+msgstr "Importar archivo de Orion ..."
+
+#: MainWin.py:717
+msgid "Orion Formatted File"
+msgstr "Orion formateado archivo"
+
+#: MainWin.py:720
+msgid "Import RaceResult File..."
+msgstr "Importar archivo RaceResult ..."
+
+#: MainWin.py:720
+msgid "RaceResult File"
+msgstr "Archivo RaceResult"
+
+#: MainWin.py:723
+msgid "Chip&Reader"
+msgstr "Chip y lector"
+
+#: MainWin.py:728
+msgid "&Change Race Start Time..."
+msgstr "&Cambiar la hora de inicio de la carrera ..."
+
+#: MainWin.py:728
+msgid "Change the Start Time of the Race"
+msgstr "Cambiar la hora de inicio de la carrera"
+
+#: MainWin.py:733
+msgid "Copy Log File to&Clipboard..."
+msgstr "Copiar archivo de registro a&Portapapeles ..."
+
+#: MainWin.py:733
+msgid "Copy Log File to Clipboard"
+msgstr "Copiar archivo de registro al portapapeles"
+
+#: MainWin.py:738
+msgid "&Simulate Race..."
+msgstr "&Simular carrera ..."
+
+#: MainWin.py:738
+msgid "Simulate a race"
+msgstr "Simular una carrera"
+
+#: MainWin.py:741
+msgid "&Reload Checklist..."
+msgstr "Y recargar lista de verificación ..."
+
+#: MainWin.py:741
+msgid "Reload the Checklist from the Checklist File"
+msgstr "Recargar la lista de verificación del archivo de lista de verificación"
+
+#: MainWin.py:745
+msgid "&Playback..."
+msgstr "&Reproducción..."
+
+#: MainWin.py:745
+msgid "Playback this race from original data."
+msgstr "Reproducción de esta carrera a partir de datos originales."
+
+#: MainWin.py:748
+msgid "&Tools"
+msgstr "&Herramientas"
+
+#: MainWin.py:752
+msgid "&Show 100s of a second"
+msgstr "&Mostrar 100s de segundo"
+
+#: MainWin.py:752
+msgid "Show 100s of a second"
+msgstr "Mostrar 100s de segundo"
+
+#: MainWin.py:755
+msgid "&Play Sounds"
+msgstr "&Reproducir sonidos"
+
+#: MainWin.py:755
+msgid "Play Sounds"
+msgstr "Reproducir sonidos"
+
+#: MainWin.py:760
+msgid "Sync&Categories between Tabs"
+msgstr "Sincronización y categorías entre pestañas"
+
+#: MainWin.py:760
+msgid "Sync Categories between Tabs"
+msgstr "Sincronizar categorías entre pestañas"
+
+#: MainWin.py:765
+msgid "&Launch Excel after Publishing Results"
+msgstr "Y lanzar Excel después de publicar los resultados"
+
+#: MainWin.py:766
+msgid "Launch Excel after Publishing Results"
+msgstr "Iniciar Excel después de publicar los resultados"
+
+#: MainWin.py:781
+msgid "Set Default Contact&Email..."
+msgstr "Establecer contacto predeterminado y correo electrónico ..."
+
+#: MainWin.py:781
+msgid "Set Default Contact Email"
+msgstr "Establecer correo electrónico de contacto predeterminado"
+
+#: MainWin.py:784
+msgid "Set Default&Graphic..."
+msgstr "Establecer predeterminado y gráfico ..."
+
+#: MainWin.py:784
+msgid "Set Default Graphic"
+msgstr "Establecer gráfico predeterminado"
+
+#: MainWin.py:787
+msgid "&Options"
+msgstr "Y opciones"
+
+#: MainWin.py:798 MainWin.py:800
+msgid "Jump to"
+msgstr "Salta a"
+
+#: MainWin.py:805
+msgid "&JumpTo"
+msgstr "&Salta a"
+
+#: MainWin.py:827 UnmatchedTagsGantt.py:23
+msgid "Unmatched RFID Tags"
+msgstr "Etiquetas RFID sin igual"
+
+#: MainWin.py:829
+msgid "&Windows"
+msgstr "Y Windows"
+
+#: MainWin.py:834
+msgid "&Index Page..."
+msgstr "&Página de inicio..."
+
+#: MainWin.py:834
+msgid "Index Page..."
+msgstr "Página de inicio..."
+
+#: MainWin.py:837
+msgid "&QR Code Share Page..."
+msgstr "&Código QR Compartir Página ..."
+
+#: MainWin.py:837
+msgid "QR Code Share Page..."
+msgstr "Código QR Compartir Página ..."
+
+#: MainWin.py:840
+msgid "&Web"
+msgstr "&Web"
+
+#: MainWin.py:845
+msgid "Help&Search..."
+msgstr "Ayuda y búsqueda ..."
+
+#: MainWin.py:845
+msgid "Search Help..."
+msgstr "Buscar Ayuda..."
+
+#: MainWin.py:847
+msgid "Help Search"
+msgstr "Búsqueda de ayuda"
+
+#: MainWin.py:848
+msgid "&Help..."
+msgstr "&Ayuda..."
+
+#: MainWin.py:848
+msgid "Help about CrossMgr..."
+msgstr "Ayuda sobre CrossMgr ..."
+
+#: MainWin.py:850
+msgid "&QuickStart..."
+msgstr "&Inicio rápido..."
+
+#: MainWin.py:850
+msgid "Get started with CrossMgr Now..."
+msgstr "Comience con CrossMgr ahora ..."
+
+#: MainWin.py:855
+msgid "&About..."
+msgstr "&Acerca de..."
+
+#: MainWin.py:855
+msgid "About CrossMgr..."
+msgstr "Acerca de CrossMgr ..."
+
+#: MainWin.py:858
+msgid "&Tips at Startup..."
+msgstr "&Consejos al inicio ..."
+
+#: MainWin.py:858
+msgid "Enable/Disable Tips at Startup..."
+msgstr "Habilitar / deshabilitar consejos al inicio ..."
+
+#: MainWin.py:884
+msgid "PhotoViewer"
+msgstr "PhotoViewer"
+
+#: MainWin.py:940
+msgid "This Bib number is choosen already."
+msgstr "Este número de babero ya ha sido elegido."
+
+#: MainWin.py:940
+msgid "Not Available"
+msgstr "No disponible"
+
+#: MainWin.py:945
+msgid "This Bib Number is Not in the Race"
+msgstr "Este número de babero no está en la carrera"
+
+#: MainWin.py:945
+msgid "Not in Race"
+msgstr "No en carrera"
+
+#: MainWin.py:950
+msgid "This Bib number is Already in the Race"
+msgstr "Este número de babero ya está en la carrera."
+
+#: MainWin.py:950
+msgid "Already in Race"
+msgstr "Ya en carrera"
+
+#: MainWin.py:957
+msgid "Delete Bib"
+msgstr "Eliminar babero"
+
+#: MainWin.py:961 RiderDetail.py:708
+msgid "Delete Rider"
+msgstr "Eliminar jinete"
+
+#: MainWin.py:967
+msgid "First Bib Number"
+msgstr "Primer número de babero"
+
+#: MainWin.py:970
+msgid "Second Bib Number"
+msgstr "Segundo número de babero"
+
+#: MainWin.py:975
+msgid "Confirm Swap Bib Numbers"
+msgstr "Confirmar números de babero de intercambio"
+
+#: MainWin.py:975
+msgid "Swap Bib Numbers"
+msgstr "Intercambiar números de babero"
+
+#: MainWin.py:985
+msgid "Bib Number to Change"
+msgstr "Número de babero para cambiar"
+
+#: MainWin.py:990 RiderDetail.py:829
+msgid "New Bib Number"
+msgstr "Nuevo número de babero"
+
+#: MainWin.py:994 MainWin.py:1015
+msgid "New Bib"
+msgstr "Nuevo babero"
+
+#: MainWin.py:995 MainWin.py:1016
+msgid "The new Bib number does not match a Category."
+msgstr "El nuevo número de Bib no coincide con una categoría."
+
+#: MainWin.py:996 MainWin.py:1017
+msgid ""
+"Add this Bib number to a Category later, or press Cancel to select a different "
+"number."
+msgstr ""
+"Agregue este número de Bib a una categoría más tarde, o presione Cancelar para "
+"seleccionar un número diferente."
+
+#: MainWin.py:998 MainWin.py:1019
+msgid "No Matching Category"
+msgstr "Ninguna categoría coincidente"
+
+#: MainWin.py:1002
+msgid "Confirm Change Bib Number"
+msgstr "Confirmar cambio de número de babero"
+
+#: MainWin.py:1002
+msgid "Change Bib Number"
+msgstr "Cambiar el número de babero"
+
+#: MainWin.py:1011
+msgid "Bib Number to Add"
+msgstr "Número de babero para agregar"
+
+#: MainWin.py:1023
+msgid "Existing Bib Number to get Lap Times"
+msgstr "Número de babero existente para obtener tiempos de vuelta"
+
+#: MainWin.py:1030
+msgid "Times will be copied to new Bib"
+msgstr "Los tiempos serán copiados a nuevo Bib."
+
+#: MainWin.py:1031
+msgid "All times will be slightly earlier."
+msgstr "Todos los tiempos serán ligeramente anteriores."
+
+#: MainWin.py:1034
+msgid "Confirm Add Bib Number"
+msgstr "Confirmar agregar número de babero"
+
+#: MainWin.py:1050 MainWin.py:1128 MainWin.py:1669
+msgid "You must have a valid race."
+msgstr "Debes tener una carrera válida."
+
+#: MainWin.py:1055
+msgid "Missing Excel Link."
+msgstr "Falta el enlace de Excel."
+
+#: MainWin.py:1055
+msgid "Missing Excel Link"
+msgstr "Falta el enlace de Excel"
+
+#: MainWin.py:1103
+msgid "Cannot change Start Time of unstarted race.  Start the race from Actions."
+msgstr ""
+"No se puede cambiar la hora de inicio de la carrera no iniciada. Comienza la "
+"carrera desde Acciones."
+
+#: MainWin.py:1103
+msgid "Race Not Started"
+msgstr "Carrera no iniciada"
+
+#: MainWin.py:1106
+msgid "Cannot change Start Time of a Time Trial with recorded times"
+msgstr ""
+"No se puede cambiar la hora de inicio de una prueba de tiempo con tiempos "
+"registrados"
+
+#: MainWin.py:1106
+msgid "Cannot Change Start Time"
+msgstr "No se puede cambiar la hora de inicio"
+
+#: MainWin.py:1123
+msgid "Turn Off Tips at Startup?"
+msgstr "Desactivar consejos al inicio?"
+
+#: MainWin.py:1123
+msgid "Show Tips at Startup?"
+msgstr "¿Mostrar consejos al inicio?"
+
+#: MainWin.py:1123
+msgid "Tips at Startup"
+msgstr "Consejos al inicio"
+
+#: MainWin.py:1131
+msgid ""
+"This will restore the race from the original input and replace your adds/splits/"
+"deletes.\n"
+"Are you sure you want to continue?"
+msgstr ""
+"Esto restaurará la carrera desde la entrada original y reemplazará tus "
+"agregados / divisiones / eliminaciones.\n"
+" ¿Estás seguro de que deseas continuar?"
+
+#: MainWin.py:1138 MainWin.py:1140
+msgid "No Data Found"
+msgstr "Datos no encontrados"
+
+#: MainWin.py:1139
+msgid "Check file"
+msgstr "Revisar archivo"
+
+#: MainWin.py:1182 Properties.py:357
+msgid "Cannot perform RFID setup while race is running."
+msgstr ""
+"No se puede realizar la configuración de RFID mientras la carrera se está "
+"ejecutando."
+
+#: MainWin.py:1182 Properties.py:357
+msgid "Cannot Perform RFID Setup"
+msgstr "No se puede realizar la configuración de RFID"
+
+#: MainWin.py:1191 MainWin.py:1207 MainWin.py:1223 MainWin.py:1239 MainWin.py:1255
+#: MainWin.py:1271
+msgid "You must have a valid Excel sheet with associated tags and Bib numbers."
+msgstr ""
+"Debe tener una hoja de Excel válida con etiquetas asociadas y números de Bib."
+
+#: MainWin.py:1297
+msgid "Results Contact Email"
+msgstr "Resultados Contacto Email"
+
+#: MainWin.py:1322
+msgid "Default Contact Email:"
+msgstr "Correo electrónico de contacto predeterminado:"
+
+#: MainWin.py:1322
+msgid "Default Contact Email for HTML output - New Races"
+msgstr ""
+"Correo electrónico de contacto predeterminado para salida HTML - Nuevas razas"
+
+#: MainWin.py:1352
+msgid "Unable to open log file."
+msgstr "No se puede abrir el archivo de registro."
+
+#: MainWin.py:1364
+msgid "Log file copied to clipboard."
+msgstr "Archivo de registro copiado al portapapeles."
+
+#: MainWin.py:1364
+msgid "You can now paste it into an email."
+msgstr "Ahora puedes pegarlo en un correo electrónico."
+
+#: MainWin.py:1366
+msgid "Unable to open the clipboard."
+msgstr "No se puede abrir el portapapeles."
+
+#: MainWin.py:1371
+msgid "Playback this race in real-time."
+msgstr "Reproduce esta carrera en tiempo real."
+
+#: MainWin.py:1371
+msgid "Playback"
+msgstr "Reproducción"
+
+#: MainWin.py:1466
+msgid "Print preview"
+msgstr "Vista previa de impresión"
+
+#: MainWin.py:1597 MainWin.py:1610
+msgid "Error creating PDF files"
+msgstr "Error al crear archivos PDF"
+
+#: MainWin.py:1598 MainWin.py:1611
+msgid "PDF File Error"
+msgstr "Error de archivo PDF"
+
+#: MainWin.py:1620
+msgid "PDF file written to"
+msgstr "Archivo PDF escrito en"
+
+#: MainWin.py:1620
+msgid "PDF Publish"
+msgstr "Publicación en PDF"
+
+#: MainWin.py:1649
+msgid "Error creating Image files"
+msgstr "Error al crear archivos de imagen"
+
+#: MainWin.py:1650
+msgid "Image File Error"
+msgstr "Error de archivo de imagen"
+
+#: MainWin.py:1659
+msgid "Results written as Image files to"
+msgstr "Resultados escritos como archivos de imagen para"
+
+#: MainWin.py:1659
+msgid "Facebook Publish"
+msgstr "Publicación en Facebook"
+
+#: MainWin.py:1669
+msgid "Link ExcelSheet"
+msgstr "Enlace ExcelSheet"
+
+#: MainWin.py:1842
+msgid "Starting"
+msgstr "Comenzando"
+
+#: MainWin.py:1976
+msgid "Course for"
+msgstr "Curso para"
+
+#: MainWin.py:2044 MainWin.py:2045
+msgid "No Race"
+msgstr "No raza"
+
+#: MainWin.py:2044
+msgid "New/Open a Race and try again."
+msgstr "Nuevo / Abre una carrera y vuelve a intentarlo."
+
+#: MainWin.py:2049 MainWin.py:2067
+msgid ""
+"Your Email contact is not set.\n"
+"\n"
+"Configure it now?"
+msgstr ""
+"Su contacto de correo electrónico no está configurado.\n"
+"\\n¿Configurarlo ahora?"
+
+#: MainWin.py:2050 MainWin.py:2068
+msgid "Set Email Contact"
+msgstr "Establecer contacto de correo electrónico"
+
+#: MainWin.py:2057 Properties.py:1050
+msgid "Publish Complete"
+msgstr "Publicación completa"
+
+#: MainWin.py:2077 MainWin.py:2247 MainWin.py:2373 MainWin.py:2411
+msgid "Cannot read HTML template file.  Check program installation."
+msgstr ""
+"No se puede leer el archivo de plantilla HTML. Compruebe la instalación del "
+"programa."
+
+#: MainWin.py:2078 MainWin.py:2248 MainWin.py:2374 MainWin.py:2412
+msgid "Html Template Read Error"
+msgstr "Error de lectura de la plantilla html"
+
+#: MainWin.py:2090
+msgid "Html Race Animation written to"
+msgstr "Html Race Animation escrito en"
+
+#: MainWin.py:2090 MainWin.py:2385 MainWin.py:2500
+msgid "Html Write"
+msgstr "Html escribe"
+
+#: MainWin.py:2093 MainWin.py:2259 MainWin.py:2387 MainWin.py:2503
+msgid "Cannot write HTML file"
+msgstr "No se puede escribir el archivo HTML"
+
+#: MainWin.py:2094 MainWin.py:2260 MainWin.py:2388 MainWin.py:2504
+msgid "Html Write Error"
+msgstr "Error de escritura de HTML"
+
+#: MainWin.py:2105
+msgid "HTML Index Failure"
+msgstr "Falla del índice HTML"
+
+#: MainWin.py:2115
+msgid "No race loaded."
+msgstr "No hay carrera cargada."
+
+#: MainWin.py:2229
+msgid "TT Start can only be created for a Time Trial event."
+msgstr "TT Start solo se puede crear para un evento Contrarreloj."
+
+#: MainWin.py:2229
+msgid "Cannot Create TTStart Page"
+msgstr "No se puede crear la página TTStart"
+
+#: MainWin.py:2235
+msgid "The Time Trial has not started."
+msgstr "El Time Trial no ha comenzado."
+
+#: MainWin.py:2236
+msgid ""
+"The TTCountdown page will act as countdown clock for the scheduled start time."
+msgstr ""
+"La página TTCountdown actuará como un reloj de cuenta regresiva para la hora de "
+"inicio programada."
+
+#: MainWin.py:2237
+msgid "You must publish this page again after you start the Time Trial."
+msgstr ""
+"Debe publicar esta página nuevamente después de iniciar la Prueba de tiempo."
+
+#: MainWin.py:2239
+msgid "Reminder: Publish after Time Trial is Started"
+msgstr "Recordatorio: Publicar después de que se inicie el periodo de prueba"
+
+#: MainWin.py:2276
+msgid "You must set TimeTrial mode first."
+msgstr "Debe configurar el modo Contrarreloj primero."
+
+#: MainWin.py:2276
+msgid "Race must be TimeTrial"
+msgstr "La carrera debe ser Contrarreloj"
+
+#: MainWin.py:2315 MainWin.py:2362
+msgid "No GPX Course Loaded."
+msgstr "No hay curso GPX cargado."
+
+#: MainWin.py:2315 MainWin.py:2340 MainWin.py:2362
+msgid "Nothing to export."
+msgstr "Nada para exportar."
+
+#: MainWin.py:2315 MainWin.py:2340 MainWin.py:2362
+msgid "No GPX Course Loaded"
+msgstr "No hay curso GPX cargado"
+
+#: MainWin.py:2329
+msgid "Course written to GPX file"
+msgstr "Curso escrito en archivo GPX"
+
+#: MainWin.py:2329 MainWin.py:2331
+msgid "GPX Export"
+msgstr "Exportacion GPX"
+
+#: MainWin.py:2331
+msgid "Write to GPX file Failed."
+msgstr "La escritura en el archivo GPX falló."
+
+#: MainWin.py:2353
+msgid "Course Virtual Tour written to KMZ file"
+msgstr "Curso virtual escrito en archivo KMZ"
+
+#: MainWin.py:2353
+msgid "Google Earth Launched."
+msgstr "Lanzamiento de Google Earth."
+
+#: MainWin.py:2353
+msgid "KMZ Write"
+msgstr "KMZ escribe"
+
+#: MainWin.py:2385
+msgid "Course Preview written to"
+msgstr "Vista previa del curso escrito en"
+
+#: MainWin.py:2400
+msgid "Raw race data file is empty/missing."
+msgstr "El archivo de datos sin procesar de la raza está vacío / falta."
+
+#: MainWin.py:2401
+msgid "Missing Raw Race Data"
+msgstr "Datos de la carrera en bruto que faltan"
+
+#: MainWin.py:2500
+msgid "Html Raw Data written to"
+msgstr "Html datos crudos escritos en"
+
+#: MainWin.py:2605 MainWin.py:2692 MainWin.py:2814
+msgid "Configure Race"
+msgstr "Configurar Carrera"
+
+#: MainWin.py:2622
+msgid "File already exists"
+msgstr "El archivo ya existe"
+
+#: MainWin.py:2622
+msgid "Overwrite"
+msgstr "Exagerar"
+
+#: MainWin.py:2657 MainWin.py:2750 MainWin.py:3360
+msgid "Bad file format"
+msgstr "Formato de archivo incorrecto"
+
+#: MainWin.py:2709 MainWin.py:2841
+msgid "File already exists.  Overwrite?"
+msgstr "El archivo ya existe. ¿Exagerar?"
+
+#: MainWin.py:2709 MainWin.py:2842
+msgid "File Exists"
+msgstr "El archivo existe"
+
+#: MainWin.py:2717 MainWin.py:2720
+msgid "Cannot open file."
+msgstr "No puede abrir el archivo."
+
+#: MainWin.py:2801 MainWin.py:2897
+msgid "Excel Read Failure"
+msgstr "Error de lectura de Excel"
+
+#: MainWin.py:2886
+msgid "Choose a RaceDB Excel file"
+msgstr "Elija un archivo Excel RaceDB"
+
+#: MainWin.py:2889
+msgid "RaceDB Excel files (*.xlsx)|*.xlsx"
+msgstr "Archivos de Excel RaceDB (* .xlsx) | * .xlsx"
+
+#: MainWin.py:2897
+msgid "Excel file not in RaceDB format"
+msgstr "Archivo de Excel no en formato RaceDB"
+
+#: MainWin.py:2955
+msgid "This will replace an Existing Race file"
+msgstr "Esto reemplazará un archivo de carrera existente"
+
+#: MainWin.py:2960
+msgid "The FileName does not match the Event Name format"
+msgstr ""
+"\n"
+"El nombre del archivo no coincide con el formato del nombre del event"
+
+#: MainWin.py:2961
+msgid "Going forward, this event will saved as"
+msgstr ""
+"\n"
+"En el futuro, este evento se guardará como"
+
+#: MainWin.py:2963
+msgid ""
+"To change the File Name, change the event Date, Name or Race Number in "
+"Properties/General Properties"
+msgstr ""
+"\n"
+"Para cambiar el nombre del archivo, cambie la fecha, el nombre o el número "
+"de la carrera en Propiedades / Propiedades generale"
+
+#: MainWin.py:2965
+msgid "Unmatched Filename"
+msgstr ""
+"\n"
+"Nombre de archivo incomparable"
+
+#: MainWin.py:2993
+msgid "Could not find Excel file"
+msgstr "No se pudo encontrar el archivo de Excel"
+
+#: MainWin.py:2994
+msgid "Found this Excel file in the race folder with matching name"
+msgstr ""
+"Encontré este archivo de Excel en la carpeta de la carrera con el mismo "
+"nombre"
+
+#: MainWin.py:2994
+msgid "Use this Excel file from now on?"
+msgstr "Utilice este archivo de Excel a partir de ahora?"
+
+#: MainWin.py:2996
+msgid "Excel Link Not Found"
+msgstr "Enlace Excel no encontrado"
+
+#: MainWin.py:3010
+msgid "Choose a Race file"
+msgstr "Elige un archivo de carrera"
+
+#: MainWin.py:3013
+msgid "CrossMgr files (*.cmn)|*.cmn"
+msgstr "Archivos de CrossMgr (* .cmn) | * .cmn"
+
+#: MainWin.py:3034 MainWin.py:3072
+msgid ""
+"The current race is still running.\n"
+"Finish it and continue?"
+msgstr ""
+"La carrera actual aún se está ejecutando.\n"
+"¿Finalizarla y continuar?"
+
+#: MainWin.py:3035 MainWin.py:3073
+msgid "Current race running"
+msgstr "Carrera actual en ejecución"
+
+#: MainWin.py:3046
+msgid "No next race found"
+msgstr ""
+"\n"
+"No se encuentra la próxima carrera"
+
+#: MainWin.py:3344 MainWin.py:3371
+msgid "A race must be loaded first."
+msgstr "Una carrera debe ser cargada primero."
+
+#: MainWin.py:3344
+msgid "Import Categories"
+msgstr "Importar Categorías"
+
+#: MainWin.py:3347 MainWin.py:3374 Properties.py:1596
+msgid "Choose Race Categories File"
+msgstr "Elegir archivo de categorías de raza"
+
+#: MainWin.py:3350 MainWin.py:3377 Properties.py:1599
+msgid "Bicycle Race Categories (*.brc)|*.brc"
+msgstr "Categorías de carreras de bicicletas (* .brc) | * .brc"
+
+#: MainWin.py:3371
+msgid "Export Categories"
+msgstr "Categorías de exportación"
+
+#: MainWin.py:3409
+msgid "Race Passings"
+msgstr "Pases de carrera"
+
+#: MainWin.py:3425 MainWin.py:3452 MainWin.py:3477 MainWin.py:3500 MainWin.py:3508
+msgid "Check if this spreadsheet is open."
+msgstr "Compruebe si esta hoja de cálculo está abierta."
+
+#: MainWin.py:3547
+msgid "CrossResults/Race-Result Publish"
+msgstr "CrossResults / Race-Result Publish"
+
+#: MainWin.py:3549
+msgid "Make sure you publish correct results."
+msgstr "Asegúrate de publicar los resultados correctos."
+
+#: MainWin.py:3550
+msgid "Take a few minutes to check the following:"
+msgstr "Tómese unos minutos para comprobar lo siguiente:"
+
+#: MainWin.py:3553
+msgid "Is the Race Name spelled correctly?"
+msgstr "¿El nombre de la raza está escrito correctamente?"
+
+#: MainWin.py:3554
+msgid "Is the Race Organizer spelled correctly?"
+msgstr "¿Está el organizador de carreras escrito correctamente?"
+
+#: MainWin.py:3555
+msgid "Are the City, State/Prov and Country fields correctly filled in?"
+msgstr "¿Están correctamente rellenados los campos Ciudad, Estado / Prov y País?"
+
+#: MainWin.py:3556
+msgid "Are all the Category Names spelled and coded correctly?"
+msgstr ""
+"¿Todos los nombres de categorías están escritos y codificados correctamente?"
+
+#: MainWin.py:3557
+msgid "Are the Category Number Ranges correct?"
+msgstr "¿Son correctos los rangos de números de categoría?"
+
+#: MainWin.py:3558
+msgid "Have you fixed all scoring and data problems?"
+msgstr "¿Ha solucionado todos los problemas de puntuación y datos?"
+
+#: MainWin.py:3559
+msgid ""
+"Are the Rider Names / Teams / License data correct (spelling?  missing data)?"
+msgstr ""
+"¿Son correctos los nombres de los usuarios / equipos / datos de licencia "
+"(ortografía? Datos faltantes)?"
+
+#: MainWin.py:3562
+msgid "If not, press Cancel, fix the issues and publish again."
+msgstr "Si no, presione Cancelar, arregle los problemas y publique nuevamente."
+
+#: MainWin.py:3564
+msgid "Results Publish"
+msgstr "Publicación de resultados"
+
+#: MainWin.py:3582
+msgid "Missing City, State/Prov or Country fields."
+msgstr "Faltan campos de Ciudad, Estado / Prov o País."
+
+#: MainWin.py:3583
+msgid "Please fill in these fields in Properties."
+msgstr "Por favor, rellene estos campos en Propiedades."
+
+#: MainWin.py:3584
+msgid "Missing Location Fields"
+msgstr "Campos de ubicación faltantes"
+
+#: MainWin.py:3622
+msgid "File Error"
+msgstr "Error de archivo"
+
+#: MainWin.py:3647
+msgid "WebScorer file written to:"
+msgstr "Archivo de WebScorer escrito en:"
+
+#: MainWin.py:3647
+msgid "WebScorer Publish"
+msgstr "WebScorer Publish"
+
+#: MainWin.py:3652
+msgid "WebScorer Publish Error"
+msgstr "Error de publicación de WebScorer"
+
+#: MainWin.py:3732
+msgid ""
+"Score Cycling races quickly and easily with little preparation.\n"
+"\n"
+"A brief list of features:\n"
+"   * Input riders on the first lap\n"
+"   * Predicts riders for all other laps based on lap times\n"
+"   * Indicates race leader by category and tracks missing riders\n"
+"   * Interpolates missing numbers.  Ignores duplicate rider entries.\n"
+"   * Shows results instantly by category during and after race\n"
+"   * Shows rider history\n"
+"   * Allows rider lap adjustments\n"
+"   * UCI 80% Rule Countdown\n"
+msgstr ""
+"Anote las carreras de ciclismo de manera rápida y fácil con poca preparación.\n"
+"\n"
+"Una breve lista de características:\n"
+" * Ingrese corredores en la primera vuelta\n"
+" * Predice corredores para todas las demás vueltas según los tiempos de vuelta\n"
+" * Indica el líder de la carrera por categoría y Rastrea los jinetes que faltan\n"
+" * Interpola los números que faltan. Ignora las entradas duplicadas de los "
+"corredores.\n"
+" * Muestra los resultados instantáneamente por categoría durante y después de la "
+"carrera\n"
+" * Muestra el historial de los corredores\n"
+" * Permite ajustes de vuelta de los corredores\n"
+" * UCI 80% Rule Countdown\n"
+
+#: MainWin.py:3753
+msgid ""
+"User Beware!\n"
+"\n"
+"This program is experimental, under development and may have bugs.\n"
+"Feedback is sincerely appreciated.\n"
+"Donations are also appreciated - see website for details.\n"
+"\n"
+"CRITICALLY IMPORTANT MESSAGE!\n"
+"This program is not warranted for any use whatsoever.\n"
+"It may not produce correct results, it might lose your data.\n"
+"The authors of this program assume no responsibility or liability for data loss "
+"or erroneous results produced by this program.\n"
+"\n"
+"Use entirely at your own risk.\n"
+"Do not come back and tell me that this program screwed up your event!\n"
+"Computers fail, screw-ups happen.  Always use a manual backup.\n"
+msgstr ""
+"¡Cuidado del usuario!\n"
+"\n"
+"Este programa es experimental, está en desarrollo y puede tener errores.\n"
+"Se agradece sinceramente la retroalimentación.\n"
+"Las donaciones también se aprecian; consulte el sitio web para obtener más "
+"detalles.\n"
+"\n"
+" MENSAJE CRÍTICAMENTE IMPORTANTE! use lo que sea.\n"
+"Puede que no produzca resultados correctos, podría perder sus datos.\n"
+"Los autores de este programa no asumen ninguna responsabilidad u obligación por "
+"la pérdida de datos o los resultados erróneos producidos por este programa.\n"
+"\n"
+"Use bajo su propio riesgo.\n"
+" ¡No vuelvas y dime que este programa arruinó tu evento!\n"
+"Las computadoras fallan, se producen errores. Siempre use una copia de seguridad "
+"manual.\n"
+
+#: MainWin.py:4012
+msgid "Unstarted"
+msgstr "No empezado"
+
+#: MainWin.py:4014
+msgid "Running"
+msgstr "Corriendo"
+
+#: MainWin.py:4021
+msgid "Finished"
+msgstr "Terminado"
+
+#: MainWin.py:4028 MainWin.py:4037 NumKeypad.py:264
+msgid "TimeTrial"
+msgstr "Contrarreloj"
+
+#: MainWin.py:4036 Model.py:1244 Properties.py:1252
+msgid "RFID"
+msgstr "RFID"
+
+#: Model.py:985
+msgid "Add"
+msgstr "Añadir"
+
+#: Model.py:986 RiderDetail.py:263
+msgid "Edit"
+msgstr "Editar"
+
+#: Model.py:988
+msgid "Swap"
+msgstr "Intercambiar"
+
+#: Model.py:1060
+msgid "on"
+msgstr "en"
+
+#: Model.py:1241 Model.py:2342 RaceDB.py:311
+msgid "Mass Start"
+msgstr "Comienzo de la misa"
+
+#: Model.py:1244 Model.py:1246
+msgid "Manual"
+msgstr "Manual"
+
+#: Model.py:1246
+msgid "Automatic: Triggered by first tag read"
+msgstr "Automático: activado por la primera etiqueta leída"
+
+#: Model.py:1247
+msgid "USB Camera Enabled"
+msgstr "Cámara USB habilitada"
+
+#: Model.py:1247
+msgid "USB Camera Not Enabled"
+msgstr "Cámara USB no habilitada"
+
+#: Model.py:2096
+msgid "Copy"
+msgstr "Dupdo"
+
+#: Model.py:2347
+msgid "Category Laps"
+msgstr "Vueltas de categoría"
+
+#: Model.py:2349
+msgid "Duration"
+msgstr "Duración"
+
+#: NumKeypad.py:90
+msgid "&Del"
+msgstr "&Del"
+
+#: NumKeypad.py:95
+msgid "&Enter"
+msgstr "&Entrar"
+
+#: NumKeypad.py:107
+msgid "DN&F"
+msgstr "DN&F"
+
+#: NumKeypad.py:107
+msgid "DN&S"
+msgstr "DN&S"
+
+#: NumKeypad.py:107
+msgid "&Pull"
+msgstr "&Halar"
+
+#: NumKeypad.py:107
+msgid "D&Q"
+msgstr "D&Q"
+
+#: NumKeypad.py:117
+msgid "Touch Screen Toggle"
+msgstr "Conmutar pantalla táctil"
+
+#: NumKeypad.py:210 RaceHUD.py:358
+msgid "Last Rider"
+msgstr "Último jinete"
+
+#: NumKeypad.py:217 RaceHUD.py:365
+msgid "End"
+msgstr "Fin"
+
+#: NumKeypad.py:297 NumKeypad.py:761
+msgid "Manual Start"
+msgstr "Inicio manual"
+
+#: NumKeypad.py:310
+msgid "Est. Last Rider"
+msgstr "Est. Último jinete"
+
+#: NumKeypad.py:341
+msgid "Show Last Photos..."
+msgstr "Mostrar las últimas fotos ..."
+
+#: NumKeypad.py:360
+msgid "Riders on Course:"
+msgstr "Jinetes en el curso:"
+
+#: NumKeypad.py:367 Printing.py:33 Recommendations.py:200 Recommendations.py:218
+msgid "Count"
+msgstr "Contar"
+
+#: NumKeypad.py:480
+msgid "Missing"
+msgstr "Desaparecido"
+
+#: NumKeypad.py:574
+msgid "Finishers Arriving"
+msgstr "Acabados llegando"
+
+#: NumKeypad.py:574
+msgid "Ring Bell"
+msgstr "Timbre de campana"
+
+#: NumKeypad.py:574
+msgid "Prepare Bell"
+msgstr "Preparar campana"
+
+#: NumKeypad.py:680
+msgid "on lap"
+msgstr "en la vuelta"
+
+#: NumKeypad.py:706
+msgid "Finishing at"
+msgstr "Terminando en"
+
+#: NumKeypad.py:757
+msgid "Chip Start"
+msgstr "Inicio de viruta"
+
+#: NumKeypad.py:759
+msgid "Waiting..."
+msgstr "Esperando..."
+
+#: PageDialog.py:7 Properties.py:1503
+msgid "Change Properties"
+msgstr "Cambiar propiedades"
+
+#: PhotoSyncViewer.py:61
+msgid "Photo Sync Previewer"
+msgstr "Photo Sync Previewer"
+
+#: PhotoSyncViewer.py:78
+msgid "Reset Photo Capture"
+msgstr "Restablecer captura de fotos"
+
+#: PhotoSyncViewer.py:153
+msgid "Advance/Delay Photo Milliseconds set to"
+msgstr "Avances / Delay Photo Milliseconds establecido en"
+
+#: PhotoSyncViewer.py:153
+msgid "Advance/Delay Milliseconds"
+msgstr "Avances / Delay Milliseconds"
+
+#: PhotoSyncViewer.py:230
+msgid "Photo Sync Viewer"
+msgstr "Visor de sincronización de fotos"
+
+#: PhotoViewer.py:154
+msgid "Refresh Photos"
+msgstr "Actualizar fotos"
+
+#: PhotoViewer.py:158
+msgid "Copy Photo to Clipboard..."
+msgstr "Copiar foto al portapapeles ..."
+
+#: PhotoViewer.py:162
+msgid "Show Files..."
+msgstr "Mostrar archivos..."
+
+#: PhotoViewer.py:166
+msgid "Print Photo..."
+msgstr "Imprimir foto ..."
+
+#: PhotoViewer.py:170
+msgid "Photo Test"
+msgstr "Prueba de foto"
+
+#: PhotoViewer.py:237
+msgid "Cannot open Clipboard."
+msgstr ""
+"\n"
+"No se puede abrir el Portapapeles."
+
+#: PhotoViewer.py:237 PhotoViewer.py:250
+msgid "Copy Failed"
+msgstr "Copia fallida"
+
+#: PhotoViewer.py:245
+msgid "Photo Copied to Clipboard."
+msgstr "Foto copiada al portapapeles."
+
+#: PhotoViewer.py:245
+msgid "You can now Paste it into another program."
+msgstr "Ahora puedes pegarlo en otro programa."
+
+#: PhotoViewer.py:246
+msgid "Copy to Clipboard Succeeded"
+msgstr "Copiar al portapapeles"
+
+#: PhotoViewer.py:250
+msgid "Error copying Clipboard"
+msgstr ""
+"\n"
+"Error al copiar al Portapapeles"
+
+#: PhotoViewer.py:262
+msgid "No Photo Available."
+msgstr "No hay foto disponible."
+
+#: PhotoViewer.py:262
+msgid "Print Failed"
+msgstr "Error de impresión"
+
+#: PhotoViewer.py:317
+msgid "photos"
+msgstr "fotos"
+
+#: PhotoViewer.py:317
+msgid "last race photos"
+msgstr "fotos de la ultima carrera"
+
+#: PhotoViewer.py:351
+msgid "Race must be running"
+msgstr "La carrera debe estar corriendo"
+
+#: PhotoViewer.py:351 PhotoViewer.py:354
+msgid "Camera Test Unavailable"
+msgstr "Prueba de cámara no disponible"
+
+#: PhotoViewer.py:354
+msgid "USB camera option must be enabled"
+msgstr "Opción de cámara USB debe estar habilitada"
+
+#: PhotoViewer.py:363
+msgid "Camera error"
+msgstr "Error de camara"
+
+#: Primes.py:36
+msgid "Pack"
+msgstr "Paquete"
+
+#: Primes.py:37
+msgid "Break"
+msgstr "Descanso"
+
+#: Primes.py:38
+msgid "Chase"
+msgstr "Persecución"
+
+#: Primes.py:52
+msgid "Prime For"
+msgstr "Prime For"
+
+#: Primes.py:53
+msgid "or Custom"
+msgstr "o personalizada"
+
+#: Primes.py:55
+msgid ""
+"Laps\n"
+"To Go"
+msgstr ""
+"Vueltas\n"
+"Para ir"
+
+#: Primes.py:56 Primes.py:423
+msgid "Sponsor"
+msgstr "Patrocinador"
+
+#: Primes.py:57 Primes.py:413
+msgid "Cash"
+msgstr "Efectivo"
+
+#: Primes.py:58 Primes.py:415
+msgid "Merchandise"
+msgstr "Mercancías"
+
+#: Primes.py:59 Primes.py:418
+msgid "Points"
+msgstr "Puntos"
+
+#: Primes.py:60
+msgid ""
+"Time\n"
+"Bonus"
+msgstr ""
+"Tiempo\n"
+"Bonus"
+
+#: Primes.py:61
+msgid ""
+"Winner\n"
+"Bib"
+msgstr ""
+"Ganador\n"
+"Bib"
+
+#: Primes.py:108
+msgid "Create a new Prime"
+msgstr "Crear un nuevo Prime"
+
+#: Primes.py:111
+msgid "Create a Prime from an Existing Prime for the Next Position"
+msgstr "Crear un Prime a partir de un Prime existente para la siguiente posición"
+
+#: Primes.py:114
+msgid "Create a Prime from an Existing Prime"
+msgstr "Crear un Prime a partir de un Prime existente"
+
+#: Primes.py:117
+msgid "Delete a Prime"
+msgstr "Eliminar un Prime"
+
+#: Primes.py:191
+msgid "You must have a Race to create a Prime."
+msgstr "Debes tener una Carrera para crear un Prime."
+
+#: Primes.py:191 Primes.py:207 Primes.py:237
+msgid "Missing Race"
+msgstr "Carrera que falta"
+
+#: Primes.py:207 Primes.py:237
+msgid "You must have a Race to create a next Prime."
+msgstr "Debes tener una Carrera para crear un Prime siguiente."
+
+#: Primes.py:256
+msgid "Delete Prime"
+msgstr "Eliminar Prime"
+
+#: Primes.py:256
+msgid "Confirm Delete Primes"
+msgstr "Confirmar Eliminar Primes"
+
+#: Primes.py:395 ReadSignOnSheet.py:38 RiderDetail.py:284
+msgid "Team"
+msgstr "Equipo"
+
+#: Primes.py:400
+msgid "For"
+msgstr "por"
+
+#: Primes.py:421
+msgid "Time Bonus"
+msgstr "Tiempo extra"
+
+#: Printing.py:66
+msgid "Click to select Categories.  Use Ctrl-Click to select Multiple Categories."
+msgstr ""
+"Haga clic para seleccionar Categorías. Utilice Ctrl-Click para seleccionar "
+"múltiples categorías."
+
+#: Printing.py:73
+msgid "Include Lap Times in Printout"
+msgstr "Incluir tiempos de vuelta en la impresión"
+
+#: Printing.py:74 Printing.py:174
+msgid "Include Primes in Printout"
+msgstr "Incluir Primes en la impresión"
+
+#: Printing.py:87
+msgid "Fit Entire Category on One Page"
+msgstr "Ajustar toda la categoría en una sola página"
+
+#: Printing.py:87
+msgid "Small Text (max 60 riders per page)"
+msgstr "Texto pequeño (máx. 60 personas por página)"
+
+#: Printing.py:87
+msgid "Big Text (max 30 riders per page)"
+msgstr "Texto grande (máximo 30 usuarios por página)"
+
+#: Printing.py:152
+msgid "Print Podium Positions"
+msgstr "Imprimir Podio Posiciones"
+
+#: Printing.py:161
+msgid "Click to select Categories."
+msgstr "Haga clic para seleccionar Categorías."
+
+#: Printing.py:161
+msgid "Use Ctrl-Click to select Multiple Categories."
+msgstr "Utilice Ctrl-Click para seleccionar múltiples categorías."
+
+#: Printing.py:170
+msgid "Podium Positions to Print:"
+msgstr "Podio de Posiciones para Imprimir:"
+
+#: Printing.py:509
+msgid "Podium Results"
+msgstr "Resultados del podio"
+
+#: Prizes.py:90
+msgid "Recipient"
+msgstr "Destinatario"
+
+#: Properties.py:52
+msgid "Event Name:"
+msgstr "Nombre del evento:"
+
+#: Properties.py:56
+msgid "Long Name:"
+msgstr "Nombre largo:"
+
+#: Properties.py:60 ReadSignOnSheet.py:39
+msgid "City"
+msgstr "Ciudad"
+
+#: Properties.py:64
+msgid "State/Prov"
+msgstr "Estado / Prov"
+
+#: Properties.py:68
+msgid "Country"
+msgstr "País"
+
+#: Properties.py:79
+msgid "Date"
+msgstr "Fecha"
+
+#: Properties.py:88
+msgid "Discipline"
+msgstr "Disciplina"
+
+#: Properties.py:98
+msgid "Race #"
+msgstr "Carrera #"
+
+#: Properties.py:102
+msgid "Scheduled Start"
+msgstr "Inicio programado"
+
+#: Properties.py:106
+msgid "Race Minutes"
+msgstr "Minutos de carrera"
+
+#: Properties.py:117
+msgid "Organizer"
+msgstr "Organizador"
+
+#: Properties.py:120
+msgid "Official/Commissaire"
+msgstr "Oficial / Comisario"
+
+#: Properties.py:123
+msgid "Memo"
+msgstr "Memorándum"
+
+#: Properties.py:197
+msgid "All Categories Finish After Fastest Rider's Last Lap"
+msgstr ""
+"Todas las categorías terminan después de la última vuelta más rápida del piloto"
+
+#: Properties.py:200
+msgid "Set \"Autocorrect Lap Data\" option by Default"
+msgstr "Establecer la opción \"Autocorrección de datos de vuelta\" por defecto"
+
+#: Properties.py:203
+msgid "Show Times to 100s of a Second"
+msgstr "Mostrar tiempos a 100s de un segundo"
+
+#: Properties.py:204
+msgid "Road Race Finish Times (ignore decimals, groups get same time)"
+msgstr ""
+"Road Race Finish Times (ignora los decimales, los grupos obtienen el mismo "
+"tiempo)"
+
+#: Properties.py:205
+msgid "Estimate Laps Down Finish Time (requires Road Race Finish Times)"
+msgstr ""
+"Estimar el tiempo de finalización de los vueltas (requiere tiempos de "
+"finalización de carrera en carretera)"
+
+#: Properties.py:206
+msgid "Consider Riders in Spreadsheet to be DNS if no race data"
+msgstr ""
+"Considere a los corredores en la hoja de cálculo como DNS si no hay datos de "
+"carrera"
+
+#: Properties.py:208
+msgid "Lap Time for 80% Rule: "
+msgstr "Tiempo de vuelta para la regla del 80%: "
+
+#: Properties.py:209
+msgid "1st Lap Time"
+msgstr "Tiempo de vuelta"
+
+#: Properties.py:210
+msgid "2nd Lap Time"
+msgstr "Tiempo de la segunda vuelta"
+
+#: Properties.py:216
+msgid "Distance Unit: "
+msgstr "Unidad de distancia: "
+
+#: Properties.py:223
+msgid "Show Lap Notes, Edits and Projected Times in HTML Output"
+msgstr "Mostrar notas de vuelta, ediciones y tiempos proyectados en salida HTML"
+
+#: Properties.py:224
+msgid "Show Course Animation in Html"
+msgstr "Mostrar animación del curso en html"
+
+#: Properties.py:227
+msgid "Min. Possible Lap Time: "
+msgstr "Tiempo de vuelta mínimo posible"
+
+#: Properties.py:229
+msgid "hh:mm:ss.ddd"
+msgstr ""
+
+#: Properties.py:234
+msgid "License Link HTML Template: "
+msgstr "Plantilla HTML de enlace de licencia: "
+
+#: Properties.py:237
+msgid "Win and Out"
+msgstr "Ganar y salir"
+
+#: Properties.py:318
+msgid "Manual Start: Collect every chip."
+msgstr "Inicio manual: Recoge todos los chips."
+
+#: Properties.py:318
+msgid "Does NOT restart race clock on first read."
+msgstr "NO reinicia el reloj de carrera en la primera lectura."
+
+#: Properties.py:319
+msgid "Automatic Start: Reset start clock on first tag read."
+msgstr ""
+"Inicio automático: reinicio del reloj de inicio en la primera etiqueta leída."
+
+#: Properties.py:319
+msgid "All riders get the start time of the first read."
+msgstr "Todos los corredores obtienen la hora de inicio de la primera lectura."
+
+#: Properties.py:320
+msgid "Manual Start: Skip first tag read for all riders."
+msgstr "Inicio manual: omitir la primera etiqueta leída para todos los corredores."
+
+#: Properties.py:320
+msgid "Required when start run-up passes the finish on the first lap."
+msgstr ""
+"Requerido cuando el inicio de la carrera pasa el final en la primera vuelta."
+
+#: Properties.py:324
+msgid "Use RFID Reader"
+msgstr "Utilizar lector de RFID"
+
+#: Properties.py:342
+msgid "Setup/Test Rfid Reader..."
+msgstr "Configurar / Probar Rfid Reader ..."
+
+#: Properties.py:399
+msgid "Contact Email"
+msgstr "Email de contacto"
+
+#: Properties.py:403
+msgid "Google Analytics Tracking ID (of the form UA-XXXX-Y)"
+msgstr "ID de seguimiento de Google Analytics (del formulario UA-XXXX-Y)"
+
+#: Properties.py:412
+msgid "Set Graphic"
+msgstr "Conjunto gráfico"
+
+#: Properties.py:418
+msgid "Page Header Graphic"
+msgstr "Gráfico de encabezado de página"
+
+#: Properties.py:429
+msgid "The Page Header Graphic will appears on HTML, Printouts and PDF files."
+msgstr ""
+"El gráfico del encabezado de página aparecerá en HTML, impresiones y archivos "
+"PDF."
+
+#: Properties.py:432
+msgid "Show Index Page"
+msgstr "Mostrar página de índice"
+
+#: Properties.py:434
+msgid "Show QR Code Share"
+msgstr "Mostrar Código QR Compartir"
+
+#: Properties.py:518
+msgid "Elevation Gain"
+msgstr "Desnivel"
+
+#: Properties.py:535
+msgid "Import GPX Course"
+msgstr "Importar curso GPX"
+
+#: Properties.py:540
+msgid "Reverse Course Direction"
+msgstr "Dirección inversa del curso"
+
+#: Properties.py:544
+msgid "Show on Google Map"
+msgstr "Mostrar en el mapa de Google"
+
+#: Properties.py:548
+msgid "Export in GPX Format"
+msgstr "Exportar en formato GPX"
+
+#: Properties.py:552
+msgid "Export in KML Format (requires Google Earth)"
+msgstr "Exportar en formato KML (requiere Google Earth)"
+
+#: Properties.py:643
+msgid "Do Not Use Camera for Photo Finish"
+msgstr "No use la cámara para el acabado fotográfico"
+
+#: Properties.py:644
+msgid "Photos on Every Lap"
+msgstr "Fotos en cada vuelta"
+
+#: Properties.py:645
+msgid "Photos at Race Finish Only"
+msgstr "Fotos en Race Finish Only"
+
+#: Properties.py:647
+msgid "USB Camera Options"
+msgstr "Opciones de cámara USB"
+
+#: Properties.py:650
+msgid "Photo Delay Option"
+msgstr "Opción de retardo de foto"
+
+#: Properties.py:661
+msgid "RFID Read Distance before Finish Line"
+msgstr "Distancia de lectura RFID antes de la línea de meta"
+
+#: Properties.py:668
+msgid "Milliseconds"
+msgstr "Milisegundos"
+
+#: Properties.py:688
+msgid "Requires CrossMgrCamera.  See help for details"
+msgstr "Requiere CrossMgrCamera. Consulte la ayuda para más detalles."
+
+#: Properties.py:789
+msgid "This only applies to the Track animation."
+msgstr "Esto solo se aplica a la animación de la pista."
+
+#: Properties.py:790
+msgid "GPX animation follows the lat/lng coordinates."
+msgstr "La animación GPX sigue las coordenadas lat / lng."
+
+#: Properties.py:793
+msgid "Animation Finish on Top"
+msgstr "Final de animación en la parte superior"
+
+#: Properties.py:794
+msgid "Animation Reverse Direction"
+msgstr "Animación Dirección Inversa"
+
+#: Properties.py:823
+msgid "Configure Ftp"
+msgstr "Configurar Ftp"
+
+#: Properties.py:829
+msgid ""
+"Choose File Formats to Publish.  Select Ftp option to upload files to Ftp server."
+msgstr ""
+"Elija los formatos de archivo para publicar. Seleccione la opción Ftp para "
+"cargar archivos en el servidor Ftp."
+
+#: Properties.py:837
+msgid "Format"
+msgstr "Formato"
+
+#: Properties.py:837
+msgid "Ftp"
+msgstr "Ftp"
+
+#: Properties.py:867
+msgid "BikeReg"
+msgstr "BikeReg"
+
+#: Properties.py:868
+msgid "None"
+msgstr "Ninguna"
+
+#: Properties.py:873
+msgid "Post Publish Command"
+msgstr "Publicar comando de publicación"
+
+#: Properties.py:892
+msgid ""
+"Postpublish Command is run on CrossMgr generated files.  Use %* to insert the "
+"file names into the command line."
+msgstr ""
+"Postpublish Command se ejecuta en archivos generados con CrossMgr. Use% * para "
+"insertar los nombres de archivo en la línea de comando."
+
+#: Properties.py:893
+msgid ""
+"You can also use Notes variables, for example: {=RaceDate}, {=Organizer} and "
+"{=City}."
+msgstr ""
+"También puede usar las variables de Notes, por ejemplo: {= RaceDate}, {= "
+"Organizer} y {= City}."
+
+#: Properties.py:894
+msgid "Scripts can be shell cmds or scripts (.bat, .py, .rb, .perl, ...)."
+msgstr "Los scripts pueden ser shell cmds o scripts (.bat, .py, .rb, .perl, ...)."
+
+#: Properties.py:996
+msgid "Ftp is Not Configured"
+msgstr "Ftp no está configurado"
+
+#: Properties.py:996
+msgid "Configure it now?"
+msgstr "Configurarlo ahora?"
+
+#: Properties.py:1026
+msgid "Ftp Upload Error"
+msgstr "Error de carga de Ftp"
+
+#: Properties.py:1044 Properties.py:1047
+msgid "Post Publish Cmd Error"
+msgstr "Post Publish Cmd Error"
+
+#: Properties.py:1044
+msgid "return code"
+msgstr "código de retorno"
+
+#: Properties.py:1054
+msgid "Batch Publish Results"
+msgstr "Resultados por lotes de publicación"
+
+#: Properties.py:1064
+msgid "Publish All"
+msgstr "Publica todo"
+
+#: Properties.py:1066
+msgid "Save Options and Close"
+msgstr "Guardar opciones y cerrar"
+
+#: Properties.py:1120
+msgid "Notes to appear on Html output:"
+msgstr "Notas para aparecer en la salida de HTML:"
+
+#: Properties.py:1121
+msgid "(notes containing Html tags must start with <html> and end with </html>)"
+msgstr ""
+"(las notas que contienen etiquetas HTML deben comenzar con <html> y terminar con "
+"</html>)"
+
+#: Properties.py:1123
+msgid "Insert Variable..."
+msgstr "Insertar variable ..."
+
+#: Properties.py:1169
+msgid "File Name"
+msgstr "Nombre del archivo"
+
+#: Properties.py:1172
+msgid "Link External Excel Sheet..."
+msgstr "Enlace a la hoja externa de Excel ..."
+
+#: Properties.py:1177
+msgid "Categories Initially Loaded From"
+msgstr "Categorías Inicialmente Cargadas Desde"
+
+#: Properties.py:1180
+msgid "Template File"
+msgstr "Archivo de plantilla"
+
+#: Properties.py:1250
+msgid "General Info"
+msgstr "Información general"
+
+#: Properties.py:1251
+msgid "Race Options"
+msgstr "Opciones de carrera"
+
+#: Properties.py:1253
+msgid "Web"
+msgstr "Web"
+
+#: Properties.py:1254
+msgid "FTP"
+msgstr "FTP"
+
+#: Properties.py:1255
+msgid "Batch Publish"
+msgstr "Publicación por lotes"
+
+#: Properties.py:1256
+msgid "GPX"
+msgstr "GPX"
+
+#: Properties.py:1257
+msgid "Notes"
+msgstr "Notas"
+
+#: Properties.py:1258
+msgid "Camera"
+msgstr "Cámara"
+
+#: Properties.py:1261
+msgid "Files/Excel"
+msgstr "Archivos / Excel"
+
+#: Properties.py:1273 Pulled.py:96
+msgid "Commit"
+msgstr "Cometer"
+
+#: Properties.py:1276
+msgid "Save Template"
+msgstr "Guardar plantilla"
+
+#: Properties.py:1279 Properties.py:1341 Properties.py:1349
+msgid "Load Template"
+msgstr "Cargar plantilla"
+
+#: Properties.py:1290
+msgid ""
+"Save as \"default\" for a default Template that is applied automatically to all "
+"New races"
+msgstr ""
+"Guardar como \"predeterminado\" para una plantilla predeterminada que se aplica "
+"automáticamente a todas las nuevas carreras"
+
+#: Properties.py:1329
+msgid "You must have a valid race File|Open..."
+msgstr "Debes tener una carrera válida Archivo | Abrir ..."
+
+#: Properties.py:1329
+msgid "Or create one with File|New...."
+msgstr "O crea uno con File | New ...."
+
+#: Properties.py:1329
+msgid "Valid Race Required"
+msgstr "Se requiere una carrera válida"
+
+#: Properties.py:1351
+msgid "This will replace existing Properties."
+msgstr "Esto reemplazará las propiedades existentes."
+
+#: Properties.py:1354
+msgid "Confirm Load Template"
+msgstr "Confirmar plantilla de carga"
+
+#: Properties.py:1365
+msgid "Template Load Failure"
+msgstr "Falla de carga de la plantilla"
+
+#: Properties.py:1377
+msgid "Save as Template"
+msgstr "Guardar como plantilla"
+
+#: Properties.py:1388
+msgid "Template Saved to"
+msgstr "Plantilla guardada en"
+
+#: Properties.py:1388
+msgid "Save Template Successful"
+msgstr "Guardar plantilla exitosa"
+
+#: Properties.py:1390
+msgid "Template Save Failure"
+msgstr "Error de guardado de plantilla"
+
+#: Properties.py:1522
+msgid "Race File Folder"
+msgstr "Carpeta de archivos de carrera"
+
+#: Properties.py:1531
+msgid "Categories Import File (*.brc):"
+msgstr "Categorías Importar archivo (* .brc):"
+
+#: Properties.py:1579
+msgid "Choose a Folder for the Race"
+msgstr "Elige una carpeta para la carrera"
+
+#: Properties.py:1622
+msgid "UnnamedRace"
+msgstr "Sin nombre"
+
+#: Properties.py:1630
+msgid "The filename will be changed to:"
+msgstr "El nombre del archivo se cambiará a:"
+
+#: Properties.py:1632
+msgid "Change Filename?"
+msgstr "Cambiar nombre de archivo?"
+
+#: Properties.py:1636
+msgid "This file already exists:"
+msgstr "Este archivo ya existe:"
+
+#: Properties.py:1638
+msgid "Overwrite?"
+msgstr "¿Exagerar?"
+
+#: Properties.py:1638
+msgid "Overwrite Existing File?"
+msgstr "¿Sobrescribir el archivo existente?"
+
+#: Properties.py:1693
+msgid "Properties Dialog Test"
+msgstr "Prueba de diálogo de propiedades"
+
+#: Pulled.py:106
+msgid "Laps to Go"
+msgstr "Vueltas para ir"
+
+#: Pulled.py:200
+msgid "Bib not in Race"
+msgstr ""
+
+#: Pulled.py:202
+msgid "Bib not in Category"
+msgstr ""
+
+#: Pulled.py:205
+msgid "Bib has non-Finisher Status"
+msgstr ""
+
+#: Pulled.py:207
+msgid "Laps To Go exceeds for Race Laps"
+msgstr "Vueltas para ir superan las vueltas en la carrera"
+
+#: Pulled.py:209
+msgid "Laps To Go must be >= 0"
+msgstr ""
+
+#: RaceAnimation.py:52
+msgid "GPX Track"
+msgstr "GPX Track"
+
+#: RaceAnimation.py:55
+msgid "Oval Track"
+msgstr "Pista ovalada"
+
+#: RaceAnimation.py:59
+msgid "Finish on Top"
+msgstr "Terminar en la parte superior"
+
+#: RaceAnimation.py:61
+msgid "Reverse Direction"
+msgstr "Direccion contraria"
+
+#: RaceAnimation.py:83
+msgid "Rewind"
+msgstr "Rebobinar"
+
+#: RaceAnimation.py:86 RaceAnimation.py:140 RaceAnimation.py:224
+#: RaceAnimation.py:232
+msgid "Play"
+msgstr "Jugar"
+
+#: RaceAnimation.py:90
+msgid "Playback Speed"
+msgstr "Velocidad de reproducción"
+
+#: RaceAnimation.py:104
+msgid "Highlight Numbers"
+msgstr "Resaltar números"
+
+#: RaceAnimation.py:111 RaceDB.py:108
+msgid "Update"
+msgstr "Actualizar"
+
+#: RaceAnimation.py:227
+msgid "Stop"
+msgstr "Detener"
+
+#: RaceDB.py:73
+msgid "Open RaceDB Event"
+msgstr "Evento abierto RaceDB"
+
+#: RaceDB.py:79 RaceDB.py:356
+msgid ""
+"Drag and Drop any RaceDB URL from the browser.\n"
+"\n"
+"Drag the small icon just to the left of the URL\n"
+"on the browser page to the RaceDB logo below"
+msgstr ""
+"Arrastre y suelte cualquier URL de RaceDB desde el navegador.\n"
+" \\ nArrastre el pequeño icono a la izquierda de la URL\n"
+"o en la página del navegador al logotipo de RaceDB a continuación"
+
+#: RaceDB.py:100
+msgid "Race Folder Base"
+msgstr "Base de la carpeta de la carrera"
+
+#: RaceDB.py:102 RaceDB.py:370
+msgid "RaceDB URL"
+msgstr "URL RaceDB"
+
+#: RaceDB.py:104
+msgid "All Events On"
+msgstr "Todos los eventos en"
+
+#: RaceDB.py:131
+msgid "Event Info"
+msgstr "Información del evento"
+
+#: RaceDB.py:132
+msgid "Event Type"
+msgstr "Tipo de evento"
+
+#: RaceDB.py:136
+msgid "Participants"
+msgstr "Participantes"
+
+#: RaceDB.py:148
+msgid "Open Event"
+msgstr "Evento abierto"
+
+#: RaceDB.py:191 RaceDB.py:192
+msgid "Error Connecting to RaceDB Server"
+msgstr "Error al conectar con el servidor RaceDB"
+
+#: RaceDB.py:196
+msgid "Confirm Open Event"
+msgstr "Confirmar evento abierto"
+
+#: RaceDB.py:209 RaceDB.py:210
+msgid "Error Creating Folder"
+msgstr "Error al crear la carpeta"
+
+#: RaceDB.py:222 RaceDB.py:223
+msgid "Error Writing File"
+msgstr "Error al escribir el archivo"
+
+#: RaceDB.py:261
+msgid "No Events found on"
+msgstr ""
+"\n"
+"No se han encontrado eventos en"
+
+#: RaceDB.py:262
+msgid "Events retrieved successfully"
+msgstr ""
+"\n"
+"Eventos recuperados exitosamente"
+
+#: RaceDB.py:305
+msgid "Past"
+msgstr ""
+
+#: RaceDB.py:306
+msgid "Event"
+msgstr "Evento"
+
+#: RaceDB.py:345
+msgid "Upload Results to RaceDB"
+msgstr "Subir los resultados a RaceDB"
+
+#: RaceDB.py:380
+msgid "Done"
+msgstr "Hecho"
+
+#: RaceDB.py:416
+msgid "Starting Upload..."
+msgstr "Iniciando Subida ..."
+
+#: RaceDB.py:429
+msgid "Warning"
+msgstr "Advertencia"
+
+#: RaceDB.py:435
+msgid "Otherwise, Upload Successful."
+msgstr "De lo contrario, subir con éxito."
+
+#: RaceDB.py:437
+msgid "Upload Successful."
+msgstr "Subida exitosa."
+
+#: RaceDB.py:444
+msgid "RaceDB Upload Status"
+msgstr ""
+"\n"
+"Estado de subida de RaceDB"
+
+#: RaceHUD.py:20 RaceHUD.py:380
+msgid "RaceHUD"
+msgstr "RaceHUD"
+
+#: RaceResult.py:135 Ultra.py:139
+msgid "Checking"
+msgstr "Comprobación"
+
+#: RaceResult.py:145 RaceResult.py:280 RaceResult.py:300 RaceResult.py:336
+#: RaceResultUSB.py:99 RaceResultUSB.py:104 RaceResultUSB.py:323 Ultra.py:152
+#: Ultra.py:218
+msgid "Connection failed"
+msgstr "La conexión falló"
+
+#: RaceResult.py:149 RaceResult.py:253 RaceResult.py:267 RaceResult.py:273
+#: RaceResult.py:277 RaceResult.py:323 RaceResultUSB.py:335
+msgid "Unexpected return"
+msgstr "Retorno inesperado"
+
+#: RaceResult.py:164
+msgid "Attempting to connect to RaceResult reader at"
+msgstr "Intentando conectar con el lector RaceResult en"
+
+#: RaceResult.py:170 RaceResultUSB.py:223
+msgid "Connection to RaceResult reader failed"
+msgstr "Falló la conexión con el lector RaceResult"
+
+#: RaceResult.py:173 RaceResultUSB.py:226 Ultra.py:176
+msgid "Attempting AutoDetect..."
+msgstr "Intentando AutoDetect ..."
+
+#: RaceResult.py:176
+msgid "AutoDetect RaceResult at"
+msgstr "AutoDetect RaceResult at"
+
+#: RaceResult.py:197
+msgid "RaceResult requires Firmware Upgrade"
+msgstr "RaceResult requiere actualización de firmware"
+
+#: RaceResult.py:198
+msgid "CrossMgr requires PROTOCOL"
+msgstr "CrossMgr requiere PROTOCOLO"
+
+#: RaceResult.py:199
+msgid "RaceResult supports"
+msgstr "RaceResult apoya"
+
+#: RaceResultImport.py:36
+msgid "invalid date"
+msgstr "fecha invalida"
+
+#: RaceResultUSB.py:87
+msgid "Checking COM"
+msgstr "Comprobando COM"
+
+#: RaceResultUSB.py:99
+msgid "Write length error"
+msgstr "Error de longitud de escritura"
+
+#: RaceResultUSB.py:108
+msgid "Command failed"
+msgstr "Comando falló"
+
+#: RaceResultUSB.py:217
+msgid "Attempting to connect to RaceResult reader on COM"
+msgstr "Intentando conectar con el lector RaceResult en COM"
+
+#: RaceResultUSB.py:229
+msgid "AutoDetect RaceResult at COM"
+msgstr "AutoDetecta RaceResult en COM"
+
+#: RaceResultUSB.py:266
+msgid "Warning: Loop ID != 0"
+msgstr "Advertencia: ¡ID de bucle! = 0"
+
+#: ReadSignOnSheet.py:26 Recommendations.py:376 UnmatchedTagsGantt.py:66
+msgid "Tag"
+msgstr "Etiqueta"
+
+#: ReadSignOnSheet.py:26
+msgid "Tag1"
+msgstr "Etiqueta1"
+
+#: ReadSignOnSheet.py:26
+msgid "Tag2"
+msgstr "Etiqueta2"
+
+#: ReadSignOnSheet.py:26
+msgid "Tag3"
+msgstr "Etiqueta3"
+
+#: ReadSignOnSheet.py:26
+msgid "Tag4"
+msgstr "Etiqueta4"
+
+#: ReadSignOnSheet.py:26
+msgid "Tag5"
+msgstr "Etiqueta5"
+
+#: ReadSignOnSheet.py:26
+msgid "Tag6"
+msgstr "Etiqueta6"
+
+#: ReadSignOnSheet.py:26
+msgid "Tag7"
+msgstr "Etiqueta7"
+
+#: ReadSignOnSheet.py:26
+msgid "Tag8"
+msgstr "Etiqueta8"
+
+#: ReadSignOnSheet.py:26
+msgid "Tag9"
+msgstr "Etiqueta9"
+
+#: ReadSignOnSheet.py:31
+msgid "CustomCategory"
+msgstr "CategoríaPersonalizada"
+
+#: ReadSignOnSheet.py:31
+msgid "CustomCategory1"
+msgstr "CategoríaPersonalizada1"
+
+#: ReadSignOnSheet.py:31
+msgid "CustomCategory2"
+msgstr "CategoríaPersonalizada2"
+
+#: ReadSignOnSheet.py:31
+msgid "CustomCategory3"
+msgstr "CategoríaPersonalizada3"
+
+#: ReadSignOnSheet.py:31
+msgid "CustomCategory4"
+msgstr "CategoríaPersonalizada4"
+
+#: ReadSignOnSheet.py:31
+msgid "CustomCategory5"
+msgstr "CategoríaPersonalizada5"
+
+#: ReadSignOnSheet.py:31
+msgid "CustomCategory6"
+msgstr "CategoríaPersonalizada6"
+
+#: ReadSignOnSheet.py:31
+msgid "CustomCategory7"
+msgstr "CategoríaPersonalizada7"
+
+#: ReadSignOnSheet.py:31
+msgid "CustomCategory8"
+msgstr "CategoríaPersonalizada8"
+
+#: ReadSignOnSheet.py:31
+msgid "CustomCategory9"
+msgstr "CategoríaPersonalizada9"
+
+#: ReadSignOnSheet.py:36 Situation.py:665
+msgid "Bib#"
+msgstr "Babero#"
+
+#: ReadSignOnSheet.py:37
+msgid "LastName"
+msgstr "Apellido"
+
+#: ReadSignOnSheet.py:37
+msgid "FirstName"
+msgstr "Nombre de pila"
+
+#: ReadSignOnSheet.py:39
+msgid "State"
+msgstr "Estado"
+
+#: ReadSignOnSheet.py:39
+msgid "Prov"
+msgstr "Prov"
+
+#: ReadSignOnSheet.py:39
+msgid "StateProv"
+msgstr "EstadoProv"
+
+#: ReadSignOnSheet.py:39
+msgid "Nat."
+msgstr "Nat."
+
+#: ReadSignOnSheet.py:40
+msgid "EventCategory"
+msgstr "Categoría de evento"
+
+#: ReadSignOnSheet.py:41
+msgid "License"
+msgstr "Licencia"
+
+#: ReadSignOnSheet.py:42
+msgid "UCIID"
+msgstr "UCIID"
+
+#: ReadSignOnSheet.py:42
+msgid "TeamCode"
+msgstr "Código de Equipo"
+
+#: ReadSignOnSheet.py:43 Results.py:779
+msgid "Factor"
+msgstr "Factor"
+
+#: ReadSignOnSheet.py:57
+msgid "Specify the Excel File containing additional rider information."
+msgstr ""
+"Especifique el archivo de Excel que contiene información adicional del usuario."
+
+#: ReadSignOnSheet.py:59 ReadTTStartTimesSheet.py:29
+msgid "Each race must be in a separate sheet."
+msgstr "Cada carrera debe estar en una hoja separada."
+
+#: ReadSignOnSheet.py:60
+msgid "See documentation for examples."
+msgstr "Vea la documentación para ejemplos."
+
+#: ReadSignOnSheet.py:65
+msgid "Excel Workbook:"
+msgstr "Libro de Excel:"
+
+#: ReadSignOnSheet.py:86
+msgid "Specify the sheet containing the information for this race:"
+msgstr "Especifique la hoja que contiene la información para esta carrera:"
+
+#: ReadSignOnSheet.py:134
+msgid "Could not find a Header Row"
+msgstr "No se pudo encontrar una fila de encabezado"
+
+#: ReadSignOnSheet.py:137
+msgid "Blank Header Column"
+msgstr "Columna de encabezado en blanco"
+
+#: ReadSignOnSheet.py:201
+msgid "Specify the spreadsheet columns corresponding to CrossMgr fields."
+msgstr ""
+"Especifique las columnas de la hoja de cálculo correspondientes a los campos de "
+"CrossMgr."
+
+#: ReadSignOnSheet.py:203
+msgid "Set ignored or missing fields to blank."
+msgstr "Establezca en blanco los campos ignorados o faltantes."
+
+#: ReadSignOnSheet.py:231
+msgid ""
+"Initialize CrossMgr Categories from Excel EventCategory/CustomCategory and Bib# "
+"columns"
+msgstr ""
+"Inicialice las categorías de CrossMgr desde Excel EventCategory / CustomCategory "
+"y Bib #"
+
+#: ReadSignOnSheet.py:233
+msgid ""
+"Updates, adds or deletes CrossMgr categories, with bib numbers, using the "
+"EventCategory/CustomCategory and Bib# columns in the Excel sheet.  Use with care "
+"as the Categories will be updated every time the Excel sheet changes.  Read the "
+"documentation first!"
+msgstr ""
+"Actualiza, agrega o elimina categorías de CrossMgr, con números de bib, usando "
+"las columnas EventCategory / CustomCategory y Bib # en la hoja de Excel. Use con "
+"cuidado ya que las Categorías se actualizarán cada vez que cambie la hoja de "
+"Excel. ¡Lea primero la documentación!"
+
+#: ReadSignOnSheet.py:245
+msgid "CrossMgr"
+msgstr "CrossMgr"
+
+#: ReadSignOnSheet.py:246
+msgid "Spreadsheet"
+msgstr "Hoja de cálculo"
+
+#: ReadSignOnSheet.py:302
+msgid "Excel File"
+msgstr "Archivo Excel"
+
+#: ReadSignOnSheet.py:306
+msgid "Sheet Name"
+msgstr "Nombre de la hoja"
+
+#: ReadSignOnSheet.py:310
+msgid "Rider Data Entries"
+msgstr "Entradas de datos del jinete"
+
+#: ReadSignOnSheet.py:314
+msgid "CrossMgr Categories from Excel EventCategory/CustomCategory"
+msgstr "Categorías de CrossMgr de Excel EventCategory / CustomCategory"
+
+#: ReadSignOnSheet.py:318
+msgid "Categories and Properties"
+msgstr "Categorias y propiedades"
+
+#: ReadSignOnSheet.py:322 Recommendations.py:335 RiderDetail.py:324
+msgid "Status"
+msgstr "Estado"
+
+#: ReadSignOnSheet.py:326 ReadSignOnSheet.py:405
+msgid "Errors"
+msgstr "Los errores"
+
+#: ReadSignOnSheet.py:330
+msgid "Copy Errors to Clipboard"
+msgstr "Copiar errores al portapapeles"
+
+#: ReadSignOnSheet.py:378
+msgid "Excel Errors Copied to Clipboard."
+msgstr "Excel errores copiados al portapapeles."
+
+#: ReadSignOnSheet.py:378
+msgid "Excel Errors Copied to Clipboard"
+msgstr "Errores de Excel copiados al portapapeles"
+
+#: ReadSignOnSheet.py:388
+msgid "Read Categories"
+msgstr "Leer Categorías"
+
+#: ReadSignOnSheet.py:390
+msgid "Read Properties"
+msgstr "Leer propiedades"
+
+#: ReadSignOnSheet.py:393
+msgid "Yes"
+msgstr "Sí"
+
+#: ReadSignOnSheet.py:393
+msgid "No"
+msgstr "No"
+
+#: ReadSignOnSheet.py:405 ReadTTStartTimesSheet.py:231
+msgid "Success!"
+msgstr "¡Éxito!"
+
+#: ReadSignOnSheet.py:422
+msgid "Define Excel Link"
+msgstr "Definir enlace de Excel"
+
+#: ReadSignOnSheet.py:471 ReadTTStartTimesSheet.py:288
+msgid "Please specify an Excel file."
+msgstr "Por favor, especifique un archivo de Excel."
+
+#: ReadSignOnSheet.py:485 ReadTTStartTimesSheet.py:297
+msgid "Cannot find at least 5 header names in the Excel sheet."
+msgstr ""
+"No se pueden encontrar al menos 5 nombres de encabezados en la hoja de Excel."
+
+#: ReadSignOnSheet.py:485 ReadTTStartTimesSheet.py:297
+msgid "Check the format."
+msgstr "Comprueba el formato."
+
+#: ReadSignOnSheet.py:486 ReadSignOnSheet.py:503 ReadTTStartTimesSheet.py:298
+#: ReadTTStartTimesSheet.py:307
+msgid "Excel Format Error"
+msgstr "Error de formato de Excel"
+
+#: ReadSignOnSheet.py:491
+msgid "No RFID Tag Columns Specified."
+msgstr "No se especifican columnas de etiquetas RFID."
+
+#: ReadSignOnSheet.py:491
+msgid "Fix it now?"
+msgstr "¿Arréglalo ahora?"
+
+#: ReadSignOnSheet.py:492
+msgid "No RFID Tag Columns"
+msgstr "No hay columnas de etiquetas RFID"
+
+#: ReadSignOnSheet.py:502 ReadTTStartTimesSheet.py:306
+msgid "You must specify column"
+msgstr "Debe especificar la columna"
+
+#: ReadSignOnSheet.py:524 ReadTTStartTimesSheet.py:315
+msgid "Problem extracting rider info."
+msgstr "Problema al extraer información del jinete."
+
+#: ReadSignOnSheet.py:525 ReadTTStartTimesSheet.py:315
+msgid "Check the Excel format."
+msgstr "Compruebe el formato de Excel."
+
+#: ReadSignOnSheet.py:528 ReadTTStartTimesSheet.py:316
+msgid "Data Error"
+msgstr "Error de datos"
+
+#: ReadSignOnSheet.py:805
+msgid "Unknown"
+msgstr "Desconocido"
+
+#: ReadSignOnSheet.py:874 ReadSignOnSheet.py:888 ReadSignOnSheet.py:902
+#: ReadSignOnSheet.py:906 ReadSignOnSheet.py:917
+msgid "Row"
+msgstr "Fila"
+
+#: ReadSignOnSheet.py:875
+msgid "Duplicate Bib#"
+msgstr "Duplicar babero #"
+
+#: ReadSignOnSheet.py:876
+msgid "Same as row"
+msgstr "Igual que la fila"
+
+#: ReadSignOnSheet.py:890
+msgid "Missing field"
+msgstr "Campo faltante"
+
+#: ReadSignOnSheet.py:903
+msgid "Duplicate Field"
+msgstr "Campo duplicado"
+
+#: ReadSignOnSheet.py:904
+msgid "Same as"
+msgstr "Igual que"
+
+#: ReadSignOnSheet.py:919
+msgid "Missing Field"
+msgstr "Campo perdido"
+
+#: ReadTTStartTimesSheet.py:27
+msgid "Specify the Excel File containing TT Start Times in HH:MM:SS format."
+msgstr ""
+"Especifique el archivo de Excel que contiene las horas de inicio de TT en "
+"formato HH:MM:SS."
+
+#: ReadTTStartTimesSheet.py:30
+msgid ""
+"This is the Stopwatch Time usually beginning at 00:01:00, with 30 to 60 second "
+"gaps - not the clock time."
+msgstr ""
+"Este es el tiempo de cronómetro que generalmente comienza a las 00:01:00, con "
+"intervalos de 30 a 60 segundos, no la hora del reloj."
+
+#: ReadTTStartTimesSheet.py:56
+msgid "Specify the sheet containing the start times for this race:"
+msgstr "Especifique la hoja que contiene los tiempos de inicio para esta carrera:"
+
+#: ReadTTStartTimesSheet.py:87
+msgid "Specify the spreadsheet columns corresponding to the Start Time fields."
+msgstr ""
+"Especifique las columnas de la hoja de cálculo correspondientes a los campos de "
+"Hora de inicio."
+
+#: ReadTTStartTimesSheet.py:89
+msgid "Both Bib and Start Time must be specified."
+msgstr "Se deben especificar tanto el Bib como la Hora de inicio."
+
+#: ReadTTStartTimesSheet.py:194
+msgid "Summary:"
+msgstr "Resumen:"
+
+#: ReadTTStartTimesSheet.py:197
+msgid "Excel File:"
+msgstr "Archivo Excel:"
+
+#: ReadTTStartTimesSheet.py:200
+msgid "Sheet Name:"
+msgstr "Nombre de la hoja:"
+
+#: ReadTTStartTimesSheet.py:203
+msgid "Rider Start Times:"
+msgstr "Horario de inicio del jinete:"
+
+#: ReadTTStartTimesSheet.py:206
+msgid "Status:"
+msgstr "Estado:"
+
+#: ReadTTStartTimesSheet.py:231
+msgid "Failure"
+msgstr "Fracaso"
+
+#: ReadTTStartTimesSheet.py:240
+msgid "Import TT Start Times"
+msgstr "Importar tiempos de inicio de TT"
+
+#: ReadTTStartTimesSheet.py:377
+msgid "Missing excelLink"
+msgstr "Falta excelLink"
+
+#: ReadTTStartTimesSheet.py:386
+msgid "missing start time"
+msgstr "falta la hora de inicio"
+
+#: ReadTTStartTimesSheet.py:402
+msgid "cannot read time format"
+msgstr "no puede leer el formato de hora"
+
+#: ReadTTStartTimesSheet.py:406
+msgid "cannot read start time (neither Excel time nor String)"
+msgstr "no se puede leer la hora de inicio (ni la hora de Excel ni la cadena)"
+
+#: ReadTTStartTimesSheet.py:464
+msgid "Start Time Import Errors"
+msgstr "Errores de importación de tiempo de inicio"
+
+#: ReadTTStartTimesSheet.py:467
+msgid "Start Times Changed"
+msgstr "Horas de inicio cambiadas"
+
+#: ReadTTStartTimesSheet.py:467
+msgid "Start Times Success"
+msgstr "Start Times Success"
+
+#: Recommendations.py:148
+msgid "Num"
+msgstr "Num"
+
+#: Recommendations.py:148
+msgid "Issue"
+msgstr "Problema"
+
+#: Recommendations.py:148
+msgid "Recommendation"
+msgstr "Recomendación"
+
+#: Recommendations.py:160
+msgid "Fix"
+msgstr "Fijar"
+
+#: Recommendations.py:196
+msgid "EarlyTimes"
+msgstr "Tiempos tempranos"
+
+#: Recommendations.py:198
+msgid "Rider has entries before the Start Offset."
+msgstr "El jinete tiene entradas antes del Start Offset."
+
+#: Recommendations.py:199
+msgid "Early times are not shown in the results."
+msgstr "Los primeros tiempos no se muestran en los resultados."
+
+#: Recommendations.py:201
+msgid "StartOffset"
+msgstr "StartOffset"
+
+#: Recommendations.py:217
+msgid ""
+"Rider has extra laps not shown in results (all riders finish on leader's last "
+"lap)"
+msgstr ""
+"El piloto tiene vueltas adicionales que no se muestran en los resultados (todos "
+"los pilotos terminan en la última vuelta del líder)"
+
+#: Recommendations.py:227
+msgid "sec"
+msgstr "segundo"
+
+#: Recommendations.py:227
+msgid "time penalty"
+msgstr "penalización de tiempo"
+
+#: Recommendations.py:230
+msgid "Penalty"
+msgstr "Pena"
+
+#: Recommendations.py:269
+msgid "Race Laps"
+msgstr "Vueltas de carrera"
+
+#: Recommendations.py:270
+msgid ""
+"Verify that Category did Race Laps.  Update Race Laps for Category if necessary."
+msgstr ""
+"Verifique que la categoría haya hecho las vueltas de carrera. Actualizar "
+"carreras de vueltas para la categoría si es necesario."
+
+#: Recommendations.py:292
+msgid "Check for DNF after rider lap"
+msgstr "Compruebe si hay DNF después de la vuelta piloto"
+
+#: Recommendations.py:315
+msgid "Confirm rider was lapped by Category Leader in leader's lap"
+msgstr ""
+"Confirmar que el piloto fue lapeado por el Líder de la categoría en la vuelta "
+"del líder"
+
+#: Recommendations.py:327
+msgid "Rider has recorded times."
+msgstr "El jinete tiene tiempos grabados."
+
+#: Recommendations.py:327
+msgid "Check status"
+msgstr "Comprobar estado"
+
+#: Recommendations.py:335
+msgid "Check if time is accurate."
+msgstr "Compruebe si el tiempo es exacto."
+
+#: Recommendations.py:344
+msgid "Check time for Status"
+msgstr "Consultar hora para estado"
+
+#: Recommendations.py:345
+msgid "Found recorded time"
+msgstr "Tiempo registrado encontrado"
+
+#: Recommendations.py:354
+msgid ""
+"Rider does not match any active category.  Check if rider is in right race or "
+"data entry error."
+msgstr ""
+"El jinete no coincide con ninguna categoría activa. Compruebe si el jinete está "
+"en la carrera correcta o error de entrada de datos."
+
+#: Recommendations.py:368
+msgid "Check rider has projected times"
+msgstr "Revisar jinete ha proyectado tiempos."
+
+#: Recommendations.py:377
+msgid ""
+"Imported chip Tag missing from Excel sheet.  Check if a stray read.  If not, add "
+"Tag to Excel sheet and run Chip Import again"
+msgstr ""
+"Etiqueta de chip importada que falta en la hoja de Excel. Compruebe si una "
+"lectura perdida. De lo contrario, agregue la etiqueta a la hoja de Excel y "
+"ejecute Chip Import nuevamente."
+
+#: Recommendations.py:385
+msgid "First recorded time"
+msgstr "Primer tiempo registrado"
+
+#: Results.py:110
+msgid "Show Rider Data"
+msgstr "Mostrar datos del jinete"
+
+#: Results.py:117 Results.py:127
+msgid "Useful for finding the fastest lap."
+msgstr "Útil para encontrar la vuelta más rápida."
+
+#: Results.py:122
+msgid ""
+"Useful for finding for Prime winners.\n"
+"After selecting, click on a lap header to sort."
+msgstr ""
+"Útil para encontrar a los ganadores de Prime.\n"
+"Después de seleccionar, haga clic en el encabezado de una vuelta para ordenar."
+
+#: Results.py:124
+msgid "Lap Speeds"
+msgstr "Velocidades de vuelta"
+
+#: Results.py:129
+msgid "Race Speeds"
+msgstr "Velocidad de carrera"
+
+#: Results.py:132
+msgid "Useful to predict how long a race will take based on rider's average speed."
+msgstr ""
+"Útil para predecir cuánto tiempo tomará una carrera en función de la velocidad "
+"promedio del corredor."
+
+#: Results.py:244
+msgid "close finish to"
+msgstr "cerca de terminar"
+
+#: Results.py:330
+msgid "Switch to Passings tab"
+msgstr "Cambiar a la pestaña de Pases"
+
+#: Results.py:333 RiderDetail.py:361
+msgid "Show Photos"
+msgstr "Mostrar fotos"
+
+#: Results.py:335
+msgid "Change number or lap time..."
+msgstr "Cambiar número o tiempo de vuelta ..."
+
+#: Results.py:336
+msgid "Move lap time earlier/later..."
+msgstr "Mueve el tiempo de vuelta antes / después ..."
+
+#: Results.py:337
+msgid "Delete lap time..."
+msgstr "Eliminar tiempo de vuelta ..."
+
+#: Results.py:681 Results.py:777
+msgid "mph"
+msgstr "mph"
+
+#: Results.py:681
+msgid "km/h"
+msgstr "km/h"
+
+#: Results.py:777
+msgid "km"
+msgstr "km"
+
+#: Results.py:811
+msgid "by Lap Time"
+msgstr "por lap time"
+
+#: Results.py:811
+msgid "by Race Time"
+msgstr "por tiempo de carrera"
+
+#: Results.py:811
+msgid "by Lap Speed"
+msgstr "por Lap Speed"
+
+#: Results.py:811
+msgid "by Race Speed"
+msgstr "por Race Speed"
+
+#: RiderDetail.py:36 RiderDetail.py:364
+msgid "Adjust Time Trial Times"
+msgstr "Ajustar los tiempos de prueba"
+
+#: RiderDetail.py:71 RiderDetail.py:302
+msgid "Ride Time"
+msgstr "Tiempo de viaje"
+
+#: RiderDetail.py:74 RiderDetail.py:316
+msgid "Penalty Time"
+msgstr "Tiempo de penalización"
+
+#: RiderDetail.py:108
+msgid "Start Time must be before Finish Time"
+msgstr "La hora de inicio debe ser anterior a la hora de finalización"
+
+#: RiderDetail.py:108
+msgid "Time Error"
+msgstr "Error de tiempo"
+
+#: RiderDetail.py:120
+msgid "You must specify the Missing Start Time"
+msgstr "Debe especificar la hora de inicio faltante"
+
+#: RiderDetail.py:120
+msgid "Missing Start Time"
+msgstr "Falta la hora de inicio"
+
+#: RiderDetail.py:153
+msgid "Adjust Start Time"
+msgstr "Ajustar la hora de inicio"
+
+#: RiderDetail.py:161
+msgid "Rider Started Early"
+msgstr "Jinete comenzó temprano"
+
+#: RiderDetail.py:161
+msgid "Rider Started Late"
+msgstr "Jinete comenzó tarde"
+
+#: RiderDetail.py:174
+msgid "Adjust for"
+msgstr "Ajustar para"
+
+#: RiderDetail.py:177
+msgid "Adjustment Time"
+msgstr "Tiempo de ajuste"
+
+#: RiderDetail.py:203
+msgid "The race must be Finished before you can adjust a Start Wave Offset."
+msgstr ""
+"La carrera debe finalizarse antes de poder ajustar un Offset de inicio de onda."
+
+#: RiderDetail.py:203
+msgid "Race Must be Finished"
+msgstr "La carrera debe estar terminada"
+
+#: RiderDetail.py:252
+msgid "&Delete Rider from Race..."
+msgstr "&Eliminar Rider de Race ..."
+
+#: RiderDetail.py:252
+msgid "Delete this rider from the race"
+msgstr "Elimina a este jinete de la carrera."
+
+#: RiderDetail.py:254
+msgid "&Change Rider's Number..."
+msgstr "&Cambiar el número de jinete ..."
+
+#: RiderDetail.py:254
+msgid "Change this rider's number"
+msgstr "Cambiar el número de este jinete."
+
+#: RiderDetail.py:256
+msgid "&Swap Number with Other Rider..."
+msgstr "&Intercambiar número con otro jinete ..."
+
+#: RiderDetail.py:256
+msgid "Swap this rider's number with another rider's number"
+msgstr "Intercambia el número de este jinete con el número de otro jinete."
+
+#: RiderDetail.py:258
+msgid "C&opy Rider Times to New Number..."
+msgstr "C&opy Rider Times to New Number ..."
+
+#: RiderDetail.py:258
+msgid "Copy these rider's times to another number"
+msgstr "Copia los tiempos de estos jinetes a otro número."
+
+#: RiderDetail.py:260
+msgid "Change Start W&ave Time..."
+msgstr "Cambiar Inicio W&ave Time ..."
+
+#: RiderDetail.py:260
+msgid "Fix lap times if the rider started in the wrong start wave"
+msgstr ""
+"Corrija los tiempos de vuelta si el piloto comenzó en la ola de inicio incorrecta"
+
+#: RiderDetail.py:297
+msgid "Tag(s)"
+msgstr "Etiqueta (s)"
+
+#: RiderDetail.py:330
+msgid "at race time"
+msgstr "en el momento de la carrera"
+
+#: RiderDetail.py:344
+msgid "Relegated to"
+msgstr "Relegado a"
+
+#: RiderDetail.py:351
+msgid "Autocorrect Lap Data"
+msgstr "Autocorrección de datos de vuelta"
+
+#: RiderDetail.py:353
+msgid "Always Filter on Min Possble Lap Time"
+msgstr ""
+"\n"
+"Filtrar siempre en el tiempo de vuelta mínimo posible"
+
+#: RiderDetail.py:421
+msgid "Started in Early Wave"
+msgstr "Comenzó en Early Wave"
+
+#: RiderDetail.py:422
+msgid "            "
+msgstr "            "
+
+#: RiderDetail.py:531
+msgid "Change number or lap time"
+msgstr "Cambiar número o tiempo de vuelta"
+
+#: RiderDetail.py:532
+msgid "Move lap time earlier/later"
+msgstr "Mueve el tiempo de vuelta antes / después"
+
+#: RiderDetail.py:533
+msgid "Delete lap time(s)"
+msgstr "Eliminar tiempo (s) de vuelta"
+
+#: RiderDetail.py:535
+msgid "Add/Edit lap note"
+msgstr "Añadir / Editar nota de vuelta"
+
+#: RiderDetail.py:603
+msgid "Delete entries of Bib"
+msgstr "Eliminar entradas de Bib"
+
+#: RiderDetail.py:604
+msgid "Delete Times"
+msgstr "Eliminar tiempos"
+
+#: RiderDetail.py:670
+msgid "Note on Lap"
+msgstr "Nota sobre la vuelta"
+
+#: RiderDetail.py:730
+msgid "Rider's new number:"
+msgstr "Nuevo número de jinete:"
+
+#: RiderDetail.py:730
+msgid "New Number"
+msgstr "Nuevo número"
+
+#: RiderDetail.py:748
+msgid "Cannot Change Bib."
+msgstr "No se puede cambiar el babero."
+
+#: RiderDetail.py:749
+msgid "There is a rider with this number already."
+msgstr "Ya hay un jinete con este número."
+
+#: RiderDetail.py:751
+msgid "Cannot Change Rider Number"
+msgstr "No se puede cambiar el número de usuario"
+
+#: RiderDetail.py:754
+msgid "Confirm Change rider's number"
+msgstr "Confirmar cambio de número de jinete"
+
+#: RiderDetail.py:754
+msgid "Change Rider Number"
+msgstr "Cambiar número de usuario"
+
+#: RiderDetail.py:777
+msgid "Number to swap with:"
+msgstr "Número a intercambiar con:"
+
+#: RiderDetail.py:777
+msgid "Swap Numbers"
+msgstr "Números de intercambio"
+
+#: RiderDetail.py:794
+msgid "Cannot swap with specified rider."
+msgstr "No se puede intercambiar con el jinete especificado."
+
+#: RiderDetail.py:795
+msgid "This rider is not in race."
+msgstr "Este jinete no está en carrera."
+
+#: RiderDetail.py:797
+msgid "Cannot Swap Rider Numbers"
+msgstr "No se pueden intercambiar números de usuarios"
+
+#: RiderDetail.py:801
+msgid "Confirm Swap numbers"
+msgstr "Confirmar números de intercambio"
+
+#: RiderDetail.py:801
+msgid "Swap Rider Number"
+msgstr "Número de jinete de intercambio"
+
+#: RiderDetail.py:828
+msgid "All time entries will be copied to the new bib number."
+msgstr "Todas las entradas de tiempo se copiarán al nuevo número de babero."
+
+#: RiderDetail.py:831
+msgid "Copy Rider Times"
+msgstr "Copiar tiempos de jinete"
+
+#: RiderDetail.py:850 RiderDetail.py:854
+msgid "New Bib Number Exists"
+msgstr "Ya existe un nuevo número de babero"
+
+#: RiderDetail.py:851
+msgid "This operation will replace all existing data."
+msgstr ""
+
+#: RiderDetail.py:859 RiderDetail.py:860
+msgid "Cannot Copy to Same Number"
+msgstr "No se puede copiar al mismo número"
+
+#: RiderDetail.py:867
+msgid "Entries will be copied to new Bib"
+msgstr "Las entradas se copiarán al nuevo Bib."
+
+#: RiderDetail.py:868
+msgid "All entries will be slightly earlier."
+msgstr "Todas las entradas serán ligeramente anteriores."
+
+#: RiderDetail.py:871
+msgid "Confirm Copy Rider Times"
+msgstr "Confirmar Copiar Horarios"
+
+#: RiderDetail.py:1023
+msgid ""
+"\n"
+"Lap Start "
+msgstr "\\nInicio de vuelta"
+
+#: RiderDetail.py:1026
+msgid ""
+"\n"
+"Lap End "
+msgstr "\\nFinal de vuelt"
+
+#: RiderDetail.py:1058
+msgid "Add missing last lap"
+msgstr "Añadir la última vuelta faltante"
+
+#: RiderDetail.py:1063
+msgid "Correct lap End Time"
+msgstr "Tiempo de vuelta de vuelta correcta"
+
+#: RiderDetail.py:1149
+msgid "Note for lap"
+msgstr "Nota para la vuelta"
+
+#: RiderDetail.py:1397
+msgid "Lapped by Leader"
+msgstr "Lapeado por el líder"
+
+#: RiderDetail.py:1523
+msgid "Save (Ctrl-S)"
+msgstr "Guarda\\t(Ctrl-G)"
+
+#: Search.py:26
+msgid "Search:"
+msgstr "Buscar:"
+
+#: Search.py:34
+msgid "Close"
+msgstr "Cerrar"
+
+#: Search.py:164 Search.py:195 Search.py:218
+msgid "StartTime"
+msgstr "Hora de inicio"
+
+#: Search.py:166 Search.py:193 Search.py:210
+msgid "In Race"
+msgstr "En carrera"
+
+#: Search.py:194
+msgid "yes"
+msgstr "sí"
+
+#: Search.py:241
+msgid "Find Rider"
+msgstr "Encontrar jinete"
+
+#: SetAutoCorrect.py:11
+msgid "Set Autocorrect"
+msgstr "Establecer autocorrección"
+
+#: SetAutoCorrect.py:19
+msgid "Change the Autocorrect Flag by Category"
+msgstr "Cambiar la marca de autocorrección por categoría"
+
+#: SetAutoCorrect.py:21
+msgid "Select Categories:"
+msgstr "Seleccione Categorías:"
+
+#: SetAutoCorrect.py:25
+msgid "For all Riders in the Categories above:"
+msgstr "Para todos los corredores en las categorías anteriores:"
+
+#: SetAutoCorrect.py:26
+msgid "Set Autocorrect Flag"
+msgstr "Establecer marca de autocorrección"
+
+#: SetAutoCorrect.py:29
+msgid "Clear Autocorrect Flag"
+msgstr "Borrar marca de autocorrección"
+
+#: SetAutoCorrect.py:54
+msgid ""
+"No Categories Selected.\n"
+"\n"
+"Select some Categories, or Cancel"
+msgstr ""
+"No se seleccionaron categorías.\n"
+"\n"
+"Seleccione algunas categorías o Cancelar"
+
+#: SetAutoCorrect.py:55
+msgid "No Categories Selected"
+msgstr "No hay categorías seleccionadas"
+
+#: SetGraphic.py:14
+msgid "Graphic to be Displayed in Results (set to blank to use default graphic):"
+msgstr ""
+"Gráfico que se mostrará en Resultados (configurado en blanco para usar el "
+"gráfico predeterminado):"
+
+#: SetGraphic.py:19
+msgid "Choose"
+msgstr "Escoger"
+
+#: Situation.py:161
+msgid "Leader ETA"
+msgstr "Líder ETA"
+
+#: Situation.py:562
+msgid "Pull After Last Recorded Time"
+msgstr "Tirar después del último tiempo grabado"
+
+#: Situation.py:563
+msgid "DNF After Last Recorded Time"
+msgstr "DNF después del último tiempo grabado"
+
+#: Situation.py:593
+msgid "Pull at "
+msgstr "Tirar "
+
+#: Situation.py:618
+msgid "DNF at "
+msgstr "DNF en "
+
+#: Situation.py:750
+msgid "Drag Top Slider to Change Time"
+msgstr "Arrastre el control deslizante superior para cambiar la hora"
+
+#: Situation.py:751
+msgid "Drag Left Slider to Zoom"
+msgstr "Arrastre el control deslizante izquierdo para hacer zoom"
+
+#: Situation.py:791
+msgid "Chase Group"
+msgstr "Grupo de persecución"
+
+#: Situation.py:793
+msgid "Size"
+msgstr "tamaño"
+
+#: TimeTrialRecord.py:83
+msgid "Tap for Time"
+msgstr "Toque para el tiempo"
+
+#: TimeTrialRecord.py:94
+msgid "Tap to get a Time, or press \"t\"."
+msgstr "Toque para obtener una hora, o presione \"t \"."
+
+#: TimeTrialRecord.py:95
+msgid "Then enter the Bib number(s) and Save."
+msgstr "Luego ingrese el (los) número (s) de Bib y Guardar."
+
+#: TimeTrialRecord.py:98
+msgid "(or press \"t\")"
+msgstr "(o presione \"t \")"
+
+#: TimeTrialRecord.py:132
+msgid "(or press \"s\")"
+msgstr "(o presione \"s \")"
+
+#: TimeTrialRecord.py:141
+msgid "Save Entries (or press \"s\")"
+msgstr "Guardar entradas (o presionar \"s \")"
+
+#: TimeTrialRecord.py:195
+msgid "Insufficient space to Record Time."
+msgstr "Espacio insuficiente para registrar el tiempo."
+
+#: TimeTrialRecord.py:196
+msgid "Enter Bib numbers and press Commit."
+msgstr "Ingrese números de babero y presione Confirmar."
+
+#: TimeTrialRecord.py:197
+msgid "Or delete some entries"
+msgstr "O borra algunas entradas"
+
+#: TimeTrialRecord.py:197
+msgid "Record Time Failed."
+msgstr "Tiempo de grabación fallido."
+
+#: Ultra.py:167
+msgid "Attempting to connect to Ultra reader at"
+msgstr "Intentando conectar al lector Ultra en"
+
+#: Ultra.py:173
+msgid "Connection to Ultra reader failed"
+msgstr "Falló la conexión con el lector Ultra"
+
+#: Ultra.py:179
+msgid "AutoDetect Ultra at"
+msgstr "AutoDetect Ultra en"
+
+#: Ultra.py:185
+msgid "connect to Ultra reader SUCCEEDS on"
+msgstr "conectarse al lector Ultra SUCCEEDS en"
+
+#: Ultra.py:215
+msgid "Lost heartbeat."
+msgstr "Latido del corazón perdido."
+
+#: Ultra.py:237
+msgid "Unexpected reader message"
+msgstr "Mensaje de lector inesperado"
+
+#: UnmatchedTagsGantt.py:24
+msgid "Export to Excel"
+msgstr "Exportar a Excel"
+
+#: UnmatchedTagsGantt.py:47
+msgid "Folder to write"
+msgstr "Carpeta para escribir"
+
+#: Utils.py:157
+msgid "Search"
+msgstr "Buscar"
+
+#: Utils.py:158
+msgid "Finisher"
+msgstr "Acabador"
+
+#: Utils.py:158
+msgid "OTL"
+msgstr "OTL"
+
+#: Utils.py:158
+msgid "NP"
+msgstr "notario público"
+
+#: VideoBuffer.py:239
+msgid "ModelTakePhoto: usb camera is not enabled"
+msgstr "ModelTakePhoto: la cámara usb no está habilitada"
+
+#: WebScorerExport.py:57
+msgid "LastName must be linked to a column in the Excel sheet."
+msgstr "El apellido debe estar vinculado a una columna en la hoja de Excel."
+
+#~ msgid "as .xls file"
+#~ msgstr "como archivo .xls"
+
+#~ msgid "Enter"
+#~ msgstr "Entrar"
+
+#~ msgid ""
+#~ "Unlike a Mass Start real race, the simulation will show riders crossing the "
+#~ "line right from the start."
+#~ msgstr ""
+#~ "A diferencia de una carrera real de Mass Start, la simulación mostrará a los "
+#~ "corredores cruzando la línea desde el principio."
+
+#~ msgid ""
+#~ "In a real race, riders would have to finish the first lap before they were "
+#~ "recorded."
+#~ msgstr ""
+#~ "En una carrera real, los corredores tendrían que terminar la primera vuelta "
+#~ "antes de que se registraran."
+
+#~ msgid "Found this Excel file in the race folder with the same name"
+#~ msgstr ""
+#~ "Encontré este archivo de Excel en la carpeta de la carrera con el mismo nombre"
+
+#~ msgid "No next race"
+#~ msgstr "No hay proxima carrera"
+
+#~ msgid "Switch to Time Trial Entry"
+#~ msgstr "Cambiar a entrada de contrarreloj"
+
+#~ msgid "Switch to Regular Number Entry"
+#~ msgstr "Cambiar a la entrada de número regular"
+
+#~ msgid "Composite Finish Photo"
+#~ msgstr "Foto compuesta del final"
+
+#~ msgid "Unable to Copy Photo to Clipboard."
+#~ msgstr "No se puede copiar la foto al portapapeles."
+
+#~ msgid "Min. Possible Lap Time (hh:mm:ss.ddd) "
+#~ msgstr "Min. Tiempo de vuelta posible (hh: mm: ss.ddd) "
+
+#~ msgid "Test"
+#~ msgstr "Prueba"
+
+#~ msgid "Publish Now"
+#~ msgstr "Publica ahora"
+
+#~ msgid "New Bib Number Already Exists"
+#~ msgstr "Ya existe un nuevo número de babero"
+
+#~ msgid "If you really want to copy times to this number, delete it first."
+#~ msgstr "Si realmente desea copiar tiempos a este número, elimínelo primero."

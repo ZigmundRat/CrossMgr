@@ -3,15 +3,11 @@
 # JChipFake.py: program for communicating with CrossMgr.
 #
 # Copyright (C) Edward Sitarski, 2017.
-import re
-import os
-import six
-import sys
 import time
 import socket
 import datetime
 import threading
-from six.moves.queue import Queue, Empty
+from queue import Queue, Empty
 
 #------------------------------------------------------------------------------	
 # CrossMgr's port.
@@ -25,7 +21,7 @@ CR = u'\r'
 class JChipFake( threading.Thread ):
 
 	def __init__( self, q, host=DEFAULT_HOST, port=DEFAULT_PORT, connectionName='JChipFake', group=None, target=None, name=None ):
-		super( JChipFake, self ).__init__( group=group, target=target, name=name )
+		super().__init__( group=group, target=target, name=name )
 		self.daemon = True
 		
 		self.q = q
@@ -39,27 +35,27 @@ class JChipFake( threading.Thread ):
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.sock.settimeout( 3.0 )
 
-		six.print_( u'Trying to connect to CrossMgr...' )
+		print( u'Trying to connect to CrossMgr...' )
 		self.sock.connect((self.host, self.port))
 
 		#------------------------------------------------------------------------------	
-		six.print_( u'Connection succeeded!' )
-		six.print_( u'Sending connection name...', self.connectionName )
+		print( u'Connection succeeded!' )
+		print( u'Sending connection name...', self.connectionName )
 		message = u"N0000{}{}".format(self.connectionName, CR)
 		self.sock.send( message.encode() )
 
 		#------------------------------------------------------------------------------	
-		six.print_( u'Waiting for get time command...' )
+		print( u'Waiting for get time command...' )
 		while 1:
-			received = self.sock.recv(1) if six.PY2 else self.sock.recv(1).decode()
+			received = self.sock.recv(1).decode()
 			if received == 'G':
 				while received[-1] != CR:
 					received += self.sock.recv(1).decode()
-				six.print_( u'Received cmd: "%s" from CrossMgr' % received[:-1] )
+				print( u'Received cmd: "%s" from CrossMgr' % received[:-1] )
 				break
 
 		#------------------------------------------------------------------------------	
-		six.print_( 'Send gettime data...' )
+		print( 'Send gettime data...' )
 		# format is GT0HHMMSShh<CR> where hh is 100's of a second.
 		# The '0' (zero) after GT is the number of days running and is ignored by CrossMgr.
 		# The date can be sent in the form date=YYYYMMDD.
@@ -69,17 +65,17 @@ class JChipFake( threading.Thread ):
 			self.dBase.strftime('%Y%m%d'),
 			CR
 		)
-		six.print_( message[:-1] )
+		print( message[:-1] )
 		self.sock.send( message.encode() )
 
 		#------------------------------------------------------------------------------	
-		six.print_( u'Waiting for send command from CrossMgr...' )
+		print( u'Waiting for send command from CrossMgr...' )
 		while 1:
-			received = self.sock.recv(1) if six.PY2 else self.sock.recv(1).decode()
+			received = self.sock.recv(1).decode()
 			if received == 'S':
 				while received[-1] != CR:
 					received += self.sock.recv(1).decode()
-				six.print_( u'Received cmd: "%s" from CrossMgr' % received[:-1] )
+				print( u'Received cmd: "%s" from CrossMgr' % received[:-1] )
 				break
 
 	#------------------------------------------------------------------------------	
@@ -105,19 +101,19 @@ class JChipFake( threading.Thread ):
 					try:
 						self.connect()
 					except Exception as e:
-						six.print_( u'connection error:', e )
-						six.print_( u'waiting 5 seconds...' )
+						print( 'connection error:', e )
+						print( 'waiting 5 seconds...' )
 						time.sleep( 5 )
 						self.sock = None
 						continue
 				
 				message = self.formatMessage( tag, t )
-				six.print_( u'sending:', message[:-1] )
+				print( u'sending:', message[:-1] )
 				try:
 					self.sock.send( message.encode() )
 					break
 				except Exception as e:
-					six.print_( 'communication error:', e )
+					print( 'communication error:', e )
 					self.sock = None	
 		
 if __name__ == '__main__':
@@ -125,7 +121,7 @@ if __name__ == '__main__':
 	q = Queue()
 	sender = JChipFake( q, host=DEFAULT_HOST, connectionName='JChipFake' )
 	sender.start()
-	for i in six.moves.range(10,1000,10):
+	for i in range(10,1000,10):
 		q.put( (i, datetime.datetime.now()) )		# put tag (or bib) and datetime on queue to transmit (no wait).
 		time.sleep( 1.5 )
 	

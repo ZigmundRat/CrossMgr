@@ -1,9 +1,8 @@
-import requests
-import datetime
 import re
 import os
 import wx
-import six
+import requests
+import datetime
 import wx.dataview as dataview
 import Utils
 import Model
@@ -14,7 +13,19 @@ globalRaceDBUrl = ''
 def RaceDBUrlDefault():
 	#return 'http://{}:8000/RaceDB'.format( Utils.GetDefaultHost() )
 	return globalRaceDBUrl or 'http://{}:8000/RaceDB'.format( '127.0.0.1' )
-	
+
+def fixUrl( url ):
+	global globalRaceDBUrl
+	url = url.strip()
+	if not url:
+		url = RaceDBUrlDefault()
+	if not (url.startswith('http://') or url.startswith('https://')):
+		url = 'http://' + url.lstrip('/')
+	url = url.split('RaceDB')[0] + 'RaceDB'
+	url = url.rstrip('/')
+	globalRaceDBUrl = url
+	return url
+
 def CrossMgrFolderDefault():
 	return os.path.join( os.path.expanduser('~'), 'CrossMgrRaces' )
 
@@ -37,7 +48,7 @@ def GetEventCrossMgr( url, eventId, eventType ):
 
 class URLDropTarget(wx.DropTarget):
 	def __init__(self, window, callback=None):
-		super( URLDropTarget, self ).__init__()
+		super().__init__()
 		self.window = window
 		self.callback = callback
 		self.data = wx.URLDataObject();
@@ -59,7 +70,7 @@ class URLDropTarget(wx.DropTarget):
 
 class RaceDB( wx.Dialog ):
 	def __init__( self, parent, id=wx.ID_ANY, size=(1100,500) ):
-		super(RaceDB, self).__init__(parent, id, style=wx.DEFAULT_DIALOG_STYLE, size=size, title=_('Open RaceDB Event'))
+		super().__init__(parent, id, style=wx.DEFAULT_DIALOG_STYLE, size=size, title=_('Open RaceDB Event'))
 		
 		fontPixels = 20
 		font = wx.Font((0,fontPixels), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
@@ -162,15 +173,8 @@ class RaceDB( wx.Dialog ):
 		wx.CallAfter( self.refresh )
 	
 	def fixUrl( self ):
-		global globalRaceDBUrl
-		url = self.raceDBUrl.GetValue().strip()
-		if not url:
-			url = RaceDBUrlDefault()
-		url = url.split('RaceDB')[0] + 'RaceDB'
-		while url.endswith( '/' ):
-			url = url[:-1]
+		url = fixUrl( self.raceDBUrl.GetValue() )
 		self.raceDBUrl.SetValue( url )
-		globalRaceDBUrl = url
 		return url
 	
 	def doOK( self, event ):
@@ -249,12 +253,13 @@ class RaceDB( wx.Dialog ):
 					url=self.fixUrl(),
 					date=datetime.date( d.GetYear(), d.GetMonth()+1, d.GetDay() ),
 				)
-			except Exception as e:
+			except Exception as e_current:
+				e = e_current
 				events = {'events':[]}
 
 		if not e and not (events and events.get('events',None)):
 			e = u'{} {:04d}-{:02d}-{:02d}'.format( _('No Events found on'), d.GetYear(), d.GetMonth()+1, d.GetDay() )
-		self.status.SetLabel( six.text_type(e) if e else u'{}.'.format(_('Events retrieved successfully')) )
+		self.status.SetLabel( u'{}'.format(e) if e else u'{}.'.format(_('Events retrieved successfully')) )
 				
 		competitions = {}
 		for e in events['events']:
@@ -290,9 +295,9 @@ class RaceDB( wx.Dialog ):
 		self.dataSelect = None
 		
 		for cName, events, participant_count, num in sorted(
-				((c['name'], c['events'], c['participant_count'], c['num']) for c in six.itervalues(competitions)), key=lambda x: x[-1] ):
+				((c['name'], c['events'], c['participant_count'], c['num']) for c in competitions.values()), key=lambda x: x[-1] ):
 			competition = self.tree.AppendItem( self.root, cName )
-			self.tree.SetItemText( competition, self.participantCountCol, six.text_type(participant_count) )
+			self.tree.SetItemText( competition, self.participantCountCol, u'{}'.format(participant_count) )
 			for e in events:
 				eventData = e
 				event = self.tree.AppendItem( competition,
@@ -304,7 +309,7 @@ class RaceDB( wx.Dialog ):
 				)
 				self.tree.SetItemText( event, self.startTimeCol, get_tod(e['date_time']) )
 				self.tree.SetItemText( event, self.eventTypeCol, _('Mass Start') if e['event_type'] == 0 else _('Time Trial') )
-				self.tree.SetItemText( event, self.participantCountCol, six.text_type(e['participant_count']) )
+				self.tree.SetItemText( event, self.participantCountCol, u'{}'.format(e['participant_count']) )
 				
 				tEvent = datetime.datetime.combine( tNow.date(), get_time(e['date_time']) )
 				if eventClosest is None and tEvent > tNow:
@@ -313,13 +318,13 @@ class RaceDB( wx.Dialog ):
 				
 				for w in e['waves']:
 					wave = self.tree.AppendItem( event, u'{}: {}'.format(_('Wave'), w['name']), data=eventData )
-					self.tree.SetItemText( wave, self.participantCountCol, six.text_type(w['participant_count']) )
+					self.tree.SetItemText( wave, self.participantCountCol, u'{}'.format(w['participant_count']) )
 					start_offset = w.get('start_offset',None)
 					if start_offset:
 						self.tree.SetItemText( wave, self.startTimeCol, '+' + start_offset )
 					for cat in w['categories']:
 						category = self.tree.AppendItem( wave, cat['name'], data=eventData )
-						self.tree.SetItemText( category, self.participantCountCol, six.text_type(cat['participant_count']) )
+						self.tree.SetItemText( category, self.participantCountCol, u'{}'.format(cat['participant_count']) )
 			self.tree.Expand( competition )
 						
 		self.tree.Expand( self.root )
@@ -337,7 +342,7 @@ def PostEventCrossMgr( url ):
 
 class RaceDBUpload( wx.Dialog ):
 	def __init__( self, parent, id=wx.ID_ANY, size=(700,500) ):
-		super(RaceDBUpload, self).__init__(parent, id, style=wx.DEFAULT_DIALOG_STYLE, size=size, title=_('Upload Results to RaceDB'))
+		super().__init__(parent, id, style=wx.DEFAULT_DIALOG_STYLE, size=size, title=_('Upload Results to RaceDB'))
 		
 		fontPixels = 20
 		font = wx.Font((0,fontPixels), wx.DEFAULT, wx.NORMAL, wx.NORMAL)
@@ -393,15 +398,8 @@ class RaceDBUpload( wx.Dialog ):
 		self.refresh()
 
 	def fixUrl( self ):
-		global globalRaceDBUrl
-		url = self.raceDBUrl.GetValue().strip()
-		if not url:
-			url = RaceDBUrlDefault()
-		url = url.split('RaceDB')[0] + 'RaceDB'
-		while url.endswith( '/' ):
-			url = url[:-1]
+		url = fixUrl( self.raceDBUrl.GetValue() )
 		self.raceDBUrl.SetValue( url )
-		globalRaceDBUrl = url
 		return url
 	
 	def refresh( self, events=None ):
@@ -422,21 +420,27 @@ class RaceDBUpload( wx.Dialog ):
 		try:
 			response = PostEventCrossMgr( url )
 		except Exception as e:
-			response = {'errors':[six.text_type(e)], 'warnings':[]}
+			response = {'errors':[u'{}'.format(e)], 'warnings':[], 'info':[] }
 		
-		if response.get('errors',None) or response.get('warnings',None):
-			resultText = u'\n'.join( u'RaceDB{}: {}'.format(_('Error'), e) for e in response.get('errors',[]) )
-			if resultText:
-				resultText += u'\n\n'
-			resultText += u'\n'.join( u'RaceDB{}: {}'.format(_('Warning'),w) for w in response.get('warnings',[]) )
+		resultText = ''
+		if 'errors' in response or 'warnings' in response:
+			if 'errors' in response:
+				resultText += (u'\n\n' if resultText else u'') + u'\n'.join( u'{}: {}'.format(_('Error'), e) for e in response.get('errors',[]) )
+			
+			if 'warnings' in response:
+				resultText += (u'\n\n' if resultText else u'') + u'\n'.join( u'{}: {}'.format(_('Warning'),w) for w in response.get('warnings',[]) )
+			
+			if 'info' in response:
+				resultText += (u'\n\n' if resultText else u'') + u'\n'.join( u'{}: {}'.format(_('Info'), i) for i in response.get('info',[]) )			
 		
-		if not response.get('errors',None):
-			if resultText:
-				resultText += u'\n\n'
-			if response.get('warnings',None):
-				resultText += _('Otherwise, Upload Successful.')
+		if 'errors' not in response:
+			if 'warnings' in response:
+				resultText += (u'\n\n' if resultText else u'') + _('Otherwise, Upload Successful.')
 			else:
-				resultText += _('Upload Successful.')
+				resultText += (u'\n\n' if resultText else u'') + _('Upload Successful.')
+		
+		if resultText:
+			resultText = u'url="{}"'.format( url ) + '\n' + resultText
 		
 		self.uploadStatus.SetValue( resultText )
 		del busy
@@ -452,8 +456,8 @@ if __name__ == '__main__':
 	else:
 
 		events = GetRaceDBEvents()
-		six.print_( GetRaceDBEvents( date=datetime.date.today() ) )
-		six.print_( GetRaceDBEvents( date=datetime.date.today() - datetime.timedelta(days=2) ) )
+		print ( GetRaceDBEvents( date=datetime.date.today() ) )
+		print ( GetRaceDBEvents( date=datetime.date.today() - datetime.timedelta(days=2) ) )
 		
 		app = wx.App(False)
 		mainWin = wx.Frame(None,title="CrossMan", size=(1000,400))

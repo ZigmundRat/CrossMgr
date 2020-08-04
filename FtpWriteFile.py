@@ -3,10 +3,9 @@ import wx.lib.intctrl
 import io
 import os
 import sys
-import six
 import webbrowser
 import ftputil
-from six.moves.urllib.parse import quote
+from urllib.parse import quote
 import datetime
 import threading
 import Utils
@@ -22,7 +21,7 @@ def lineno():
 
 def FtpWriteFile( host, user='anonymous', passwd='anonymous@', timeout=30, serverPath='.', fname='', callback=None ):
 	
-	if isinstance(fname, six.string_types):
+	if isinstance(fname, str):
 		fname = [fname]
 	
 	# This stops the ftputils from going into an infinite loop.
@@ -34,7 +33,7 @@ def FtpWriteFile( host, user='anonymous', passwd='anonymous@', timeout=30, serve
 		import time
 		for i, f in enumerate(fname):
 			fSize = os.path.getsize(f)
-			for s in six.moves.range(0, fSize, 1024 ):
+			for s in range(0, fSize, 1024 ):
 				callback( ' '*1024, f, i )
 				time.sleep( 0.1 )
 			if s != fSize:
@@ -73,8 +72,10 @@ def FtpUploadFile( fname=None, callback=None ):
 			return None
 	
 	try:
+		# Fix cut and paste issues
+		hostname = getattr( race, 'ftpHost', '' ).strip().strip('\t')
 		FtpWriteFile(
-			host		= getattr( race, 'ftpHost', '' ),
+			host		= hostname,
 			user		= getattr( race, 'ftpUser', '' ),
 			passwd		= getattr( race, 'ftpPassword', '' ),
 			serverPath	= getattr( race, 'ftpPath', '' ),
@@ -210,19 +211,19 @@ class FtpQRCodePrintout( wx.Printout ):
 		wx.Printout.__init__(self)
 
 	def OnBeginDocument(self, start, end):
-		return super(FtpQRCodePrintout, self).OnBeginDocument(start, end)
+		return super().OnBeginDocument(start, end)
 
 	def OnEndDocument(self):
-		super(FtpQRCodePrintout, self).OnEndDocument()
+		super().OnEndDocument()
 
 	def OnBeginPrinting(self):
-		super(FtpQRCodePrintout, self).OnBeginPrinting()
+		super().OnBeginPrinting()
 
 	def OnEndPrinting(self):
-		super(FtpQRCodePrintout, self).OnEndPrinting()
+		super().OnEndPrinting()
 
 	def OnPreparePrinting(self):
-		super(FtpQRCodePrintout, self).OnPreparePrinting()
+		super().OnPreparePrinting()
 
 	def HasPage(self, page):
 		return page == 1
@@ -306,10 +307,10 @@ def GetFtpPublish( isDialog=True ):
 
 		def __init__( self, parent, id=wx.ID_ANY, uploadNowButton=True ):
 			if isDialog:
-				super(FtpPublishObject, self).__init__( parent, id, _("Ftp Publish Results"),
+				super().__init__( parent, id, _("Ftp Publish Results"),
 								style=wx.DEFAULT_DIALOG_STYLE|wx.TAB_TRAVERSAL )
 			else:
-				super(FtpPublishObject, self).__init__( parent, id )
+				super().__init__( parent, id )
 							
 			fgs = wx.FlexGridSizer(vgap=4, hgap=4, rows=0, cols=2)
 			fgs.AddGrowableCol( 1, 1 )
@@ -409,15 +410,22 @@ def GetFtpPublish( isDialog=True ):
 
 		def onFtpTest( self, event ):
 			self.commit()
-			result = FtpTest()
-			if result:
-				Utils.MessageOK(self, u'{}\n\n{}\n'.format(_("Ftp Test Failed"), result), _("Ftp Test Failed"), iconMask=wx.ICON_ERROR)
-			else:
-				Utils.MessageOK(self, _("Ftp Test Successful"), _("Ftp Test Successful"))				
+			if Utils.MessageYesNo(self, "Are you sure you want to FTP Test Now? This can take several minutes and you will not be able to do anything until complete?", "Test FTP Upload"):
+				busy = wx.BusyInfo('Uploading...', self)
+				result = FtpTest()
+				del busy
+				if result:
+					Utils.MessageOK(self, u'{}\n\n{}\n'.format(_("Ftp Test Failed"), result), _("Ftp Test Failed"), iconMask=wx.ICON_ERROR)
+				else:
+					Utils.MessageOK(self, _("Ftp Test Successful"), _("Ftp Test Successful"))
+								
 
 		def onFtpUploadNow( self, event ):
 			self.commit()
-			FtpUploadNow( self )
+			if Utils.MessageYesNo(self, "Are you sure you want to FTP Upload Now? This can take several minutes and you will not be able to do anything until complete?", "FTP Upload Now"):
+				busy = wx.BusyInfo('Uploading...', self)
+				FtpUploadNow( self )
+				del busy
 		
 		def onPrint( self, event ):
 			race = Model.race

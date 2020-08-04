@@ -24,12 +24,14 @@ initTranslation()
 #
 FontFace = 'Arial'
 
-import datetime
 import os
 import re
 import sys
 import math
+import string
 import socket
+import datetime
+import unicodedata
 
 timeoutSecs = None
 
@@ -157,17 +159,36 @@ def getDocumentsDir():
 	return sp.GetDocumentsDir()
 	
 #------------------------------------------------------------------------
-try:
-	dirName = os.path.dirname(os.path.abspath(__file__))
-except:
-	dirName = os.path.dirname(os.path.abspath(sys.argv[0]))
+if 'WXMAC' in wx.Platform:
+	try:
+		topdirName = os.environ['RESOURCEPATH']
+	except:
+		topdirName = os.path.dirname(os.path.realpath(__file__))
+	if os.path.isdir( os.path.join(topdirName, 'CrossMgrVideoImages') ):
+		dirName = topdirName
+	else:
+		dirName = os.path.normpath(topdirName + '/../Resources/')
+	if not os.path.isdir(dirName):
+		dirName = os.path.normpath(topdirName + '/../../Resources/')
+	if not os.path.isdir(dirName):
+		raise Exception("Resource Directory does not exist:" + dirName)
+else:
+	try:
+		dirName = os.path.dirname(os.path.abspath(__file__))
+	except:
+		dirName = os.path.dirname(os.path.abspath(sys.argv[0]))
 
-if os.path.basename(dirName) == 'library.zip':
-	dirName = os.path.dirname(dirName)
-if 'CrossMgr?' in os.path.basename(dirName):
-	dirName = os.path.dirname(dirName)
+	if os.path.basename(dirName) == 'library.zip':
+		dirName = os.path.dirname(dirName)
+	if 'CrossMgrVideo?' in os.path.basename(dirName):
+		dirName = os.path.dirname(dirName)
 
-imageFolder = os.path.join(dirName, 'images')
+	if os.path.isdir( os.path.join(dirName, 'CrossMgrVideoImages') ):
+		pass
+	elif os.path.isdir( '/usr/local/CrossMgrVideoImages' ):
+		dirName = '/usr/local'
+
+imageFolder = os.path.join(dirName, 'CrossMgrVideoImages')
 helpFolder = os.path.join(dirName, 'CrossMgrVideoHtmlDoc')
 
 def getDirName():		return dirName
@@ -186,6 +207,12 @@ def getFFMegExe():
 
 def GetPngBitmap( fname ):
 	return wx.Bitmap( os.path.join(imageFolder, fname), wx.BITMAP_TYPE_PNG )
+	
+invalidFilenameChars = re.compile( "[^-_.() " + string.ascii_letters + string.digits + "]" )
+def RemoveDisallowedFilenameChars( filename ):
+	cleanedFilename = unicodedata.normalize('NFKD', u'{}'.format(filename).strip()).encode('ASCII', 'ignore').decode()
+	cleanedFilename = cleanedFilename.replace( '/', '_' ).replace( '\\', '_' )
+	return invalidFilenameChars.sub( '', cleanedFilename )
 #------------------------------------------------------------------------
 
 def disable_stdout_buffering():
@@ -212,4 +239,4 @@ def readDelimitedData( s, delim ):
 	yield buffer
 	
 if __name__ == '__main__':
-	six.print_( getImageFolder(), os.path.join(getImageFolder(), 'CrossMgrHeader.png') )
+	print_( getImageFolder(), os.path.join(getImageFolder(), 'CrossMgrHeader.png') )

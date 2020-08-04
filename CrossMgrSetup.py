@@ -2,7 +2,6 @@
 import os
 import io
 import sys
-import six
 import shutil
 import zipfile
 import datetime
@@ -35,6 +34,19 @@ if os.path.exists(distDirParent):
 	shutil.rmtree( distDirParent )
 if not os.path.exists( distDirParent ):
 	os.makedirs( distDirParent )
+
+# Compile all the language files.
+print( "Compiling language files..." )
+cmd = ['pybabel']
+CrossMgrLocale = 'CrossMgrLocale'
+languages = [d for d in os.listdir(CrossMgrLocale) if os.path.isdir(os.path.join(CrossMgrLocale,d))]
+for lang in languages:
+	#-----------------------------------------------------------------------
+	# Compile the translation file.
+	#
+	po = os.path.join(CrossMgrLocale, lang, 'LC_MESSAGES', 'messages.po')
+	if os.path.isfile(po):
+		subprocess.call( cmd + ["compile", "-f", "-d", CrossMgrLocale, "-l", lang, "-i", po] )
 
 subprocess.call( [
 	'pyinstaller',
@@ -105,12 +117,12 @@ def make_inno_version():
 		'VersionInfoVersion':	AppVerName.split()[1],
 	}
 	with io.open('inno_setup.txt', 'w', encoding='utf-8') as f:
-		for k, v in six.iteritems(setup):
+		for k, v in setup.items():
 			f.write( '{}={}\n'.format(k,v) )
 make_inno_version()
 
 cmd = '"' + inno + '" ' + 'CrossMgr.iss'
-six.print_( cmd )
+print( cmd )
 subprocess.call( cmd, shell=True )
 
 # Create versioned executable.
@@ -123,7 +135,7 @@ except:
 	pass
 
 shutil.copy( 'install\\CrossMgr_Setup.exe', 'install\\' + newExeName )
-six.print_( 'executable copied to: ' + newExeName )
+print( 'executable copied to: ' + newExeName )
 
 # Create compressed executable.
 os.chdir( 'install' )
@@ -138,14 +150,14 @@ except:
 z = zipfile.ZipFile(newZipName, "w")
 z.write( newExeName )
 z.close()
-six.print_( 'executable compressed to: ' + newZipName )
+print( 'executable compressed to: ' + newZipName )
 
 shutil.copy( newZipName, googleDrive  )
 
 from virus_total_apis import PublicApi as VirusTotalPublicApi
 API_KEY = '64b7960464d4dbeed26ffa51cb2d3d2588cb95b1ab52fafd82fb8a5820b44779'
 vt = VirusTotalPublicApi(API_KEY)
-six.print_( 'VirusTotal Scan' )
+print( 'VirusTotal Scan' )
 vt.scan_file( os.path.abspath(newExeName) )
 
 os.chdir( '..' )

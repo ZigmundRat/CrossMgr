@@ -1,4 +1,3 @@
-import six
 
 def set_to_intervals( s ):
 	if not s:
@@ -45,8 +44,8 @@ def minimal_intervals( numbers ):
 			nums = sorted( n )
 			intervalCur = []			
 			nRange = [nums[0], nums[0]]
-			for i in six.moves.range(1, len(nums)):
-				if other_nums.isdisjoint( six.moves.range(nums[i-1], nums[i]+1) ):
+			for i in range(1, len(nums)):
+				if other_nums.isdisjoint( range(nums[i-1], nums[i]+1) ):
 					nRange[1] = nums[i]
 				else:
 					if intervalCur and intervalCur[-1][1]+1 == nRange[0]:
@@ -67,15 +66,15 @@ def interval_to_str( intervals ):
 	
 if __name__ == '__main__':
 	for i in minimal_intervals( [
-					set( six.moves.range(1,99+1) ),
-					set( six.moves.range(1,10+1) ),
-					set( six.moves.range(10,19+1) ),
-					set( six.moves.range(20,29+1) ),
+					set( range(1,99+1) ),
+					set( range(1,10+1) ),
+					set( range(10,19+1) ),
+					set( range(20,29+1) ),
 				]
 			):
-		six.print_( interval_to_str( i ) )
+		print( interval_to_str( i ) )
 	
-	six.print_(  '-------------------------' )
+	print(  '-------------------------' )
 	
 	for i in minimal_intervals( [
 					set( [0, 1, 2] ),
@@ -84,9 +83,9 @@ if __name__ == '__main__':
 					set( x*3 for x in [6,8,9,10,11] ),
 				]
 			):
-		six.print_(  interval_to_str( i ) )
+		print(  interval_to_str( i ) )
 	
-	six.print_(  '-------------------------' )
+	print(  '-------------------------' )
 	
 	for i in minimal_intervals( [
 					set( 1000000 + x for x in [0, 1, 2] ),
@@ -95,4 +94,4 @@ if __name__ == '__main__':
 					set( 1000000 + x*3 for x in [6,8,9,10,11] ),
 				]
 			):
-		six.print_(  interval_to_str( i ) )
+		print(  interval_to_str( i ) )

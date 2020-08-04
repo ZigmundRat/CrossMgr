@@ -1,11 +1,4 @@
-import os
-import io
-import six
 import json
-import getpass
-import socket
-import datetime
-import Version
 import Utils
 import Model
 from GeoAnimation import GpsPoint, GeoTrack
@@ -85,6 +78,18 @@ class Template( object ):
 			'postPublishCmd',
 			
 			'course',
+			
+			'teamRankByRiderTime',
+			'teamRankBySumTime',
+			'teamRankBySumPoints',
+			'teamRankBySumPercentTime',
+			
+			'teamRankOption',
+
+			'nthTeamRider',
+			'topTeamResults',
+			'finishPointsStructure',
+			'showNumTeamParticipants',
 		},
 		set(batchPublishRaceAttr),
 	)
@@ -96,12 +101,12 @@ class Template( object ):
 			self.fromRace( race )
 		
 	def write( self, fname ):
-		with io.open( fname, 'wb' ) as fp:
+		with open( fname, 'w' ) as fp:
 			json.dump( self.template, fp, indent=1, sort_keys=True )
 		self.fileName = fname
 		
 	def read( self, fname ):
-		with io.open( fname, 'rb' ) as fp:
+		with open( fname, 'r' ) as fp:
 			self.template = json.load( fp )
 		self.fileName = fname
 	
@@ -134,7 +139,7 @@ class Template( object ):
 			return
 		geoTrack = None
 		firstLapDistance = None
-		for attr, value in six.iteritems(self.template):
+		for attr, value in self.template.items():
 			if attr not in self.templateAttributes:
 				continue
 			if attr == 'course':

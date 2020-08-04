@@ -1,6 +1,5 @@
 import wx
 import sys
-import six
 import bisect
 import operator
 import itertools
@@ -18,7 +17,6 @@ from EditEntry import CorrectNumber, SplitNumber, ShiftNumber, InsertNumber, Del
 from FixCategories import SetCategory
 from FtpWriteFile import realTimeFtpPublish
 
-@Model.memoize
 def getExpectedRecorded( tCutoff=0.0 ):
 	race = Model.race
 	if not race:
@@ -59,7 +57,7 @@ def getExpectedRecorded( tCutoff=0.0 ):
 	for rr in results:
 		if not rr.raceTimes or rr.status != Finisher:
 			continue
-		offset = (getattr(rr,'startTime',0.0) or 0.0) if race.isTimeTrial else 0.0
+		offset = (getattr(rr,'startTime',None) or 0.0) if race.isTimeTrial else 0.0
 		
 		i = bisect_left( rr.raceTimes, tCur - offset )
 		
@@ -154,7 +152,7 @@ class ForecastHistory( wx.Panel ):
 		self.redColour = wx.Colour(255, 51, 51)
 		self.groupColour = wx.Colour(220, 220, 220)
 
-		self.callLaterRefresh = None
+		self.callFutureRefresh = None
 		self.SetDoubleBuffered( True )
 		
 		# Main sizer.
@@ -233,7 +231,7 @@ class ForecastHistory( wx.Panel ):
 		mainWin = Utils.getMainWin()
 		if mainWin:
 			mainWin.setNumSelect( numSelect )
-			mainWin.showPageName( _('RiderDetail') )
+			mainWin.showPage( mainWin.iRiderDetailPage )
 	
 	def doHistoryPopup( self, event ):
 		r = event.GetRow()
@@ -278,7 +276,7 @@ class ForecastHistory( wx.Panel ):
 		race = Model.race
 		if race and race.isTimeTrial:
 			rider = race.riders.get(e.num, None)
-			startTime = (rider.getattr('firstTime',0.0) or 0.0) if rider else 0.0
+			startTime = (getattr(rider,'firstTime',0.0) or 0.0) if rider else 0.0
 			return Model.Entry( e.num, e.lap, e.t-startTime, e.interp )
 		return e
 	
@@ -309,7 +307,7 @@ class ForecastHistory( wx.Panel ):
 		except:
 			pass
 	
-	def SelectNumShowPage( self, num, pageName ):
+	def SelectNumShowPage( self, num, iPageAttr ):
 		race = Model.race
 		mainWin = Utils.getMainWin()
 		if not race or not mainWin or not num:
@@ -320,7 +318,7 @@ class ForecastHistory( wx.Panel ):
 		# If this page supports a category, make sure we show it too.
 		category = None
 		CatComponent = Model.Category.CatComponent
-		if pageName != _('Passings'):
+		if iPageAttr != 'iPassingsPage':
 			# Check Component categories first.
 			for c in race.getCategories( startWaveOnly=False ):
 				if c.catType == CatComponent and race.inCategory(num, c):
@@ -334,27 +332,26 @@ class ForecastHistory( wx.Panel ):
 						break
 
 		# Set the category of the num.
-		for a, cls, name in mainWin.attrClassName:
-			if name == pageName:
-				try:
-					getattr(mainWin, a).setCategory( category )
-				except AttributeError:
-					pass
-				break
+		iPage = getattr(mainWin, iPageAttr, 0)
+		a = mainWin.attrClassName[iPage][0]
+		try:
+			getattr(mainWin, a).setCategory( category )
+		except AttributeError:
+			pass
 		
-		mainWin.showPageName( pageName )
+		mainWin.showPage( iPage )
 		
 	def OnPopupHistoryRiderDetail( self, event ):
-		self.SelectNumShowPage( self.entryCur.num, _('RiderDetail') )
+		self.SelectNumShowPage( self.entryCur.num, 'iRiderDetailPage' )
 	
 	def OnPopupHistoryResults( self, event ):
-		self.SelectNumShowPage( self.entryCur.num, _('Results') )
+		self.SelectNumShowPage( self.entryCur.num, 'iResultsPage' )
 	
 	def OnPopupHistoryPassings( self, event ):
-		self.SelectNumShowPage( self.entryCur.num, _('Passings') )
+		self.SelectNumShowPage( self.entryCur.num, 'iPassingsPage' )
 				
 	def OnPopupHistoryChart( self, event ):
-		self.SelectNumShowPage( self.entryCur.num, _('Chart') )
+		self.SelectNumShowPage( self.entryCur.num, 'iChartPage' )
 				
 	#--------------------------------------------------------------------
 	
@@ -433,16 +430,16 @@ class ForecastHistory( wx.Panel ):
 			pass
 
 	def OnPopupExpectedRiderDetail( self, event ):
-		self.SelectNumShowPage( self.entryCur.num, _('RiderDetail') )
+		self.SelectNumShowPage( self.entryCur.num, 'iRiderDetailPage' )
 	
 	def OnPopupExpectedResults( self, event ):
-		self.SelectNumShowPage( self.entryCur.num, _('Results') )
+		self.SelectNumShowPage( self.entryCur.num, 'iResultsPage' )
 	
 	def OnPopupExpectedPassings( self, event ):
-		self.SelectNumShowPage( self.entryCur.num, _('Passings') )
+		self.SelectNumShowPage( self.entryCur.num, 'iPassingsPage' )
 				
 	def OnPopupExpectedChart( self, event ):
-		self.SelectNumShowPage( self.entryCur.num, _('Chart') )
+		self.SelectNumShowPage( self.entryCur.num, 'iChartPage' )
 				
 	#--------------------------------------------------------------------
 	
@@ -512,8 +509,10 @@ class ForecastHistory( wx.Panel ):
 		if not tRace:
 			tRace = race.curRaceTime()
 		getT = self.getETATimeFunc()
-		self.expectedGrid.SetColumn( iExpectedTimeCol, [formatTime(getT(e) - tRace) if (e.lap or 0) > 0 else ('[{}]'.format(formatTime(max(0.0, getT(e) - tRace + 0.0000001))))\
-										for e in self.quickExpected] )
+		self.expectedGrid.SetColumn(
+			iExpectedTimeCol,
+			[formatTime(getT(e) - tRace) if (e.lap or 0) > 0 else ('[{}]'.format(formatTime(max(0.0, getT(e) - tRace + 0.0000001)))) for e in self.quickExpected]
+		)
 	
 	def addGaps( self, recorded ):
 		if not (Model.race and Model.race.enableJChipIntegration):
@@ -531,6 +530,20 @@ class ForecastHistory( wx.Panel ):
 		if groupCount:
 			recordedWithGaps.append( Model.Entry(-groupCount, None, None, True) )
 		return recordedWithGaps
+
+	def updateFuture( self, milliSeconds ):
+		if self.callFutureRefresh is None:
+			def doUpdate():
+				self.refresh()
+				if Utils.mainWin:
+					Utils.mainWin.refreshTTStart()
+			class RefreshTimer( wx.Timer ):
+				def Notify( self ):
+					wx.CallAfter( doUpdate )
+			self.callFutureRefresh = RefreshTimer()
+		
+		if not self.callFutureRefresh.IsRunning():
+			self.callFutureRefresh.StartOnce( milliSeconds )
 
 	def refresh( self ):
 		race = Model.race
@@ -550,19 +563,16 @@ class ForecastHistory( wx.Panel ):
 		expected, recorded = getExpectedRecorded()
 		
 		isTimeTrial = race.isTimeTrial
-		if isTimeTrial and expected:
-			for e in expected:
-				if (e.lap or 0) == 0:
-					# Schedule a refresh later to update started riders.
-					milliSeconds = max( 1, int(((e.t or 0.0) - tRace)*1000.0 + 10.0) )
-					if self.callLaterRefresh is None:
-						def doRefresh():
-							self.refresh()
-							if Utils.mainWin:
-								Utils.mainWin.refreshTTStart()
-						self.callLaterRefresh = wx.CallLater( milliSeconds, doRefresh )
-					self.callLaterRefresh.Restart( milliSeconds )
-					break
+		if isTimeTrial:
+			try:
+				e = next( e for e in expected if (e.lap or 0) == 0 )
+			except StopIteration:
+				e = None
+			if e:
+				# Schedule a refresh update riders as they start.
+				milliSeconds = int(((e.t or 0.0) - tRace)*1000.0 + 10.0)
+				if milliSeconds > 0:
+					self.updateFuture( milliSeconds )
 
 		#------------------------------------------------------------------
 		# Highlight interpolated entries at race time.
@@ -744,7 +754,7 @@ if __name__ == '__main__':
 	fh = ForecastHistory(mainWin)
 	Model.setRace( Model.Race() )
 	Model.getRace()._populate()
-	for i, rider in enumerate(six.itervalues(Model.getRace().riders)):
+	for i, rider in enumerate(Model.getRace().riders.values()):
 		rider.firstTime = i * 30.0
 	Model.getRace().isTimeTrial = True
 	fh.refresh()

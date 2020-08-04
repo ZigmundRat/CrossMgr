@@ -1,4 +1,3 @@
-import six
 import Utils
 import Model
 
@@ -6,9 +5,9 @@ sheetName = '--CrossMgr-Categories'
 
 def ReadCategoriesFromExcel( reader ):
 	race = Model.race
-	if not race:
+	if not race or sheetName not in reader.sheet_names():
 		return False
-	
+		
 	HeadersFields = (
 		('Category Type',	'catType'),
 		('Name',			'name'),
@@ -26,9 +25,6 @@ def ReadCategoriesFromExcel( reader ):
 	HeadersToFields = dict( (k, v) for k, v in HeadersFields )
 	HeaderSet = set( k for k, v in HeadersFields )
 
-	if sheetName not in reader.sheet_names():
-		return False
-	
 	# If the course is defined, default the Categories to the course length.
 	if race.geoTrack:
 		distance = race.geoTrack.lengthKm if race.distanceUnit == race.UnitKm else race.geoTrack.lengthMiles
@@ -47,7 +43,7 @@ def ReadCategoriesFromExcel( reader ):
 			continue
 		
 		catRow = {}
-		for h, c in six.iteritems(headerMap):
+		for h, c in headerMap.items():
 			catField = HeadersToFields[h]
 			if h == 'Race Minutes' and row[c]:
 				try:

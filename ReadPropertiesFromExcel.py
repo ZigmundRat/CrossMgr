@@ -1,5 +1,4 @@
 import re
-import six
 import sys
 import Utils
 import Model
@@ -9,9 +8,9 @@ sheetName = '--CrossMgr-Properties'
 
 def ReadPropertiesFromExcel( reader ):
 	race = Model.race
-	if not race:
+	if not race or sheetName not in reader.sheet_names():
 		return False
-		
+			
 	HeadersFields = (
 		('Event Name',		'name', 			's'),
 		('Event Organizer',	'organizer',	 	's'),
@@ -51,9 +50,6 @@ def ReadPropertiesFromExcel( reader ):
 	reStartDate = re.compile( '^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$' )
 	reStartTime = re.compile( '^[0-2][0-9]:[0-9][0-9]$' )
 
-	if sheetName not in reader.sheet_names():
-		return False
-	
 	headerMap = {}
 	for r, row in enumerate(reader.iter_list(sheetName)):
 		# Since this is machine generated, assume the headers are always in the first row.
@@ -63,13 +59,13 @@ def ReadPropertiesFromExcel( reader ):
 					headerMap[v] = c
 			continue
 		
-		for h, c in six.iteritems(headerMap):
+		for h, c in headerMap.items():
 			a = AttributeFromHeader[h]
 			
 			v = row[c]
 			t = FieldType[a]
 			if t == 's':
-				v = six.text_type(v)
+				v = '{}'.format(v)
 			elif t == 'b':
 				v = bool(v)
 			elif t == 'n':
@@ -104,7 +100,7 @@ def ReadPropertiesFromExcel( reader ):
 					Utils.logException( e, sys.exc_info() )
 					continue
 			
-			if v is not u'' and v is not None:
+			if v != u'' and v is not None:
 				setattr( race, a, v )
 		
 		return True

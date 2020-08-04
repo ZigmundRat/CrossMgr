@@ -1,9 +1,7 @@
 import wx
-import io
 import re
-import io
 import os
-import six
+import urllib
 import time
 import socket
 import Utils
@@ -30,7 +28,7 @@ def isUpgradeRecommended( fname = None ):
 		fname = getVersionFileName()
 		
 	try:
-		with io.open(fname, 'r', encoding='utf-8') as f:
+		with open(fname, 'r') as f:
 			for line in f:
 				verMax = tuple( int(n) for n in line.split('.') )
 
@@ -67,7 +65,7 @@ def updateVersionCache( fname = None ):
 		reZipFile = re.compile( "CrossMgr[^'.]*\.zip" )
 		zips = set()
 
-		p = six.moves.urllib.request.urlopen(urlRoot + '/file-cabinet').read()
+		p = urllib.request.urlopen(urlRoot + '/file-cabinet').read()
 		for line in p.split('\n'):
 			for m in reZipFile.findall(line):
 				zips.add( m )
@@ -86,7 +84,7 @@ def updateVersionCache( fname = None ):
 		verMax = max(vers)
 		
 		# Write the max version into the cache file.
-		with io.open( fname, 'w', encoding='utf-8' ) as f:
+		with open( fname, 'w' ) as f:
 			f.write( '.'.join( str(n) for n in verMax ) )
 			f.write( '\n' )
 		
@@ -99,14 +97,14 @@ if __name__ == '__main__':
 	app = wx.App(False)
 	resetVersionCache()
 	updateVersionCache()
-	six.print_( open(getVersionFileName()).read() )
-	six.print_( isUpgradeRecommended() )
+	print( open(getVersionFileName()).read() )
+	print( isUpgradeRecommended() )
 	Version.AppVerName = "CrossMgr 1.11"
 	updateVersionCache()
-	six.print_( isUpgradeRecommended() )
+	print( isUpgradeRecommended() )
 	Version.AppVerName = "CrossMgr 2.11"
 	updateVersionCache()
-	six.print_( isUpgradeRecommended() )
-	with io.open( getVersionFileName(), 'w', encodinng='utf-8' ) as f:
+	print( isUpgradeRecommended() )
+	with open( getVersionFileName(), 'w' ) as f:
 		f.write( '3.15\n' )
-	six.print_( isUpgradeRecommended() )
+	print( isUpgradeRecommended() )

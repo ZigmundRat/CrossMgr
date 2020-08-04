@@ -4,7 +4,6 @@
 
 import re
 import sys
-import six
 import time
 import struct
 from base64 import b64encode
@@ -35,7 +34,7 @@ class Logger( object ):
 	def warning( self, message ):
 		if self.level >= logging.WARNING:
 			msg = 'Websocket Warning: ' + message
-			six.print_( msg )
+			print( msg )
 			Utils.writeLog( msg )
 	
 	def warn( self, message ):
@@ -44,13 +43,13 @@ class Logger( object ):
 	def info( self, message ):
 		if self.level >= logging.INFO:
 			msg = 'Websocket Info: '
-			six.print_( msg )
+			print( msg )
 			Utils.writeLog( msg )
 	
 	def error( self, message, exc_info=False ):
 		if self.level >= logging.ERROR:
 			msg = 'Websocket Error: '
-			six.print_( msg )
+			print( msg )
 			Utils.writeLog( msg )
 
 logger = Logger()
@@ -236,7 +235,7 @@ class WebSocketHandler(StreamRequestHandler):
 	def read_next_message(self):
 		try:
 			b1, b2 = self.read_bytes(2)
-		except ValueError as e:
+		except ValueError:
 			b1, b2 = 0, 0
 
 		fin    = b1 & FIN
@@ -303,7 +302,7 @@ class WebSocketHandler(StreamRequestHandler):
 			if not message:
 				logger.warning("Can\'t send message, message is not valid UTF-8")
 				return False
-		elif isinstance(message, six.string_types):
+		elif isinstance(message, str):
 			pass
 		else:
 			logger.warning('Can\'t send message, message has to be a string or bytes. Given type is %s' % type(message))
@@ -319,7 +318,7 @@ class WebSocketHandler(StreamRequestHandler):
 			header.append(payload_length)
 
 		# Extended payload
-		elif payload_length >= 126 and payload_length <= 65535:
+		elif payload_length <= 65535:
 			header.append(FIN | opcode)
 			header.append(PAYLOAD_LEN_EXT16)
 			header.extend(struct.pack(">H", payload_length))

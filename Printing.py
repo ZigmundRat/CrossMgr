@@ -1,6 +1,5 @@
 import wx
 import os
-import six
 import sys
 import math
 import getpass
@@ -47,7 +46,7 @@ def getCatCountImagesCategoryList( parent ):
 				list.SetItem( index, 2, [_('Start Wave'), _('Component'), _('Custom')][c.catType] )
 				list.SetItem( index, 3, u'{}'.format(catCount[c]) )
 	
-	for col in six.moves.range(4+1):
+	for col in range(4+1):
 		list.SetColumnWidth( 0, wx.LIST_AUTOSIZE )
 	list.SetColumnWidth( 1, 64 )
 	list.SetColumnWidth( 3, 52 )
@@ -122,7 +121,7 @@ class ChoosePrintCategoriesDialog( wx.Dialog ):
 			race.printFormat = event.GetInt()
 		
 	def onSelectAll(self, evt = None):
-		for row in six.moves.range(self.list.GetItemCount()):
+		for row in range(self.list.GetItemCount()):
 			self.list.SetItemState(row, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
 		wx.CallAfter( self.list.SetFocus )
 		
@@ -168,7 +167,7 @@ class ChoosePrintCategoriesPodiumDialog( wx.Dialog ):
 		race = Model.race
 			
 		self.podiumPositionsLabel = wx.StaticText( self, label=_('Podium Positions to Print:') )
-		self.podiumPositions = wx.Choice( self, choices=[six.text_type(i+1) for i in six.moves.range(10)] )
+		self.podiumPositions = wx.Choice( self, choices=['{}'.format(i+1) for i in range(10)] )
 		self.podiumPositions.SetSelection( 2 )
 		
 		self.includePrimesInPrintoutCheckBox = wx.CheckBox( self, label = _('Include Primes in Printout') )
@@ -207,7 +206,7 @@ class ChoosePrintCategoriesPodiumDialog( wx.Dialog ):
 		self.categories = []
 
 	def onSelectAll(self, evt = None):
-		for row in six.moves.range(self.list.GetItemCount()):
+		for row in range(self.list.GetItemCount()):
 			self.list.SetItemState(row, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
 		wx.CallAfter( self.list.SetFocus )
 		
@@ -262,7 +261,10 @@ class CrossMgrPrintout( wx.Printout ):
 
 	def GetPageInfo(self):
 		self.pageInfo = {}
-		numCategories = len(self.categories)
+		try:
+			numCategories = len(self.categories)
+		except:
+			numCategories = 0
 		if numCategories == 0:
 			return (1,1,1,1)
 			
@@ -281,7 +283,7 @@ class CrossMgrPrintout( wx.Printout ):
 				categoryLength = len(GetResults(c))
 				pageNumberTotal = int( math.ceil( float(categoryLength) / float(rowDrawCount) ) + 0.1 )
 				pageNumber = 0
-				for i in six.moves.range(0, categoryLength, rowDrawCount):
+				for i in range(0, categoryLength, rowDrawCount):
 					page += 1
 					pageNumber += 1
 					self.pageInfo[page] = [c, i, min(categoryLength, rowDrawCount), pageNumber, pageNumberTotal, categoryLength]
@@ -416,12 +418,12 @@ class CrossMgrPrintoutPDF( CrossMgrPrintout ):
 			if self.dir and not os.path.isdir( self.dir ):
 				os.mkdir( self.dir )
 			fname = u'{fileBase}.pdf'.format( fileBase=self.fileBase )
-			self.pdf.set_title( six.text_type(os.path.splitext(fname)[0].replace('-', ' ')) )
+			self.pdf.set_title( '{}'.format(os.path.splitext(fname)[0].replace('-', ' ')) )
 			fname = os.path.join( self.dir, fname )
 			self.pdf.output( fname, 'F' )
 			self.lastFName = fname
 			self.pdf = None
-		return super(CrossMgrPrintoutPDF, self).OnEndPrinting()
+		return super().OnEndPrinting()
 
 	def OnPrintPage( self, page ):
 		exportGrid = self.prepareGrid( page )
@@ -483,7 +485,7 @@ class CrossMgrPodiumPrintout( CrossMgrPrintout ):
 				categoryLength = min( sum(1 for r in GetResults(c) if r.status == Finisher), rowDrawCount )
 				pageNumberTotal = 1
 				pageNumber = 0
-				for i in six.moves.range(0, categoryLength, rowDrawCount):
+				for i in range(0, categoryLength, rowDrawCount):
 					page += 1
 					pageNumber += 1
 					self.pageInfo[page] = [c, i, min(categoryLength, rowDrawCount), pageNumber, pageNumberTotal, categoryLength]
@@ -503,7 +505,7 @@ class CrossMgrPodiumPrintout( CrossMgrPrintout ):
 				if self.pageInfo[page][0] == 'Primes':
 					exportGrid = ExportGrid( **Primes.GetGrid() )
 				else:
-					exportGrid.setResultsOneList( self.pageInfo[page][0], True, showLapTimes=False )
+					exportGrid.setResultsOneList( self.pageInfo[page][0], True, showLapTimes=False, showPrizes=True )
 		except KeyError:
 			return ExportGrid()
 		exportGrid.title = u'\n'.join( [_('Podium Results'), u'', exportGrid.title] )
@@ -519,6 +521,6 @@ if __name__ == '__main__':
 	mainWin.Show()
 	cpcd.ShowModal()
 	for c in cpcd.categories:
-		six.print_( c )
+		print( c )
 	app.MainLoop()
 

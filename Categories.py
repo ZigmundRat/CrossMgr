@@ -1,14 +1,13 @@
 import wx
+import wx.grid as gridlib
 import re
 import os
-import six
+import xlsxwriter
 import Utils
 import Model
 from Undo import undo
-import wx.grid			as gridlib
 from ReorderableGrid import ReorderableGrid
-import wx.lib.masked	as  masked
-import xlsxwriter
+from HighPrecisionTimeEdit import HighPrecisionTimeEdit
 
 from GetResults import GetCategoryDetails, UnstartedRaceWrapper
 from ExportGrid import ExportGrid
@@ -88,19 +87,19 @@ class CategoriesPrintout( wx.Printout ):
 		wx.Printout.__init__(self)
 
 	def OnBeginDocument(self, start, end):
-		return super(CategoriesPrintout, self).OnBeginDocument(start, end)
+		return super().OnBeginDocument(start, end)
 
 	def OnEndDocument(self):
-		super(CategoriesPrintout, self).OnEndDocument()
+		super().OnEndDocument()
 
 	def OnBeginPrinting(self):
-		super(CategoriesPrintout, self).OnBeginPrinting()
+		super().OnBeginPrinting()
 
 	def OnEndPrinting(self):
-		super(CategoriesPrintout, self).OnEndPrinting()
+		super().OnEndPrinting()
 
 	def OnPreparePrinting(self):
-		super(CategoriesPrintout, self).OnPreparePrinting()
+		super().OnPreparePrinting()
 
 	def HasPage(self, page):
 		return page == 1
@@ -149,7 +148,7 @@ class TimeEditor(gridlib.GridCellEditor):
 		gridlib.GridCellEditor.__init__(self)
 		
 	def Create( self, parent, id = wx.ID_ANY, evtHandler = None ):
-		self._tc = masked.TimeCtrl( parent, id, style=wx.TE_CENTRE, fmt24hr=True, displaySeconds = True, value=self.defaultValue )
+		self._tc = HighPrecisionTimeEdit( parent, id, style=wx.TE_CENTRE, value=self.defaultValue, display_milliseconds=False )
 		self.SetControl( self._tc )
 		if evtHandler:
 			self._tc.PushEventHandler( evtHandler )
@@ -163,13 +162,8 @@ class TimeEditor(gridlib.GridCellEditor):
 		self._tc.SetFocus()
 		
 	def EndEdit( self, row, col, grid, value = None ):
-		changed = False
 		val = self._tc.GetValue()
-		if val != self.startValue:
-			changed = True
-			grid.GetTable().SetValue( row, col, val )
-		self.startValue = '00:00:00'
-		self._tc.SetValue( self.startValue )
+		grid.GetTable().SetValue( row, col, val )
 		
 	def Reset( self ):
 		self._tc.SetValue( self.startValue )
@@ -245,61 +239,61 @@ class Categories( wx.Panel ):
 		
 		hs = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.activateAllButton = wx.Button(self, label=_('Activate All'), style=wx.BU_EXACTFIT)
+		self.activateAllButton = wx.Button(self, label=_('Activate All'))
 		self.Bind( wx.EVT_BUTTON, self.onActivateAll, self.activateAllButton )
 		hs.Add( self.activateAllButton, 0, border = border, flag = flag )
 
 		hs.AddSpacer( 6 )
 		
-		self.newCategoryButton = wx.Button(self, label=_('New'), style=wx.BU_EXACTFIT)
+		self.newCategoryButton = wx.Button(self, label=_('New'))
 		self.Bind( wx.EVT_BUTTON, self.onNewCategory, self.newCategoryButton )
 		hs.Add( self.newCategoryButton, 0, border = border, flag = flag )
 		
-		self.delCategoryButton = wx.Button(self, label=_('Delete'), style=wx.BU_EXACTFIT)
+		self.delCategoryButton = wx.Button(self, label=_('Delete'))
 		self.Bind( wx.EVT_BUTTON, self.onDelCategory, self.delCategoryButton )
 		hs.Add( self.delCategoryButton, 0, border = border, flag = (flag & ~wx.LEFT) )
 
 		hs.AddSpacer( 6 )
 		
-		self.upCategoryButton = wx.Button(self, label=u'\u2191', style=wx.BU_EXACTFIT)
+		self.upCategoryButton = wx.Button(self, label=u'\u2191')
 		self.Bind( wx.EVT_BUTTON, self.onUpCategory, self.upCategoryButton )
 		hs.Add( self.upCategoryButton, 0, border = border, flag = flag )
 
-		self.downCategoryButton = wx.Button(self, label=u'\u2193', style=wx.BU_EXACTFIT)
+		self.downCategoryButton = wx.Button(self, label=u'\u2193')
 		self.Bind( wx.EVT_BUTTON, self.onDownCategory, self.downCategoryButton )
 		hs.Add( self.downCategoryButton, 0, border = border, flag = (flag & ~wx.LEFT) )
 
 		hs.AddSpacer( 6 )
 		
-		self.setGpxDistanceButton = wx.Button(self, label=_('Set Gpx Distance'), style=wx.BU_EXACTFIT)
+		self.setGpxDistanceButton = wx.Button(self, label=_('Set Gpx Distance') )
 		self.Bind( wx.EVT_BUTTON, self.onSetGpxDistance, self.setGpxDistanceButton )
 		hs.Add( self.setGpxDistanceButton, 0, border = border, flag = flag )
 		
 		hs.AddSpacer( 6 )
 		
-		self.addExceptionsButton = wx.Button(self, label=_('Bib Exceptions'), style=wx.BU_EXACTFIT)
+		self.addExceptionsButton = wx.Button(self, label=_('Bib Exceptions'))
 		self.Bind( wx.EVT_BUTTON, self.onAddExceptions, self.addExceptionsButton )
 		hs.Add( self.addExceptionsButton, 0, border = border, flag = flag )
 
 		hs.AddSpacer( 6 )
 		
 		'''
-		self.updateStartWaveNumbersButton = wx.Button(self, label=_('Update Start Wave Bibs'), style=wx.BU_EXACTFIT)
+		self.updateStartWaveNumbersButton = wx.Button(self, label=_('Update Start Wave Bibs'))
 		self.Bind( wx.EVT_BUTTON, self.onUpdateStartWaveNumbers, self.updateStartWaveNumbersButton )
 		hs.Add( self.updateStartWaveNumbersButton, 0, border = border, flag = flag )
 		'''
 
-		self.normalizeButton = wx.Button(self, label=_('Normalize'), style=wx.BU_EXACTFIT)
+		self.normalizeButton = wx.Button(self, label=_('Normalize'))
 		self.Bind( wx.EVT_BUTTON, self.onNormalize, self.normalizeButton )
 		hs.Add( self.normalizeButton, 0, border = border, flag = flag )
 
 		hs.AddStretchSpacer()
 		
-		self.printButton = wx.Button( self, label=u'{}...'.format(_('Print')), style=wx.BU_EXACTFIT )
+		self.printButton = wx.Button( self, label=u'{}...'.format(_('Print')) )
 		self.Bind( wx.EVT_BUTTON, self.onPrint, self.printButton )
 		hs.Add( self.printButton, 0, border = border, flag = flag )
 		
-		self.excelButton = wx.Button( self, label=u'{}...'.format(_('Excel')), style=wx.BU_EXACTFIT )
+		self.excelButton = wx.Button( self, label=u'{}...'.format(_('Excel')) )
 		self.Bind( wx.EVT_BUTTON, self.onExcel, self.excelButton )
 		hs.Add( self.excelButton, 0, border = border, flag = flag )
 		
@@ -414,10 +408,10 @@ class Categories( wx.Panel ):
 				
 			self.grid.SetColAttr( col, attr )
 		
-		self.Bind( gridlib.EVT_GRID_CELL_LEFT_CLICK, self.onGridLeftClick )
-		self.Bind( gridlib.EVT_GRID_SELECT_CELL, self.onCellSelected )
-		self.Bind( gridlib.EVT_GRID_CELL_CHANGED, self.onCellChanged )
-		self.Bind( gridlib.EVT_GRID_EDITOR_CREATED, self.onEditorCreated )
+		self.grid.Bind( gridlib.EVT_GRID_CELL_LEFT_CLICK, self.onGridLeftClick )
+		self.grid.Bind( gridlib.EVT_GRID_SELECT_CELL, self.onCellSelected )
+		self.grid.Bind( gridlib.EVT_GRID_CELL_CHANGED, self.onCellChanged )
+		self.grid.Bind( gridlib.EVT_GRID_EDITOR_CREATED, self.onEditorCreated )
 		
 		vs.Add( hs, 0, flag=wx.EXPAND|wx.ALL, border = 4 )
 		vs.Add( self.grid, 1, flag=wx.GROW|wx.ALL|wx.EXPAND )
@@ -494,7 +488,7 @@ class Categories( wx.Panel ):
 	def onCellChanged( self, event ):
 		self.rowCur = event.GetRow()
 		self.colCur = event.GetCol()
-		if self.colCur in [1, 2]:
+		if self.colCur in (1, 2):
 			wx.CallAfter( self.fixCells )
 		event.Skip()
 
@@ -820,7 +814,7 @@ and remove them from other categories.'''),
 				return
 			numStrTuples = []
 			for r in range(self.grid.GetNumberRows()):
-				values = { name:self.grid.GetCellValue(r, c) for name, c in six.iteritems(self.iCol)
+				values = { name:self.grid.GetCellValue(r, c) for name, c in self.iCol.items()
 																			if name not in self.computedFields }
 				values['catType'] = self.CategoryTypeChoices.index(values['catType'])
 				values['distanceType'] = self.DistanceTypeChoices.index(values['distanceType'])

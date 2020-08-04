@@ -1,14 +1,14 @@
 import os
 import re
 import sys
-import six
 import cgi
 import copy
 import operator
 import functools
 import datetime
 import GetModelInfo
-StringIO = six.StringIO
+from FileTrie import FileTrie
+from io import StringIO
 import Utils
 
 #----------------------------------------------------------------------
@@ -86,10 +86,10 @@ class PointStructure( object ):
 		self.pointsForPlace = { 1:25, 2:20, 3:16, 4:13, 5:11, 6:10, 7:9, 8:8, 9:7, 10:6, 11:5, 12:4, 13:3, 14:2, 15:1 }
 	
 	def getStr( self ):
-		return ', '.join( str(points) for points in sorted(self.pointsForPlace.values(), reverse=True) )
+		return ', '.join( '{}'.format(points) for points in sorted(self.pointsForPlace.values(), reverse=True) )
 	
 	def getHtml( self ):
-		values = [(pos, points) for pos, points in six.iteritems(self.pointsForPlace)]
+		values = [(pos, points) for pos, points in self.pointsForPlace.items()]
 		values.sort()
 		
 		html = StringIO()
@@ -323,7 +323,7 @@ class SeriesModel( object ):
 		changed = (len(dNew) != len(dExisting))
 		updated = False
 		
-		for name, aliases in six.iteritems(dNew):
+		for name, aliases in dNew.items():
 			if name not in dExisting:
 				changed = True
 				if aliases:
@@ -332,7 +332,7 @@ class SeriesModel( object ):
 				changed = True
 				updated = True
 	
-		for name, aliases in six.iteritems(dExisting):
+		for name, aliases in dExisting.items():
 			if name not in dNew:
 				changed = True
 				if aliases:
@@ -357,7 +357,7 @@ class SeriesModel( object ):
 		changed = (len(dNew) != len(dExisting))
 		updated = False
 		
-		for name, aliases in six.iteritems(dNew):
+		for name, aliases in dNew,items():
 			if name not in dExisting:
 				changed = True
 				if aliases:
@@ -366,7 +366,7 @@ class SeriesModel( object ):
 				changed = True
 				updated = True
 	
-		for name, aliases in six.iteritems(dExisting):
+		for name, aliases in dExisting.items():
 			if name not in dNew:
 				changed = True
 				if aliases:
@@ -392,7 +392,7 @@ class SeriesModel( object ):
 		changed = (len(dNew) != len(dExisting))
 		updated = False
 		
-		for name, aliases in six.iteritems(dNew):
+		for name, aliases in dNew.items():
 			if name not in dExisting:
 				changed = True
 				if aliases:
@@ -401,7 +401,7 @@ class SeriesModel( object ):
 				changed = True
 				updated = True
 	
-		for name, aliases in six.iteritems(dExisting):
+		for name, aliases in dExisting.items():
 			if name not in dNew:
 				changed = True
 				if aliases:
@@ -438,7 +438,7 @@ class SeriesModel( object ):
 	def fixCategories( self ):
 		categorySequence = getattr( self, 'categorySequence', None )
 		if self.categorySequence or not isinstance(self.categories, dict):
-			self.categories = {name:Category(name, i, name not in self.categoryHide) for name, i in six.iteritems(categorySequence) }
+			self.categories = {name:Category(name, i, name not in self.categoryHide) for name, i in categorySequence.items() }
 			self.categorySequence = {}
 			self.categoryHide = {}
 	
@@ -511,21 +511,20 @@ class SeriesModel( object ):
 			return False
 			
 	def setRootFolder( self, path ):
-		if 'win' in sys.platform:
-			fixFName = lambda fn: fn.replace( '/', '\\' )
-		else:
-			fixFName = lambda fn: fn.replace( '\\', '/' )
-		
-		raceFileNames = {os.path.basename(fixFName(r.fileName)):r for r in self.races }
-		
+		ft = FileTrie()
 		for top, directories, files in os.walk(path):
 			for f in files:
-				try:
-					r = raceFileNames[f]
-				except KeyError:
-					continue
-				r.fileName = os.path.join( top, f )
+				ft.add( os.path.join(top, f) )
+		
+		success = False
+		for r in self.races:
+			m = ft.best_match( r.fileName )
+			if m:
+				r.fileName = m
+				success = True
 				self.setChanged()
+		
+		return success
 	
 	def setChanged( self, changed = True ):
 		self.changed = changed

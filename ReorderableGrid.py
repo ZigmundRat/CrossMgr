@@ -1,6 +1,5 @@
 import wx
 import os
-import six
 import wx.grid as gridlib
 import wx.lib.mixins.gridlabelrenderer as glr
 import wx.lib.mixins.grid as gae
@@ -212,7 +211,8 @@ class SaveEditWhenFocusChangesGridMixin( object ):
 	def OnGridEditorCreated(self, event):
 		""" Bind the kill focus event to the newly instantiated cell editor """
 		editor = event.GetControl()
-		editor.Bind(wx.EVT_KILL_FOCUS, self.OnKillFocus)
+		if not isinstance(editor, wx.ComboBox):
+			editor.Bind(wx.EVT_KILL_FOCUS, self.OnKillFocus)
 		event.Skip()
 
 	def OnKillFocus(self, event):

@@ -2,7 +2,6 @@ import Utils
 import Model
 import wx
 import re
-import six
 from GetResults import GetResults
 from math import modf
 from ForecastHistory import getExpectedRecorded
@@ -44,7 +43,7 @@ class Announcer( wx.Panel ):
 	groupTextColours = [Utils.GetContrastTextColour(c) for c in groupColours]
 	
 	def __init__( self, parent, id = wx.ID_ANY ):
-		super(Announcer, self).__init__(parent, id)
+		super().__init__(parent, id)
 		
 		self.iCategory = 0
 		self.tExpected = []

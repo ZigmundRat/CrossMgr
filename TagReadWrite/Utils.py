@@ -13,20 +13,24 @@ DEFAULT_HOST = None
 def GetDefaultHost():
 	global DEFAULT_HOST
 	DEFAULT_HOST = socket.gethostbyname(socket.gethostname())
-	if DEFAULT_HOST == '127.0.0.1':
+	if DEFAULT_HOST.startswith('127.0.'):
 		reSplit = re.compile('[: \t]+')
 		try:
 			co = subprocess.Popen(['ifconfig'], stdout = subprocess.PIPE)
-			ifconfig = co.stdout.read()
+			ifconfig = co.stdout.read().decode()
 			for line in ifconfig.split('\n'):
 				line = line.strip()
 				try:
-					if line.startswith('inet addr:'):
+					addr = None
+					if line.startswith('inet'):
+						fields = reSplit.split( line )
+						addr = fields[1]
+					elif line.startswith('inet addr:'):
 						fields = reSplit.split( line )
 						addr = fields[2]
-						if addr != '127.0.0.1':
-							DEFAULT_HOST = addr
-							break
+					if addr is not None and not addr.startswith('127.0.'):
+						DEFAULT_HOST = addr
+						break
 				except:
 					pass
 		except:
@@ -196,24 +200,38 @@ def getDocumentsDir():
 	return sp.GetDocumentsDir()
 	
 #------------------------------------------------------------------------
-try:
-	dirName = os.path.dirname(os.path.abspath(__file__))
-except:
-	dirName = os.path.dirname(os.path.abspath(sys.argv[0]))
+if 'WXMAC' in wx.Platform:
+	try:
+		topdirName = os.environ['RESOURCEPATH']
+	except:
+		topdirName = os.path.dirname(os.path.realpath(__file__))
+	if os.path.isdir( os.path.join(topdirName, 'TagReadWriteImages') ):
+		dirName = topdirName
+	else:
+		dirName = os.path.normpath(topdirName + '/../Resources/')
+	if not os.path.isdir(dirName):
+		dirName = os.path.normpath(topdirName + '/../../Resources/')
+	if not os.path.isdir(dirName):
+		raise Exception("Resource Directory does not exist:" + dirName)
+else:
+	try:
+		dirName = os.path.dirname(os.path.abspath(__file__))
+	except:
+		dirName = os.path.dirname(os.path.abspath(sys.argv[0]))
 
-if os.path.basename(dirName) == 'library.zip':
-	dirName = os.path.dirname(dirName)
-if 'CrossMgr?' in os.path.basename(dirName):
-	dirName = os.path.dirname(dirName)
+	if os.path.basename(dirName) == 'library.zip':
+		dirName = os.path.dirname(dirName)
+	if 'TagReadWrite?' in os.path.basename(dirName):
+		dirName = os.path.dirname(dirName)
 
-if os.path.isdir( os.path.join(dirName, 'CrossMgrImages') ):
-	pass
-elif os.path.isdir( '/usr/local/CrossMgrImages' ):
-	dirName = '/usr/local'
+	if os.path.isdir( os.path.join(dirName, 'TagReadWriteImages') ):
+		pass
+	elif os.path.isdir( '/usr/local/TagReadWriteImages' ):
+		dirName = '/usr/local'
 
-imageFolder = os.path.join(dirName, 'CrossMgrImages')
-htmlFolder = os.path.join(dirName, 'CrossMgrHtml')
-helpFolder = os.path.join(dirName, 'CrossMgrHtmlDoc')
+imageFolder = os.path.join(dirName, 'TagReadWriteImages')
+htmlFolder = os.path.join(dirName, 'TagReadWriteHtml')
+helpFolder = os.path.join(dirName, 'TagReadWritHtmlDoc')
 
 def getDirName():		return dirName
 def getImageFolder():	return imageFolder

@@ -1,12 +1,8 @@
-from __future__ import print_function
-
 import socket
-import six
 import sys
 import time
 import datetime
 import atexit
-import math
 import re
 import os
 import wx
@@ -15,7 +11,7 @@ import Utils
 import Model
 import select
 from threading import Thread as Process
-from six.moves.queue import Queue, Empty
+from queue import Queue, Empty
 
 ChipReaderEvent, EVT_CHIP_READER = wx.lib.newevent.NewEvent()
 
@@ -114,7 +110,7 @@ reUnprintable = re.compile( r'[\x00-\x19\x7f-\xff]' )
 def formatAscii( s ):
 	r = []
 	charsPerLine = 40
-	for i in six.moves.range(0, len(s), charsPerLine):
+	for i in range(0, len(s), charsPerLine):
 		line = s[i:i+charsPerLine]
 		r.append( ''.join( '.{}'.format(c) for c in reUnprintable.sub('.', line)) )
 		r.append( ''.join( '{:02x}'.format(ord(c)) for c in line ) )
@@ -297,14 +293,14 @@ def Server( q, shutdownQ, HOST, PORT, startTime ):
 						tNow = datetime.datetime.now()
 						
 						iStart = 3
-						hh, mm, ss, hs = [int(line[i:i+2]) for i in six.moves.range(iStart, iStart + 4 * 2, 2)]
+						hh, mm, ss, hs = [int(line[i:i+2]) for i in range(iStart, iStart + 4 * 2, 2)]
 						try:
 							iDate = line.index( 'date=' ) + 5
 							YYYY, MM, DD = int(line[iDate:iDate+4]), int(line[iDate+4:iDate+6]), int(line[iDate+6:iDate+8])
 							tJChip = datetime.datetime( YYYY, MM, DD, hh, mm, ss, hs * 10000 )
 						except ValueError:
 							tJChip = datetime.datetime.combine( tNow.date(), datetime.time(hh, mm, ss, hs * 10000) )
-						except Exception as e:
+						except Exception:
 							tJChip = datetime.datetime.combine( tNow.date(), datetime.time(hh, mm, ss, hs * 10000) )
 							
 						readerComputerTimeDiff[s] = tNow - tJChip
@@ -376,7 +372,7 @@ def StopListener():
 	# Terminate the server process if it is running.
 	# Add a number of shutdown commands as we may check a number of times.
 	if listener:
-		for i in six.moves.range(32):
+		for i in range(32):
 			shutdownQ.put( 'shutdown' )
 		listener.join()
 	listener = None
@@ -423,7 +419,7 @@ def CleanupListener():
 if __name__ == '__main__':
 	StartListener()
 	count = 0
-	for count in six.moves.range(50):
+	for count in range(50):
 		time.sleep( 1 )
 		sys.stdout.write( '.' )
 		messages = GetData()

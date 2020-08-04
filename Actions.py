@@ -1,7 +1,7 @@
 import wx
 from wx.lib.wordwrap import wordwrap
-import wx.lib.masked as masked
 from roundbutton import RoundButton
+from HighPrecisionTimeEdit import HighPrecisionTimeEdit
 
 import datetime
 
@@ -83,9 +83,9 @@ class StartRaceAtTime( wx.Dialog ):
 			startOffset = 3 * 60
 			startSeconds = nowSeconds - nowSeconds % startOffset
 			startSeconds = nowSeconds + startOffset
-			value = u'{:02d}:{:02d}'.format(startSeconds / (60*60), (startSeconds / 60) % 60)
+			value = u'{:02d}:{:02d}'.format(startSeconds // (60*60), (startSeconds // 60) % 60)
 		
-		self.autoStartTime = masked.TimeCtrl( self, fmt24hr=True, display_seconds=False, value=value, size=wx.Size(60,-1) )
+		self.autoStartTime = HighPrecisionTimeEdit( self, display_seconds=False, value=value, size=wx.Size(60,-1) )
 		
 		self.pagesLabel = wx.StaticText( self, label=_('After Start, Switch to:') )
 		mainWin = Utils.getMainWin()
@@ -112,6 +112,7 @@ class StartRaceAtTime( wx.Dialog ):
 		self.pages.SetSelection( 0 )	# Record screen.
 		
 		self.countdown = CountdownClock( self, size=(400,400), tFuture=None )
+		self.countdown.SetBackgroundColour( wx.WHITE );
 		self.Bind( EVT_COUNTDOWN, self.onCountdown )
 		
 		self.okBtn = wx.Button( self, wx.ID_OK, label=_('Start at Above Time') )
@@ -170,9 +171,9 @@ class StartRaceAtTime( wx.Dialog ):
 		self.EndModal( wx.ID_OK )
 	
 	def onOK( self, event, startSeconds = None ):
-		startTime = self.autoStartTime.GetValue()
+		startTime = self.autoStartTime.GetSeconds()
 
-		self.startSeconds = Utils.StrToSeconds( startTime ) * 60.0 if startSeconds is None else startSeconds
+		self.startSeconds = startTime if startSeconds is None else startSeconds
 		if self.startSeconds < GetNowSeconds():
 			Utils.MessageOK(
 				None,
@@ -199,8 +200,8 @@ class StartRaceAtTime( wx.Dialog ):
 		self.EndModal( wx.ID_CANCEL )
 
 #-------------------------------------------------------------------------------------------
-StartText = u'\n'.join(_('Start Race').split())
-FinishText = u'\n'.join(_('Finish Race').split())
+StartText = u'\n'.join(_('Start Race').split(maxsplit=1))
+FinishText = u'\n'.join(_('Finish Race').split(maxsplit=1))
 
 class Actions( wx.Panel ):
 	iResetStartClockOnFirstTag = 1
@@ -385,8 +386,10 @@ class Actions( wx.Panel ):
 		dlg.ShowModal()
 		dlg.Destroy()  
 	
-	def onFinishRace( self, event ):
-		if Model.race is None or not Utils.MessageOKCancel(self, _('Finish Race Now?'), _('Finish Race')):
+	def onFinishRace( self, event, confirm=True ):
+		if Model.race is None:
+			return
+		if confirm and not Utils.MessageOKCancel(self, _('Finish Race Now?'), _('Finish Race')):
 			return
 			
 		with Model.LockRace() as race:

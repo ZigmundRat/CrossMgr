@@ -1,13 +1,15 @@
 import wx
 import io
 import cv2
-import six
 import numpy as np
 from LRUCache import LRUCache
 
 def rescaleToRect( w_src, h_src, w_dest, h_dest ):
 	scale = min( float(w_dest)/float(w_src), float(h_dest)/float(w_src) )
 	return int(w_src * scale), int(h_src * scale)
+
+def frameToWidthHeight( frame ):
+	return frame.shape[:2]
 
 def frameToBitmap( frame, w_req=None, h_req=None ):
 	h_frame, w_frame, layers = frame.shape
@@ -72,19 +74,16 @@ def adjustContrastFrame( frame ):
 	# convert the YUV image back to RGB format
 	return cv2.cvtColor(frame_yuv, cv2.COLOR_YUV2BGR)
 
-StringIO = six.StringIO
 def imageToFrame( image ):
-	if six.PY2:
-		s = StringIO()
-		image.SaveFile( s, wx.BITMAP_TYPE_BMP )
-		return cv2.imdecode( np.fromstring(s.getvalue(), dtype='B'), 1 )
-	else:
-		s = io.BytesIO()
-		image.SaveFile( s, wx.BITMAP_TYPE_BMP )
-		return cv2.imdecode( np.fromstring(s.getbuffer(), dtype='B'), 1 )
+	s = io.BytesIO()
+	image.SaveFile( s, wx.BITMAP_TYPE_BMP )
+	return cv2.imdecode( np.fromstring(s.getvalue(), dtype='B'), 1 )
 
 def bitmapToFrame( bitmap ):
 	return imageToFrame( bitmap.ConvertToImage() )
+	
+def bitmapToJPeg( bitmap ):
+	return frameToJPeg(bitmapToFrame(bitmap))
 	
 def adjustGammaImage( image, gamma=1.0 ):
 	return frameToImage( adjustGammaFrame(imageToFrame(image), gamma) )

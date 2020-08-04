@@ -2,14 +2,13 @@ import wx
 import os
 import re
 import sys
-import six
 import math
 import datetime
 import itertools
 from bisect import bisect_left
 import wx.lib.mixins.listctrl as listmix
 from copy import copy
-import six.moves.cPickle as pickle
+import pickle
 from operator import itemgetter, attrgetter
 from collections import defaultdict
 
@@ -69,7 +68,7 @@ def GetLeaderGap( t, leaderPosition, leaderSpeed, leaderRaceTimes, riderPosition
 		return None, len(riderRaceTimes) - len(leaderRaceTimes)
 	
 	positionFraction = math.modf( 1000 + leaderPosition - riderPosition )[0]
-	# six.print_( 'leaderPosition:', leaderPosition, 'riderPosition:', riderPosition, 'positionFraction:', positionFraction, 'lapsDown:', int(leaderPosition - riderPosition) )
+	# print( 'leaderPosition:', leaderPosition, 'riderPosition:', riderPosition, 'positionFraction:', positionFraction, 'lapsDown:', int(leaderPosition - riderPosition) )
 	return positionFraction / leaderSpeed, int(riderPosition - leaderPosition)
 
 def GetSituationGaps( category=None, t=None ):
@@ -93,11 +92,11 @@ def GetSituationGaps( category=None, t=None ):
 	if not raceTimes:
 		return []
 	
-	t = min( t, max(rt[-1] for rt in six.itervalues(raceTimes)) )
+	t = min( t, max(rt[-1] for rt in raceTimes.values()) )
 	
 	psLeader = (-1, -1, None)
 	positionSpeeds = []
-	for bib, rt in six.iteritems(raceTimes):
+	for bib, rt in raceTimes.items():
 		position, speed = GetPositionSpeed(t, rt)
 		positionSpeeds.append( (position, speed, bib) )
 		if positionSpeeds[-1][0] > psLeader[0]:
@@ -118,7 +117,7 @@ def GetSituationGaps( category=None, t=None ):
 			bibStr = u'\u2198{}'.format(bib)
 		else:
 			lapsDownStr = u''
-			bibStr = six.text_type(bib)
+			bibStr = '{}'.format(bib)
 		return u''.join([bibStr, nameStr, lapsDownStr])
 	
 	gaps = []
@@ -407,7 +406,7 @@ class SituationPanel(wx.Panel):
 			
 			# Insert the new rectangle into the list.  Keep sequenced by decreasing GetRight().
 			existingRects.append( gRect )
-			for i in six.moves.range(len(existingRects)-2, -1, -1):
+			for i in range(len(existingRects)-2, -1, -1):
 				if existingRects[i].GetRight() < existingRects[i+1].GetRight():
 					existingRects[i], existingRects[i+1] = existingRects[i+1], existingRects[i]
 				else:
@@ -450,7 +449,7 @@ class SituationPanel(wx.Panel):
 					fieldWidths[-1] += spaceWidth/2
 					iBrush = 0 if len(fieldWidths) > 2 else 2
 					xLast = xText
-					for iField in six.moves.range(1, len(fieldWidths)):
+					for iField in range(1, len(fieldWidths)):
 						tWidth = fieldWidths[iField] - fieldWidths[iField-1]
 						dc.SetBrush( groupTitleBrushes[iBrush] )
 						dc.DrawRectangle( xLast, yText, tWidth, fontHeight*1.08 )
@@ -475,7 +474,7 @@ class SituationPanel(wx.Panel):
 		leftArrow = [wx.Point(0,0), wx.Point(arrowLength, arrowLength/4), wx.Point(arrowLength, -arrowLength/4)]
 		rightArrow = [wx.Point(-p.x, p.y) for p in leftArrow]
 
-		for iGroup in six.moves.range(1, len(groups)):
+		for iGroup in range(1, len(groups)):
 			groupPrev, groupNext = groups[iGroup-1:iGroup+1]
 			tPrev, tNext = groupPrev[-1][0], groupNext[0][0]
 			xPrev, xNext = xLeft + tPrev * xScale, xLeft + tNext * xScale
@@ -669,7 +668,7 @@ class GroupInfoPopup( wx.Panel, listmix.ColumnSorterMixin ):
 				return u', '.join( n for n in [info.get('LastName','').upper(), info.get('FirstName', '')] if n )
 			externalFields = [f if f != 'LastName' else 'Name' for f in externalFields if f != 'FirstName']
 			externalInfo = { num : externalInfo[num].copy() for num in nums }
-			for num, info in six.iteritems(externalInfo):
+			for num, info in externalInfo.items():
 				info['Name'] = GetName(info)
 		
 		# Add the laps down if necessary.
@@ -680,12 +679,12 @@ class GroupInfoPopup( wx.Panel, listmix.ColumnSorterMixin ):
 			except ValueError:
 				externalFields.append( LapsDown )
 			
-			for num, info in six.iteritems(externalInfo):
+			for num, info in externalInfo.items():
 				info[LapsDown] = lapsDown.get(num, u'')
 				
 		# Add the sequence number.
 		Sequence = 'Seq'
-		for num, info in six.iteritems(externalInfo):
+		for num, info in externalInfo.items():
 			info[Sequence] = sequence[num]
 		externalFields.insert( 0, Sequence )
 			
@@ -702,7 +701,7 @@ class GroupInfoPopup( wx.Panel, listmix.ColumnSorterMixin ):
 		for row, d in enumerate(data):
 			index = self.list.InsertItem(999999, u'{}'.format(d[0]), self.sm_rt)
 			for i, v in enumerate(itertools.islice(d, 1, len(d))):
-				self.list.SetItem( index, i+1, six.text_type(v) )
+				self.list.SetItem( index, i+1, '{}'.format(v) )
 			self.list.SetItemData( row, d[0] )		# This key links to the sort fields used by ColumnSorterMixin
 		
 		# Set the sort fields and configure the sorter mixin.
@@ -720,7 +719,7 @@ class GroupInfoPopup( wx.Panel, listmix.ColumnSorterMixin ):
 
 class TopPanel( wx.Panel ):
 	def __init__( self, parent, id = wx.ID_ANY ):
-		super(TopPanel, self).__init__( parent, id, style=wx.BORDER_SUNKEN )
+		super().__init__( parent, id, style=wx.BORDER_SUNKEN )
 		
 		self.categoryLabel = wx.StaticText( self, label = u'{}:'.format(_('Category')) )
 		self.categoryChoice = wx.Choice( self )
@@ -772,7 +771,7 @@ class TopPanel( wx.Panel ):
 
 class BottomPanel( wx.Panel ):
 	def __init__( self, parent, id = wx.ID_ANY ):
-		super(BottomPanel, self).__init__( parent, id, style=wx.BORDER_SUNKEN )
+		super().__init__( parent, id, style=wx.BORDER_SUNKEN )
 
 		self.title = wx.StaticText( self )
 		
@@ -802,7 +801,7 @@ class BottomPanel( wx.Panel ):
 		
 class Situation( wx.Panel ):
 	def __init__( self, parent, id = wx.ID_ANY ):
-		super(Situation, self).__init__( parent, id )
+		super().__init__( parent, id )
 		
 		self.refreshTimer = None
 		
@@ -918,7 +917,7 @@ if __name__ == '__main__':
 		race.resetAllCaches()
 		SyncExcelLink( race )
 	except Exception as e:
-		six.print_(  e )
+		print(  e )
 		Model.setRace( Model.Race() )
 		race = Model.getRace()
 		race._populate()
@@ -940,7 +939,7 @@ if __name__ == '__main__':
 		race.resetAllCaches()
 		SyncExcelLink( race )
 	except Exception as e:
-		six.print_( e )
+		print( e )
 		Model.setRace( Model.Race() )
 		race = Model.getRace()
 		race._populate()

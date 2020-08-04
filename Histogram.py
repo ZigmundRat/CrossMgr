@@ -1,5 +1,4 @@
 import wx
-import six
 import random
 import bisect
 import sys
@@ -149,8 +148,8 @@ class Histogram(wx.Control):
 		self.bins = None
 		self.iSelect = None
 		self.data = []
-		self.label = [six.text_type(lab) for lab in label]
-		self.category = [six.text_type(cat) for cat in category]
+		self.label = ['{}'.format(lab) for lab in label]
+		self.category = ['{}'.format(cat) for cat in category]
 		if data:
 			self.data = [float(x) for x in data]
 			self.setBins()
@@ -191,7 +190,7 @@ class Histogram(wx.Control):
 
 		textWidth, textHeight = dc.GetTextExtent( u'00:00' if self.dataMax < 60*60 else u'00:00:00' )
 			
-		xLeft = dc.GetTextExtent( six.text_type(self.barMax) )[0] + 4 + tickBorder
+		xLeft = dc.GetTextExtent( '{}'.format(self.barMax) )[0] + 4 + tickBorder
 		xRight = width - 8 - tickBorder
 		yBottom = height - textHeight - 8
 		yTop = textHeight + 8
@@ -213,9 +212,9 @@ class Histogram(wx.Control):
 			if x < xLeft:
 				continue
 			if t < 60*60:
-				s = '{}:{:02d}'.format((t / 60), t%60)
+				s = '{}:{:02d}'.format((t // 60), t%60)
 			else:
-				s = '{}:{:02d}:{:02d}'.format(t/(60*60), (t / 60)%60, t%60)
+				s = '{}:{:02d}:{:02d}'.format(t//(60*60), (t // 60)%60, t%60)
 			w, h = dc.GetTextExtent(s)
 			dc.DrawText( s, x - w/2, yBottom + 4)
 			dc.DrawText( s, x - w/2, 0 + 4 )
@@ -276,7 +275,7 @@ class Histogram(wx.Control):
 				if t < 60*60:
 					s = '{}:{:02d}'.format((t/60), t%60)
 				else:
-					s = '{}:{:02d}:{:02d}'.format(t/(60*60), (t/60)%60, t%60)
+					s = '{}:{:02d}:{:02d}'.format(t//(60*60), (t//60)%60, t%60)
 
 			label = self.label[self.iSelect]
 			category = self.category[self.iSelect]

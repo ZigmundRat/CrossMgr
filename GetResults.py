@@ -2,7 +2,6 @@ import Model
 from bisect import bisect_left
 from math import floor
 import re
-import six
 import sys
 import copy
 import Utils
@@ -36,8 +35,8 @@ def RidersCanSwap( riderResults, num, numAdjacent ):
 			return False
 		rt1, rt2 = rr1.raceTimes[:], rr2.raceTimes[:]
 		rt1[laps], rt2[laps] = rt2[laps], rt1[laps]
-		if 	all( x < y for x, y in six.moves.zip(rt1, rt1[1:]) ) and \
-			all( x < y for x, y in six.moves.zip(rt2, rt2[1:]) ):
+		if 	all( x < y for x, y in zip(rt1, rt1[1:]) ) and \
+			all( x < y for x, y in zip(rt2, rt2[1:]) ):
 			return True
 	except (IndexError, ValueError, KeyError):
 		pass
@@ -170,7 +169,7 @@ def getPulledCmpTuple( rr, rider, winnerLaps, decreasingLapsToGo=True ):
 	return (lapsToGo*f, rider.pulledSequence or 9999999, rr.raceTimes[-1] if rr.raceTimes else 24.0*60*60*300, rr.num, rr)
 	
 def FixPulled( riderResults, race, category ):
-	if race.isTimeTrial:
+	if not race.useTableToPullRiders or (race.isTimeTrial or race.winAndOut):
 		return
 	
 	catPull = defaultdict( list )
@@ -183,7 +182,7 @@ def FixPulled( riderResults, race, category ):
 		if not category:
 			continue
 		if category not in catWinnerLaps:
-			catWinnerLaps[category] = len(rr.lapTimes) if rr.lapTimes else None
+			catWinnerLaps[category] = race.getNumLapsFromCategory(category)
 		rider = race.riders[rr.num]
 		if rider.status == Pulled:
 			catPull[category].append( rr )
@@ -194,7 +193,7 @@ def FixPulled( riderResults, race, category ):
 		return
 	
 	pullSort = []
-	for cat, winnerLaps in six.iteritems(catWinnerLaps):
+	for cat, winnerLaps in catWinnerLaps.items():
 		if not winnerLaps:
 			continue
 		for rr in catPull[cat]:
@@ -267,7 +266,7 @@ def _GetResultsCore( category ):
 	fastestRidersLastLapTime = None
 	if allCategoriesFinishAfterFastestRidersLastLap and not isTimeTrial:
 		resultBest = (0, sys.float_info.max)
-		for c, (times, nums) in six.iteritems(race.getCategoryTimesNums()):
+		for c, (times, nums) in race.getCategoryTimesNums().items():
 			if not times:
 				continue
 			try:
@@ -283,7 +282,7 @@ def _GetResultsCore( category ):
 				
 	# Get the number of race laps for each category.
 	categoryWinningTime, categoryWinningLaps = {}, {}
-	for c, (times, nums) in six.iteritems(race.getCategoryTimesNums()):
+	for c, (times, nums) in race.getCategoryTimesNums().items():
 		if category and c != category:
 			continue
 		
@@ -315,7 +314,7 @@ def _GetResultsCore( category ):
 	
 	highPrecision = Model.highPrecisionTimes()
 	getCategory = race.getCategory
-	for rider in list(six.itervalues(race.riders)):
+	for rider in list(race.riders.values()):
 		riderCategory = getCategory( rider.num )
 		
 		if category and riderCategory != category:
@@ -665,7 +664,7 @@ def GetResultsWithData( category ):
 					if float(v) == int(v):
 						v = int(v)
 				else:
-					v = six.text_type(v)
+					v = u'{}'.format(v)
 				setattr( rr, f, v )
 			except (KeyError, ValueError):
 				setattr( rr, f, u'' )
@@ -824,7 +823,7 @@ def UnstartedRaceDataProlog( getExternalData = True ):
 		# Add all numbers from the spreadsheet if they are not already in the race.
 		# Default the status to NP.
 		if externalInfo:
-			for num, info in six.iteritems(externalInfo):
+			for num, info in externalInfo.items():
 				if num not in race.riders and any(info.get(f, None) for f in ['LastName', 'FirstName', 'Team', 'License']):
 					rider = race.getRider( num )
 					rider.status = Model.Rider.NP
@@ -901,6 +900,7 @@ def GetCategoryDetails( ignoreEmptyCategories=True, publishOnly=False ):
 		'laps'			: 0,
 		'pos'			: [rr.num for rr in results],
 		'gapValue'		: [getattr(rr, 'gapValue', 0) for rr in results],
+		'iSort'			: 0,
 	}
 	catDetails.append( info )
 	
@@ -908,7 +908,7 @@ def GetCategoryDetails( ignoreEmptyCategories=True, publishOnly=False ):
 	lastWaveLaps = 0
 	lastWaveCat = None
 	lastWaveStartOffset = 0
-	for iSort, cat in enumerate(race.getCategories( startWaveOnly=False, publishOnly=publishOnly )):
+	for iSort, cat in enumerate(race.getCategories( startWaveOnly=False, publishOnly=publishOnly ), 1):
 		results = GetResults( cat )
 		if ignoreEmptyCategories and not results:
 			continue
@@ -1079,3 +1079,73 @@ def IsRiderFinished( bib, t ):
 	
 	rr = GetResultMap( category ).get( bib, None )
 	return rr and rr.status == Model.Rider.Finisher and rr.raceTimes and rr.raceTimes[-1] == t
+
+def IsRiderOnCourse( bib, tRace=None, rr=None ):
+	race = Model.race
+	if not race or not race.isRunning():
+		return False
+	rider = race.riders.get( bib, None )
+	if not rider:
+		return False
+	if rr is None:
+		rr = GetResultMap( category ).get( bib, None )
+		
+	tRace = tRace or race.curRaceTime()
+	if race.isTimeTrial:
+		if rider.firstTime is None or rider.firstTime > tRace:	# The rider didn't start yet.
+			return False
+		if not rr.lapTimes:									# Rider started but nothing recorded yet.
+			return True
+	
+	Finisher = Model.Rider.Finisher
+	
+	category = race.getCategory( bib )
+	if category is None:						# The rider must be in a category to be counted.
+		return False
+	results = GetResults( category )
+	if not results or results[0].status != Finisher:
+		return False							# There must be a category leader.
+		
+	if rr is None or rr.status != Finisher:
+		return False							# If the rider doesn't have a result, or is DNF or DQ, skip.
+		
+	if rr.interp and rr.interp[-1]:				# If the last time is estimated, rider is still on course.
+		return True
+			
+	return False
+
+def RidersOnCourseCount():
+	race = Model.race
+	if not race or not race.isRunning():
+		return 0
+	
+	Finisher = Model.Rider.Finisher
+	tRace = race.curRaceTime()
+	count = 0
+	for bib, rider in race.riders.items():
+		if race.isTimeTrial:
+			if rider.firstTime is None or rider.firstTime > tRace:		# The rider didn't start yet.
+				continue
+		
+		category = race.getCategory( bib )
+		if category is None:					# The rider must be in a category
+			continue
+		results = GetResults( category )
+		if not results or results[0].status != Finisher:
+			continue							# There must be a category leader.
+			
+		rr = GetResultMap( category ).get( bib, None )
+		if rr is None or rr.status != Finisher:
+			continue							# If the rider doesn't have a result, or has DNF or DQ, skip.
+			
+		if rr.raceTimes:
+			if rr.lastInterp:					# If the last time is estimated, assume the rider is on course.
+				continue
+
+			lastTime = rr.raceTimes[-1]
+			if race.isTimeTrial:
+				lastTime += race.startTime
+			if lastTime > tRace:
+				count += 1						# The rider's last time is after the current race time.  Therefore, the rider is on course.
+		
+	return count

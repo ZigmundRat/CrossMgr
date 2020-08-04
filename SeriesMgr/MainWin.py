@@ -2,7 +2,6 @@ import wx
 from wx.lib.wordwrap import wordwrap
 import wx.adv as adv
 import sys
-import six
 import os
 import re
 import datetime
@@ -29,9 +28,9 @@ except:
 	localDateFormat = '%b %d, %Y'
 	localTimeFormat = '%I:%M%p'
 	
-import six.moves.cPickle as pickle
+import pickle
 from argparse import ArgumentParser
-StringIO = six.moves.StringIO
+from io import StringIO
 
 import Dependencies
 
@@ -151,9 +150,11 @@ class MainWin( wx.Frame ):
 
 		# Add code to configure file history.
 		self.filehistory = wx.FileHistory(8)
+		dataDir = Utils.getHomeDir('SeriesMgr')
+		configFileName = os.path.join(dataDir, 'SeriesMgr.cfg')
 		self.config = wx.Config(appName="SeriesMgr",
-								vendorName="SmartCyclingSolutions",
-								#style=wx.CONFIG_USE_LOCAL_FILE
+								vendorName="Edward.Sitarski@gmail.com",
+								localFilename=configFileName
 		)
 		self.filehistory.Load(self.config)
 		
@@ -691,6 +692,35 @@ table.results tr td.fastest{
 		self.filehistory.Save(self.config)
 		self.config.Flush()
 		
+	def fixPaths( self ):
+		model = SeriesModel.model
+		if not self.fileName or not model:
+			return False
+
+		# Check if we can find all race files.
+		for r in model.races:
+			if not os.path.isfile( r.fileName ):
+				fname = os.path.basename( r.fileName )
+				break
+		else:
+			return False
+			
+		if not Utils.MessageOKCancel(
+				self,
+				'Cannot find Race File:\n\n    "{}"\n\nSet new Root Folder?'.format(fname),
+				'Cannot find Race Files'
+				):
+			return False
+		
+		dlg = wx.DirDialog(
+			self,
+			message='Select Root Folder where Race Files can be Found under:',
+			defaultPath=os.path.dirname(self.fileName) if self.fileName else '',
+		)
+		result = (dlg.ShowModal() == wx.ID_OK) and model.setRootFolder( dlg.GetPath() )
+		dlg.Destroy()
+		return result
+		
 	def openSeries( self, fileName ):
 		if not fileName:
 			return
@@ -713,7 +743,8 @@ table.results tr td.fastest{
 		SeriesModel.model.postReadFix()
 		self.fileName = fileName
 		self.updateRecentFiles()
-		SeriesModel.model.setChanged( False )
+		
+		SeriesModel.model.setChanged( self.fixPaths() )
 		self.readResetAll()
 		try:
 			self.refreshAll()
@@ -723,7 +754,7 @@ table.results tr td.fastest{
 
 	def menuOpen( self, event ):
 		if SeriesModel.model.changed:
-			if Utils.MessageOKCancel(self, 'You have Unsaved Changes.  Save Now?', 'Unsaved Changes') == wx.ID_OK:
+			if Utils.MessageOKCancel(self, 'You have Unsaved Changes.  Save Now?', 'Unsaved Changes'):
 				try:
 					self.writeSeries()
 				except:

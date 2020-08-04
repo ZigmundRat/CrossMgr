@@ -1,6 +1,5 @@
 import re
 import os
-import six
 import time
 import math
 import socket
@@ -397,19 +396,19 @@ class Impinj( object ):
 		self.tagGroupTimer.start()
 	
 	def handleLogFile( self ):
-		while 1:
+		while True:
 			msg = self.logQ.get()
 			self.logQ.task_done()
 			
 			if msg[0] == 'shutdown':
 				return
 			try:
-				pf = io.open( self.fname, 'a' )
+				pf = open( self.fname, 'a' )
 			except:
 				continue
 			
 			pf.write( msg[1] if msg[1].endswith('\n') else msg[1] + '\n' )
-			while 1:
+			while True:
 				try:
 					msg = self.logQ.get( False )
 				except Empty:
@@ -433,6 +432,8 @@ class Impinj( object ):
 		utcfromtimestamp = datetime.datetime.utcfromtimestamp
 		
 		while self.checkKeepGoing():
+			self.readerSocket = None	# Voodoo to ensure that the socket is reset properly.
+			
 			#------------------------------------------------------------
 			# Connect Mode.
 			#
@@ -503,6 +504,19 @@ class Impinj( object ):
 						self.messageQ.put( ('Impinj', 'Listening for Impinj reader data...') )
 						tUpdateLast = t
 					continue
+				except Exception as e:
+					t = getTimeNow()
+					
+					if (t - tKeepaliveLast).total_seconds() > KeepaliveSeconds * 2:
+						self.messageQ.put( ('Impinj', 'Reader Connection Lost (Check your network adapter).') )
+						self.readerSocket.close()
+						self.messageQ.put( ('Impinj', 'Attempting Reconnect...') )
+						break
+					
+					if (t - tUpdateLast).total_seconds() >= ReaderUpdateMessageSeconds:
+						self.messageQ.put( ('Impinj', 'Listening for Impinj reader data...') )
+						tUpdateLast = t
+					continue
 				
 				if isinstance(response, KEEPALIVE_Message):
 					# Respond to the KEEP_ALIVE message with KEEP_ALIVE_ACK.
@@ -525,7 +539,7 @@ class Impinj( object ):
 				try:
 					discoveryTime = utcfromtimestamp( tag['Timestamp'] / 1000000.0 )
 					if ImpinjDebug and lastDiscoveryTime is not None:
-						six.print_( '{}            \r'.format( (discoveryTime - lastDiscoveryTime).total_seconds() ) )
+						print( '{}            \r'.format( (discoveryTime - lastDiscoveryTime).total_seconds() ) )
 					lastDiscoveryTime = discoveryTime
 				except:
 					pass
@@ -586,7 +600,7 @@ class Impinj( object ):
 		return True
 		
 	def purgeDataQ( self ):
-		while 1:
+		while True:
 			try:
 				d = self.dataQ.get( False )
 			except Empty:

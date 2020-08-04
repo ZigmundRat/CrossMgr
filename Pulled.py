@@ -2,7 +2,6 @@ import wx
 import wx.grid			as gridlib
 import re
 import os
-import six
 import sys
 import math
 import operator
@@ -80,7 +79,7 @@ class TimeEditor(gridlib.GridCellEditor):
 
 class Pulled( wx.Panel ):
 	def __init__( self, parent, id=wx.ID_ANY, size=wx.DefaultSize ):
-		super(Pulled, self).__init__( parent, id, size=size )
+		super().__init__( parent, id, size=size )
 		
 		self.state = RaceInputState()
 		
@@ -93,13 +92,16 @@ class Pulled( wx.Panel ):
 		self.categoryLabel = wx.StaticText( self, label=_('Category:') )
 		self.categoryChoice = wx.Choice( self )
 		self.Bind(wx.EVT_CHOICE, self.doChooseCategory, self.categoryChoice)
+		self.useTableToPullRidersCkBox = wx.CheckBox( self, label=_('Use this Table to Pull Riders') )
+		self.useTableToPullRidersCkBox.SetToolTip( wx.ToolTip(_('Also requires Laps to be set in Categories screen.')) )
 		self.commitBtn = wx.Button( self, label=_('Commit') )
 		self.commitBtn.Bind( wx.EVT_BUTTON, self.doCommit )
 		self.hbs.Add( self.showingCategoryLabel, flag=wx.LEFT | wx.ALIGN_CENTRE_VERTICAL, border=0 )
 		self.hbs.Add( self.showingCategory, flag=wx.LEFT | wx.ALIGN_CENTRE_VERTICAL, border=2 )
 		self.hbs.Add( self.categoryLabel, flag=wx.LEFT | wx.ALIGN_CENTRE_VERTICAL, border=18 )
 		self.hbs.Add( self.categoryChoice, flag=wx.LEFT | wx.ALIGN_CENTRE_VERTICAL, border=2 )
-		self.hbs.Add( self.commitBtn, flag=wx.LEFT | wx.ALIGN_CENTRE_VERTICAL, border=64 )
+		self.hbs.Add( self.useTableToPullRidersCkBox, flag=wx.LEFT | wx.ALIGN_CENTRE_VERTICAL, border=18 )
+		self.hbs.Add( self.commitBtn, flag=wx.LEFT | wx.ALIGN_CENTRE_VERTICAL, border=32 )
 		
 		#---------------------------------------------------------------
 		self.colNameFields = (
@@ -216,7 +218,7 @@ class Pulled( wx.Panel ):
 
 		if colName == 'pulledBib' or colName == 'lapsToGo':
 			bib = int( '0' + re.sub( '[^0-9]', '', self.grid.GetCellValue(row, self.iCol['pulledBib'])) )
-			for r in six.moves.range(row, -1, -1):
+			for r in range(row, -1, -1):
 				lapsToGo = int( '0' + self.grid.GetCellValue(r, self.iCol['lapsToGo']) )
 				if lapsToGo:
 					break
@@ -243,7 +245,7 @@ class Pulled( wx.Panel ):
 			'pulledError':self.getError(bib, lapsToGo, laps), 'lapsToGo':lapsToGo
 		}		
 		for col, (name, attr, valuesType) in enumerate(self.colNameFields):
-			self.grid.SetCellValue( row, col, six.text_type(values[attr]) )
+			self.grid.SetCellValue( row, col, str(values[attr]) )
 		return values
 	
 	def getRow( self, row ):
@@ -289,7 +291,7 @@ class Pulled( wx.Panel ):
 		
 		# Remove repeated lapsToGo entries.
 		col = self.iCol['lapsToGo']
-		for row in six.moves.range(self.grid.GetNumberRows()-1, 0, -1):
+		for row in range(self.grid.GetNumberRows()-1, 0, -1):
 			if self.grid.GetCellValue( row, col) == self.grid.GetCellValue( row-1, col):
 				self.grid.SetCellValue( row, col, u'')
 		
@@ -307,7 +309,7 @@ class Pulled( wx.Panel ):
 			self.grid.ClearGrid()
 			return
 		col = self.iCol['pulledBib']
-		tableBibs = set( int(u'0' + self.grid.GetCellValue(row, col)) for row in six.moves.range(self.grid.GetNumberRows()) )
+		tableBibs = set( int(u'0' + self.grid.GetCellValue(row, col)) for row in range(self.grid.GetNumberRows()) )
 		tableBibs.discard( 0 )
 		if not tableBibs:
 			return self.updateGrid()
@@ -324,10 +326,17 @@ class Pulled( wx.Panel ):
 		self.grid.SaveEditControlValue()	# Make sure the current edit is committed.
 		self.grid.DisableCellEditControl()
 		
-		rows = [self.getRow(r) for r in six.moves.range(self.grid.GetNumberRows())]
+		race = Model.race
+		if not race:
+			return
+		race.useTableToPullRiders = self.useTableToPullRidersCkBox.GetValue()
+		if not race.useTableToPullRiders:
+			self.grid.ClearGrid()
+			Utils.AdjustGridSize( self.grid, 20 )
+			return
+		
+		rows = [self.getRow(r) for r in range(self.grid.GetNumberRows())]
 		rows = [rv for rv in rows if rv['pulledBib']]
-		if not rows:
-			return True
 		
 		# Fix any missing data lapsToGo in the table.
 		lapsToGoLast = 1
@@ -342,6 +351,7 @@ class Pulled( wx.Panel ):
 		race, category, results, laps = info
 		rule80LapTime = race.getRule80LapTime( category )
 		
+		changed = False
 		Finisher, Pulled = Model.Rider.Finisher, Model.Rider.Pulled
 		for rr in results:
 			rider = race.riders.get(rr.num, None)
@@ -349,12 +359,13 @@ class Pulled( wx.Panel ):
 				continue
 			if rider.status == Pulled:
 				rider.status = Finisher
+				changed = True
 		
 		lapsToGoPulled = defaultdict( list )
 		for rv in rows:
 			lapsToGoPulled[rv['lapsToGo']].append( rv['pulledBib'] )
 			
-		for lapsToGo, bibs in six.iteritems(lapsToGoPulled):
+		for lapsToGo, bibs in lapsToGoPulled.items():
 			if lapsToGo <= 0:
 				continue
 			for seq, bib in enumerate(bibs):
@@ -366,8 +377,10 @@ class Pulled( wx.Panel ):
 				rider.status = Pulled
 				rider.pulledLapsToGo = lapsToGo
 				rider.pulledSequence = seq
-					
-		race.setChanged()
+				changed = True
+
+		if changed:
+			race.setChanged()
 		self.updateGrid()
 
 if __name__ == '__main__':

@@ -14,10 +14,12 @@ from Impinj2JChip import CrossMgrServer
 from pyllrp.AutoDetect import AutoDetect
 import QuadReg
 from TagGroup import QuadraticRegressionMethod, StrongestReadMethod, FirstReadMethod, MethodNames, MostReadsChoice, DBMaxChoice, AntennaChoiceNames
+from AntennaReads import AntennaReads
 
 import wx
 import wx.lib.masked			as masked
 import wx.lib.intctrl			as intctrl
+import wx.adv
 import sys
 import os
 import io
@@ -38,7 +40,8 @@ if 'WXMSW' in wx.Platform:
 else:
 	class IpAddrCtrl( wx.TextCtrl ):
 		def GetAddress( self ):
-			return self.GetValue()
+			ipaddress = self.GetValue()
+			return ipaddress.strip()
 
 clipboard_xpm = [
 b"16 15 23 1",
@@ -290,18 +293,59 @@ class MainWin( wx.Frame ):
 	def __init__( self, parent, id = wx.ID_ANY, title='', size=(200,200) ):
 		wx.Frame.__init__(self, parent, id, title, size=size)
 
+		dataDir = Utils.getHomeDir()
+		configFileName = os.path.join(dataDir, 'CrossMgrImpinj.cfg')
 		self.config = wx.Config(appName="CrossMgrImpinj",
 						vendorName="SmartCyclingSolutions",
-						#style=wx.Config.CONFIG_USE_LOCAL_FILE
+						localFilename=configFileName
 						)
 						
+		ID_MENU_ADVANCECONFIG = wx.NewIdRef()
+		ID_MENU_COPYLOGS = wx.NewIdRef()
+		ID_MENU_AUTODETECT = wx.NewIdRef()
+		self.menuBar = wx.MenuBar(wx.MB_DOCKABLE)
+		if 'WXMAC' in wx.Platform:
+			self.appleMenu = self.menuBar.OSXGetAppleMenu()
+			self.appleMenu.SetTitle("CrossMgrImpinj")
+
+			self.appleMenu.Insert(0, wx.ID_ABOUT, "&About")
+
+			self.Bind(wx.EVT_MENU, self.OnAboutBox, id=wx.ID_ABOUT)
+
+			self.editMenu = wx.Menu()
+			self.editMenu.Append(wx.MenuItem(self.editMenu, ID_MENU_ADVANCECONFIG,"A&dvanced Configuration"))
+			self.editMenu.Append(wx.MenuItem(self.editMenu, ID_MENU_COPYLOGS,"&Copy Logs to Clipboard"))
+			self.editMenu.Append(wx.MenuItem(self.editMenu, ID_MENU_AUTODETECT,"&Autodetect Reader"))
+
+			self.Bind(wx.EVT_MENU, self.doAdvanced, id=ID_MENU_ADVANCECONFIG)
+			self.Bind(wx.EVT_MENU, self.doCopyToClipboard, id=ID_MENU_COPYLOGS)
+			self.Bind(wx.EVT_MENU, self.doAutoDetect, id=ID_MENU_AUTODETECT)
+			self.menuBar.Append(self.editMenu, "&Edit")
+
+		else:
+			self.fileMenu = wx.Menu()
+			self.fileMenu.Append(wx.MenuItem(self.fileMenu, ID_MENU_ADVANCECONFIG,"A&dvanced Configuration"))
+			self.fileMenu.Append(wx.MenuItem(self.fileMenu, ID_MENU_COPYLOGS,"&Copy Logs to Clipboard"))
+			self.fileMenu.Append(wx.MenuItem(self.fileMenu, ID_MENU_AUTODETECT,"&Autodetect Reader"))
+			self.fileMenu.Append(wx.ID_EXIT)
+			self.Bind(wx.EVT_MENU, self.doAdvanced, id=ID_MENU_ADVANCECONFIG)
+			self.Bind(wx.EVT_MENU, self.doCopyToClipboard, id=ID_MENU_COPYLOGS)
+			self.Bind(wx.EVT_MENU, self.doAutoDetect, id=ID_MENU_AUTODETECT)
+			self.Bind(wx.EVT_MENU, self.onCloseWindow, id=wx.ID_EXIT)
+			self.menuBar.Append(self.fileMenu, "&File")
+			self.helpMenu = wx.Menu()
+			self.helpMenu.Insert(0, wx.ID_ABOUT, "&About")
+			self.Bind(wx.EVT_MENU, self.OnAboutBox, id=wx.ID_ABOUT)
+			self.menuBar.Append(self.helpMenu, "&Help")
+
+		self.SetMenuBar(self.menuBar)
 		self.SetBackgroundColour( wx.Colour(232,232,232) )
 		
 		self.LightGreen = wx.Colour(153,255,153)
 		self.LightRed = wx.Colour(255,153,153)
 		
 		font = self.GetFont()
-		bigFont = wx.Font( int(font.GetPointSize() * 1.5), font.GetFamily(), font.GetStyle(), wx.FONTWEIGHT_BOLD )
+		bigFont = wx.Font( int(font.GetPointSize() * 1.2), font.GetFamily(), font.GetStyle(), wx.FONTWEIGHT_BOLD )
 		titleFont = wx.Font( int(bigFont.GetPointSize()*2.2), bigFont.GetFamily(), bigFont.GetStyle(), bigFont.GetWeight() )
 		
 		self.vbs = wx.BoxSizer( wx.VERTICAL )
@@ -364,10 +408,10 @@ class MainWin( wx.Frame ):
 		gs = wx.GridSizer( rows=0, cols=4, vgap=0, hgap=2 )
 		self.antennaLabels = []
 		self.antennas = []
-		for i in six.moves.range(4):
+		for i in range(4):
 			self.antennaLabels.append( wx.StaticText(self, label='{}'.format(i+1), style=wx.ALIGN_CENTER) )
-			gs.Add( self.antennaLabels[-1], flag=wx.ALIGN_CENTER|wx.EXPAND )
-		for i in six.moves.range(4):
+			gs.Add( self.antennaLabels[-1], wx.EXPAND )
+		for i in range(4):
 			cb = wx.CheckBox( self, wx.ID_ANY, '')
 			if i < 2:
 				cb.SetValue( True )
@@ -390,12 +434,19 @@ class MainWin( wx.Frame ):
 		gbs.Add( self.useHostName, pos=(iRow,0), span=(1,1), flag=wx.ALIGN_CENTER_VERTICAL )
 		hb = wx.BoxSizer( wx.HORIZONTAL )
 		hb.Add( wx.StaticText(self, label=ImpinjHostNamePrefix), flag=wx.ALIGN_CENTER_VERTICAL )
-		self.impinjHostName = masked.TextCtrl( self,
-							mask         = 'NN-NN-NN',
-							defaultValue = '00-00-00',
-							useFixedWidthFont = True,
-							size=(80, -1),
-						)
+		if 'WXMAC' in wx.Platform or 'WXGTK' in wx.Platform:
+			self.impinjHostName = masked.TextCtrl( self,
+								defaultValue = '00-00-00',
+								useFixedWidthFont = True,
+								size=(80, -1),
+							)
+		else:
+			self.impinjHostName = masked.TextCtrl( self,
+								mask         = 'NN-NN-NN',
+								defaultValue = '00-00-00',
+								useFixedWidthFont = True,
+								size=(80, -1),
+							)
 		hb.Add( self.impinjHostName )
 		hb.Add( wx.StaticText(self, label=ImpinjHostNameSuffix), flag=wx.ALIGN_CENTER_VERTICAL )
 		hb.Add( wx.StaticText(self, label=' : ' + '{}'.format(ImpinjInboundPort)), flag=wx.ALIGN_CENTER_VERTICAL )
@@ -413,6 +464,10 @@ class MainWin( wx.Frame ):
 		
 		self.useHostName.SetValue( True )
 		self.useStaticAddress.SetValue( False )
+		
+		iRow += 1
+		self.antennaReads = AntennaReads( self )
+		gbs.Add( self.antennaReads, pos=(iRow,0), span=(1,3), flag=wx.ALIGN_LEFT|wx.EXPAND )
 		
 		iRow += 1
 		self.antennaReadCount = wx.StaticText( self, label='ANT Reads: 1:0 0% | 2:0 0% | 3:0 0% | 4:0 0%               ' )
@@ -445,8 +500,8 @@ class MainWin( wx.Frame ):
 		cmcs.Add( self.strayTagsLabel, flag=wx.LEFT|wx.RIGHT, border=4 )
 		
 		self.strays = wx.ListCtrl( self, style=wx.LC_REPORT|wx.BORDER_SUNKEN, size=(-1,50) )
-		self.strays.InsertColumn( 0, 'Tag', wx.LIST_AUTOSIZE_USEHEADER )
-		self.strays.InsertColumn( 1, 'Time', wx.LIST_AUTOSIZE_USEHEADER )
+		self.strays.InsertColumn( 0, 'Tag', width=wx.LIST_AUTOSIZE_USEHEADER )
+		self.strays.InsertColumn( 1, 'Time', width=wx.LIST_AUTOSIZE_USEHEADER )
 	
 		cmcs.Add( self.strays, 1, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=4 )
 		
@@ -475,11 +530,41 @@ class MainWin( wx.Frame ):
 		
 		self.SetSizer( self.vbs )
 		self.start()
-	
+
+	def OnAboutBox(self, e):
+			description = """CrossMgrImpinj is an Impinj interface to CrossMgr
+	"""
+
+			licence = """CrossMgrImpinjis free software; you can redistribute 
+	it and/or modify it under the terms of the GNU General Public License as 
+	published by the Free Software Foundation; either version 2 of the License, 
+	or (at your option) any later version.
+
+	CrossMgrImpinj is distributed in the hope that it will be useful, 
+	but WITHOUT ANY WARRANTY; without even the implied warranty of 
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+	See the GNU General Public License for more details. You should have 
+	received a copy of the GNU General Public License along with File Hunter; 
+	if not, write to the Free Software Foundation, Inc., 59 Temple Place, 
+	Suite 330, Boston, MA  02111-1307  USA"""
+
+			info = wx.adv.AboutDialogInfo()
+
+			crossMgrPng = Utils.getImageFolder() + '/CrossMgrImpinj.png'
+			info.SetIcon(wx.Icon(crossMgrPng, wx.BITMAP_TYPE_PNG))
+			info.SetName('CrossMgrImpinj')
+			info.SetVersion(AppVerName.split(' ')[1])
+			info.SetDescription(description)
+			info.SetCopyright('(C) 2020 Edward Sitarski')
+			info.SetWebSite('http://www.sites.google.com/site/crossmgrsoftware/')
+			info.SetLicence(licence)
+
+			wx.adv.AboutBox(info, self)
+
 	def readerStatusCB( self, **kwargs ):
 		# As this is called from another thread, make sure all UI updates are done from CallAfter.
 		connectedAntennas = set(kwargs.get( 'connectedAntennas', [] ))
-		for i in six.moves.range(4):
+		for i in range(4):
 			wx.CallAfter( self.antennaLabels[i].SetBackgroundColour, self.LightGreen if (i+1) in connectedAntennas else wx.NullColour  )
 
 	def refreshMethodName( self ):
@@ -508,9 +593,8 @@ class MainWin( wx.Frame ):
 		
 		self.strays.DeleteAllItems()
 		for tag, discovered in strays:
-			i = self.strays.InsertItem( 1000000, tag )
-			self.strays.SetItem( i, 1, discovered.strftime('%H:%M:%S') )
-		for c in six.moves.range(self.strays.GetColumnCount()):
+			self.strays.Append( [tag, discovered.strftime('%H:%M:%S')] )
+		for c in range(self.strays.GetColumnCount()):
 			self.strays.SetColumnWidth( c, wx.LIST_AUTOSIZE_USEHEADER )
 			
 	def strayHandler( self, strayQ ):
@@ -520,7 +604,7 @@ class MainWin( wx.Frame ):
 				wx.CallAfter( self.refreshStrays, msg[1] )
 			elif msg[0] == 'shutdown':
 				break
-	
+
 	def start( self ):
 		self.dataQ = Queue()
 		self.strayQ = Queue()
@@ -710,7 +794,7 @@ class MainWin( wx.Frame ):
 		return self.crossMgrHost.GetAddress()
 		
 	def getAntennaStr( self ):
-		selectedAntennas = [ i for i in six.moves.range(4) if self.antennas[i].GetValue() ]
+		selectedAntennas = [ i for i in range(4) if self.antennas[i].GetValue() ]
 		# Ensure at least one antenna is selected.
 		if not selectedAntennas:
 			self.antennas[0].SetValue( True )
@@ -719,7 +803,7 @@ class MainWin( wx.Frame ):
 	
 	def setAntennaStr( self, s ):
 		antennas = set( int(a) for a in s.split() )
-		for i in six.moves.range(4):
+		for i in range(4):
 			self.antennas[i].SetValue( (i+1) in antennas )
 	
 	def writeOptions( self ):
@@ -803,17 +887,18 @@ class MainWin( wx.Frame ):
 				else:
 					self.impinjMessages.write( message )
 					if antennaReadCount is not None:
-						total = max(1, sum( antennaReadCount[i] for i in six.moves.range(1,4+1)) )
+						total = max(1, sum( antennaReadCount[i] for i in range(1,4+1)) )
 						label = '{}: {} ({})'.format(
 								'ANT Used' if Impinj.ProcessingMethod != FirstReadMethod else 'ANT Reads',
 								' | '.join('{}:{} {:.1f}%'.format(
 									i,
 									formatAntennaReadCount(antennaReadCount[i]),
-									antennaReadCount[i]*100.0/total) for i in six.moves.range(1,4+1)
+									antennaReadCount[i]*100.0/total) for i in range(1,4+1)
 								),
 								'Peak RSSI' if Impinj.ProcessingMethod != FirstReadMethod else 'First Read',
 							)
 						self.antennaReadCount.SetLabel( label )
+						self.antennaReads.Set( [antennaReadCount[i] for i in range(1,4+1)] )
 				self.refreshMethodName()
 			elif d[0] == 'Impinj2JChip':
 				if 'state' in d:

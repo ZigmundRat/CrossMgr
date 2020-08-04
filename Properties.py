@@ -4,10 +4,8 @@ from Undo import undo
 import wx
 import re
 import os
-import six
 import wx.lib.intctrl as intctrl
 import wx.lib.masked.numctrl as numctrl
-import wx.lib.masked as masked
 import wx.lib.agw.flatnotebook as flatnotebook
 import glob
 import webbrowser
@@ -47,7 +45,7 @@ def addToFGS( fgs, labelFieldBatchPublish ):
 
 class GeneralInfoProperties( wx.Panel ):
 	def __init__( self, parent, id = wx.ID_ANY ):
-		super(GeneralInfoProperties, self).__init__( parent, id )
+		super().__init__( parent, id )
 		
 		self.raceNameLabel = wx.StaticText( self, label=_('Event Name:') )
 		self.raceName = wx.TextCtrl( self )
@@ -100,8 +98,7 @@ class GeneralInfoProperties( wx.Panel ):
 		self.Bind(intctrl.EVT_INT, self.onChanged, self.raceNum)
 		
 		self.scheduledStartLabel = wx.StaticText( self, label=_('Scheduled Start') )
-		self.scheduledStart = masked.TimeCtrl( self, fmt24hr=True, display_seconds=False, value='10:00:00', )
-		self.scheduledStart.SetSize( (64,-1) )
+		self.scheduledStart = HighPrecisionTimeEdit( self, display_seconds=False, value='10:00', size=(64,-1) )
 		
 		self.minutesLabel = wx.StaticText( self, label=_('Race Minutes') )
 		self.minutes = intctrl.IntCtrl( self, min=1, max=60*48, allow_none=False, value=40, size=(64,-1), style=wx.ALIGN_RIGHT )
@@ -190,9 +187,10 @@ class GeneralInfoProperties( wx.Panel ):
 
 class RaceOptionsProperties( wx.Panel ):
 	def __init__( self, parent, id = wx.ID_ANY ):
-		super(RaceOptionsProperties, self).__init__( parent, id )
+		super().__init__( parent, id )
 		
 		self.timeTrial = wx.CheckBox( self, label=_('Time Trial') )
+		self.timeTrial.Bind(wx.EVT_CHECKBOX, self.onChangeTimeTrial )
 		
 		self.allCategoriesFinishAfterFastestRidersLastLap = wx.CheckBox( self, label=_("All Categories Finish After Fastest Rider's Last Lap") )
 		self.allCategoriesFinishAfterFastestRidersLastLap.SetValue( True )
@@ -236,6 +234,7 @@ class RaceOptionsProperties( wx.Panel ):
 		
 		self.winAndOut = wx.CheckBox( self, label=_("Win and Out") )
 		self.winAndOut.SetValue( False )
+		self.winAndOut.Bind(wx.EVT_CHECKBOX, self.onChangeWinAndOut )
 
 		#-------------------------------------------------------------------------------
 		ms = wx.BoxSizer( wx.HORIZONTAL )
@@ -269,6 +268,16 @@ class RaceOptionsProperties( wx.Panel ):
 		
 		ms.Add( fgs, 1, flag=wx.EXPAND|wx.ALL, border=16 )
 
+	def onChangeTimeTrial( self, event=None ):
+		self.timeTrial.SetBackgroundColour( wx.Colour(255, 204, 153) if self.timeTrial.GetValue() else wx.WHITE )
+		if event:
+			event.Skip()
+     
+	def onChangeWinAndOut( self, event=None ):
+		self.winAndOut.SetBackgroundColour( wx.Colour(255, 204, 153) if self.winAndOut.GetValue() else wx.WHITE )
+		if event:
+			event.Skip()
+     
 	def refresh( self ):
 		race = Model.race
 		self.timeTrial.SetValue( getattr(race, 'isTimeTrial', False) )
@@ -288,6 +297,8 @@ class RaceOptionsProperties( wx.Panel ):
 		self.showDetails.SetValue( not race.hideDetails )
 		self.showCourseAnimationInHtml.SetValue( race.showCourseAnimationInHtml )
 		self.licenseLinkTemplate.SetValue( race.licenseLinkTemplate )
+		self.onChangeWinAndOut()
+		self.onChangeTimeTrial()
 		
 	@property
 	def distanceUnitValue( self ):
@@ -320,7 +331,7 @@ class RfidProperties( wx.Panel ):
 				_('Manual Start: Skip first tag read for all riders.') + u'  \n' + _('Required when start run-up passes the finish on the first lap.')]
 
 	def __init__( self, parent, id = wx.ID_ANY ):
-		super(RfidProperties, self).__init__( parent, id )
+		super().__init__( parent, id )
 		self.jchip = wx.CheckBox( self, style=wx.ALIGN_LEFT, label = _('Use RFID Reader') )
 
 		self.chipTimingOptions = wx.RadioBox(
@@ -391,7 +402,7 @@ class RfidProperties( wx.Panel ):
 class WebProperties( wx.Panel ):
 
 	def __init__( self, parent, id = wx.ID_ANY ):
-		super(WebProperties, self).__init__( parent, id )
+		super().__init__( parent, id )
 
 		fgs = wx.FlexGridSizer( rows=0, cols=2, vgap=7, hgap=6 )
 		fgs.AddGrowableCol( 1 )
@@ -503,7 +514,7 @@ class WebProperties( wx.Panel ):
 class GPXProperties( wx.Panel ):
 
 	def __init__( self, parent, id = wx.ID_ANY ):
-		super(GPXProperties, self).__init__( parent, id )
+		super().__init__( parent, id )
 		
 		fgs = wx.FlexGridSizer( rows=0, cols=4, vgap=7, hgap=6 )
 		fgs.AddGrowableCol( 1 )
@@ -637,7 +648,7 @@ class CameraProperties( wx.Panel ):
 	advanceMin, advanceMax = -2000, 2000
 	
 	def __init__( self, parent, id=wx.ID_ANY ):
-		super(CameraProperties, self).__init__( parent, id )
+		super().__init__( parent, id )
 		
 		choices = [
 			_("Do Not Use Camera for Photo Finish"),
@@ -780,10 +791,9 @@ class CameraProperties( wx.Panel ):
 			race.photosAtRaceEndOnly = True
 
 #------------------------------------------------------------------------------------------------
-
 class AnimationProperties( wx.Panel ):
 	def __init__( self, parent, id = wx.ID_ANY ):
-		super(AnimationProperties, self).__init__( parent, id )
+		super().__init__( parent, id )
 		
 		self.note = wx.StaticText( self, label=u'\n'.join ([
 				_('This only applies to the Track animation.'),
@@ -812,9 +822,78 @@ class AnimationProperties( wx.Panel ):
 		race.finishTop = self.finishTop.GetValue()
 
 #------------------------------------------------------------------------------------------------
+class TeamResultsProperties( wx.Panel ):
+	def __init__( self, parent, id = wx.ID_ANY ):
+		super().__init__( parent, id )
+		
+		self.teamRankOptionLabel = wx.StaticText( self, label=_('Team Rank Criteria') )
+		choices = [
+			_('by Nth Rider Time'),
+			_('by Sum Time'),
+			_('by Sum Points'),
+			_('by Sum Percent Time'),
+		]
+		self.teamRankOption = wx.Choice( self, choices=choices )
+		
+		self.nthTeamRiderLabel = wx.StaticText( self, label=_('Nth Rider') )
+		self.nthTeamRider = wx.Choice( self, choices=[u'{}'.format(i) for i in range(1,16)] )
+		self.nthTeamRiderNote = wx.StaticText( self, label=_('for Nth Rider Time') )
+		
+		self.topTeamResultsLabel = wx.StaticText( self, label=_('# Top Results') )
+		self.topTeamResults = wx.Choice( self, choices=[u'{}'.format(i) for i in range(1,16)] )
+		self.topTeamResultsNote = wx.StaticText( self, label=_('for Sum Time, Points and Percent') )
+		
+		self.finishPointsStructureLabel = wx.StaticText( self, label=_('Finish Points') )
+		self.finishPointsStructure = wx.TextCtrl( self, value="", style=wx.TE_PROCESS_ENTER, size=(240,-1) )
+		self.finishPointsStructureNote = wx.StaticText( self, label=_('for Sum Points') )
+		
+		self.showNumTeamParticipants = wx.CheckBox( self, label=_('Show # of Team Participants'))
+		#-------------------------------------------------------------------------------
+		ms = wx.BoxSizer( wx.VERTICAL )
+		self.SetSizer( ms )
+		
+		hs = wx.BoxSizer( wx.HORIZONTAL )
+		hs.Add( self.teamRankOptionLabel, flag=wx.ALIGN_CENTER_VERTICAL )
+		hs.Add( self.teamRankOption, flag=wx.LEFT, border=4 )
+		ms.Add( hs, flag=wx.ALL, border=4 )
+		
+		fgs = wx.FlexGridSizer( 3, 4, 4 )
+		fgs.Add( self.nthTeamRiderLabel, flag=wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL )
+		fgs.Add( self.nthTeamRider )
+		fgs.Add( self.nthTeamRiderNote, flag=wx.ALIGN_CENTER_VERTICAL )
+		
+		fgs.Add( self.topTeamResultsLabel, flag=wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL )
+		fgs.Add( self.topTeamResults )
+		fgs.Add( self.topTeamResultsNote, flag=wx.ALIGN_CENTER_VERTICAL )
+
+		fgs.Add( self.finishPointsStructureLabel, flag=wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL )
+		fgs.Add( self.finishPointsStructure )
+		fgs.Add( self.finishPointsStructureNote, flag=wx.ALIGN_CENTER_VERTICAL )
+
+		fgs.Add( wx.StaticText(self, label='') )
+		fgs.Add( self.showNumTeamParticipants, flag=wx.ALIGN_CENTER_VERTICAL )
+
+		ms.Add( fgs, flag=wx.ALL, border=4 )
+		
+	def refresh( self ):
+		race = Model.race
+		self.teamRankOption.SetSelection( race.teamRankOption )
+		self.nthTeamRider.SetSelection( race.nthTeamRider - 1 )
+		self.topTeamResults.SetSelection( race.topTeamResults - 1 )
+		self.finishPointsStructure.SetValue( race.finishPointsStructure )
+		
+	def commit( self ):
+		race = Model.race
+		race.teamRankOption = self.teamRankOption.GetSelection()
+		race.nthTeamRider = self.nthTeamRider.GetSelection() + 1
+		race.topTeamResults = self.topTeamResults.GetSelection() + 1
+		race.finishPointsStructure = ','.join( re.sub( '[^0-9]', ' ', self.finishPointsStructure.GetValue() ).split() )
+		race.showNumTeamParticipants = self.showNumTeamParticipants.GetValue()
+
+#------------------------------------------------------------------------------------------------
 class BatchPublishProperties( wx.Panel ):
 	def __init__( self, parent, id=wx.ID_ANY, testCallback=None, ftpCallback=None ):
-		super(BatchPublishProperties, self).__init__( parent, id )
+		super().__init__( parent, id )
 
 		self.testCallback = testCallback
 		self.ftpCallback = ftpCallback
@@ -841,7 +920,7 @@ class BatchPublishProperties( wx.Panel ):
 			fgs.Add( st, flag=wx.ALL, border=4 )
 		
 		for i, attr in enumerate(batchPublishAttr):
-			for k in six.moves.range(len(headers)): fgs.Add( wx.StaticLine(self, size=(1,1)), flag=wx.EXPAND )
+			for k in range(len(headers)): fgs.Add( wx.StaticLine(self, size=(1,1)), flag=wx.EXPAND )
 		
 			attrCB = wx.CheckBox(self, label=attr.uiname)
 			attrCB.Bind( wx.EVT_CHECKBOX, lambda event, iAttr=i: self.onSelect(iAttr) )
@@ -1003,7 +1082,7 @@ def doBatchPublish( silent=False, iAttr=None ):
 		if not silent:
 			class FtpThread( threading.Thread ):
 				def __init__(self, ftpFiles, progressDialog):
-					super( FtpThread, self ).__init__()
+					super().__init__()
 					self.ftpFiles = ftpFiles
 					self.progressDialog = progressDialog
 					self.e = None
@@ -1051,7 +1130,7 @@ def doBatchPublish( silent=False, iAttr=None ):
 
 class BatchPublishPropertiesDialog( wx.Dialog ):
 	def __init__( self, parent, id=wx.ID_ANY ):
-		super(BatchPublishPropertiesDialog, self).__init__( parent, id, _("Batch Publish Results"),
+		super().__init__( parent, id, _("Batch Publish Results"),
 					style=wx.DEFAULT_DIALOG_STYLE|wx.TAB_TRAVERSAL )
 					
 		self.batchPublishProperties = BatchPublishProperties(self, testCallback=self.commit, ftpCallback=self.onToggleFtp)
@@ -1111,7 +1190,7 @@ class BatchPublishPropertiesDialog( wx.Dialog ):
 #------------------------------------------------------------------------------------------------
 class NotesProperties( wx.Panel ):
 	def __init__( self, parent, id = wx.ID_ANY ):
-		super(NotesProperties, self).__init__( parent, id )
+		super().__init__( parent, id )
 		
 		ms = wx.BoxSizer( wx.VERTICAL )
 		self.SetSizer( ms )
@@ -1164,7 +1243,7 @@ class NotesProperties( wx.Panel ):
 #------------------------------------------------------------------------------------------------
 class FilesProperties( wx.Panel ):
 	def __init__( self, parent, id = wx.ID_ANY ):
-		super(FilesProperties, self).__init__( parent, id )
+		super().__init__( parent, id )
 		
 		self.fileNameLabel = wx.StaticText( self, label=_('File Name') )
 		self.fileName = wx.StaticText( self )
@@ -1226,7 +1305,7 @@ class Properties( wx.Panel ):
 	dateFormat = '%Y-%m-%d'
 
 	def __init__( self, parent, id=wx.ID_ANY, addEditButton=True ):
-		super(Properties, self).__init__(parent, id)
+		super().__init__(parent, id)
 		
 		self.state = RaceInputState()
 		
@@ -1259,6 +1338,7 @@ class Properties( wx.Panel ):
 			('lapCounterProperties',	LapCounterProperties,		_('Lap Counter') ),
 			('animationProperties',		AnimationProperties,		_('Animation') ),
 			('filesProperties',			FilesProperties,			_('Files/Excel') ),
+			('teamResultsProperties',	TeamResultsProperties,		_('Team Results') ),
 		]
 		for prop, PropClass, name in self.propClassName:
 			setattr( self, prop, PropClass(self.notebook) )
@@ -1325,11 +1405,13 @@ class Properties( wx.Panel ):
 		if Model.race:
 			wx.CallAfter( self.commit )
 		else:
-			Utils.MessageOK( self,
-				_('You must have a valid race File|Open...') + u'\n' + _('Or create one with File|New....'), _('Valid Race Required'),
-				wx.ICON_WARNING )
+			Utils.MessageOK(self, _("You must have a valid race.  Open or New a race first."), _("No Valid Race"), iconMask=wx.ICON_ERROR)
 	
 	def loadTemplateButtonCallback( self, event ):
+		race = Model.race
+		if not race:
+			Utils.MessageOK(self, _("You must have a valid race.  Open or New a race first."), _("No Valid Race"), iconMask=wx.ICON_ERROR)
+			return
 		templatesFolder = GetTemplatesFolder()
 		try:
 			os.makedirs( templatesFolder )
@@ -1365,6 +1447,10 @@ class Properties( wx.Panel ):
 				Utils.MessageOK( self, u'{}\n\n{}\n{}'.format(_("Template Load Failure"), e, path), _("Template Load Failure"), wx.ICON_ERROR )
 	
 	def saveTemplateButtonCallback( self, event ):
+		race = Model.race
+		if not race:
+			Utils.MessageOK(self, _("You must have a valid race.  Open or New a race first."), _("No Valid Race"), iconMask=wx.ICON_ERROR)
+			return			
 		self.commit()
 		templatesFolder = os.path.join( os.path.expanduser("~"), 'CrossMgrTemplates' )
 		try:
@@ -1383,7 +1469,7 @@ class Properties( wx.Panel ):
 			path = fd.GetPath()
 			try:
 				template.write( path )
-				Model.race.templateFileName = path
+				race.templateFileName = path
 				self.refresh()
 				Utils.MessageOK( self, u'{}\n\n{}'.format(_("Template Saved to"), path), _("Save Template Successful") )
 			except Exception as e:
@@ -1407,7 +1493,7 @@ class Properties( wx.Panel ):
 			gi.scheduledStart.SetValue( '13:00' )
 			gi.minutes.SetValue( 60 )
 		else:
-			sStr = '{}'.format(gi.scheduledStart.GetValue())
+			sStr = gi.scheduledStart.GetValue()
 			fields = sStr.split(':')
 			if len(fields) == 2:
 				mins = int(fields[0],10) * 60 + int(fields[1],10)
@@ -1496,7 +1582,7 @@ class Properties( wx.Panel ):
 			wx.CallAfter( mainWin.writeRace, False )
 		wx.CallAfter( Utils.refreshForecastHistory )
 		if not success and mainWin:
-			wx.CallAfter( mainWin.showPageName, _("Properties") )
+			wx.CallAfter( mainWin.showPage, mainWin.iPropertiesPage )
 		
 class PropertiesDialog( wx.Dialog ):
 	def __init__(
@@ -1506,7 +1592,7 @@ class PropertiesDialog( wx.Dialog ):
 			updateProperties = False,
 		):
 
-		super( PropertiesDialog, self ).__init__( parent, ID, title=title, size=size, pos=pos, style=style )
+		super().__init__( parent, ID, title=title, size=size, pos=pos, style=style )
 		
 		self.properties = Properties( self, addEditButton=False )
 		
@@ -1537,7 +1623,7 @@ class PropertiesDialog( wx.Dialog ):
 			btn.Bind( wx.EVT_BUTTON, self.onBrowseCategories )
 			fgs.Add( btn, flag=wx.ALIGN_CENTER_VERTICAL )
 			
-			vsizer.Add( fgs, flag=wx.ALIGN_CENTER_VERTICAL|wx.EXPAND|wx.ALL, border=5)
+			vsizer.Add( fgs, flag=wx.EXPAND|wx.ALL, border=5)
 			
 			vsizer.Add( wx.StaticLine(self, style=wx.LI_HORIZONTAL), flag=wx.EXPAND|wx.RIGHT|wx.TOP, border=5)
 		

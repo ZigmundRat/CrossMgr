@@ -1,7 +1,6 @@
 import wx
 import os
 import re
-import six
 import xlwt
 import xlsxwriter
 import uuid
@@ -13,7 +12,7 @@ from GetResults import GetResults, GetCategoryDetails
 from ReadSignOnSheet import ReportFields
 from FitSheetWrapper import FitSheetWrapper, FitSheetWrapperXLSX
 import qrcode
-from six.moves.urllib.parse import quote
+from urllib.parse import quote
 import Flags
 import ImageIO
 
@@ -89,7 +88,7 @@ def drawQRCode( url, dc, x, y, size ):
 class ExportGrid( object ):
 	PDFLineFactor = 1.10
 
-	def __init__( self, title = '', colnames = [], data = [], footer = '', leftJustifyCols=None, infoColumns=None ):
+	def __init__( self, title='', colnames=[], data=[], footer='', leftJustifyCols=None, infoColumns=None ):
 		self.title = title
 		self.footer = footer
 		self.colnames = colnames
@@ -706,7 +705,8 @@ class ExportGrid( object ):
 		self.data[col][row] = value
 	
 	def setResultsOneList( self, category = None, getExternalData = True,
-							showLapsFrequency = None, showLapTimes = True ):
+							showLapsFrequency = None, showLapTimes = True,
+							showPrizes = False ):
 		''' Format the results into columns. '''
 		self.data = []
 		self.colnames = []
@@ -718,6 +718,8 @@ class ExportGrid( object ):
 		
 		Finisher = Model.Rider.Finisher
 		race = Model.race
+		prizes = category.prizes if category else []
+		showPrizes = showPrizes and bool(prizes)
 		
 		catDetails = { cd['name']:cd for cd in GetCategoryDetails() }
 		try:
@@ -741,10 +743,15 @@ class ExportGrid( object ):
 					u',  {} ', _('Lapped')])).format( starters, dnf, lapped )
 
 		leader = results[0]
+		
 		hasSpeeds = (hasattr(leader, 'lapSpeeds') or hasattr(leader, 'raceSpeeds'))
 		hasFactor = (hasattr(leader, 'factor') and any( leader.factor != rr.factor for rr in results ))
 		
-		leaderTime = Utils.formatTime(leader.lastTime - leader.raceTimes[0]) if leader.lastTime else u''
+		leaderTime = (
+			Utils.formatTime(leader.lastTime - leader.raceTimes[0])
+				if leader.lastTime and leader.raceTimes and leader.status == Finisher
+			else u''
+		)
 		
 		if showLapTimes and showLapsFrequency is None:
 			# Compute a reasonable number of laps to show (max around 10).
@@ -788,7 +795,9 @@ class ExportGrid( object ):
 						([_('Gap')] if not hasFactor else [])
 		)
 		if hasSpeeds:
-			self.colnames += [_('Speed')]
+			self.colnames.append( _('Speed') )
+		if showPrizes:
+			self.colnames.append( _('Prize') )
 			
 		self.colnames = [u'{} {}'.format(name[:-len(_('Name'))], _('Name')) if name.endswith(_('Name')) else name for name in self.colnames]
 		self.iLapTimes = len(self.colnames)
@@ -808,10 +817,12 @@ class ExportGrid( object ):
 					infoFields +
 					(['clockStartTime','startTime','finishTime'] if isTimeTrial else []) +
 					(['lastTimeOrig', 'factor', 'lastTime'] if hasFactor else ['lastTime']) +
-					(['gap'] if not hasFactor else [])
+					(['gap'] if not hasFactor else []) 
 		)
 		if hasSpeeds:
-			rrFields += ['speed']
+			rrFields.append( 'speed' )
+		if showPrizes:
+			rrFields.append( 'prize' )
 		for col, f in enumerate( rrFields ):
 			if f in ('lastTime', 'lastTimeOrig'):
 				for row, rr in enumerate(results):
@@ -839,6 +850,12 @@ class ExportGrid( object ):
 					if factor is not None:
 						data[col].append( u'{:.2f}'.format(factor) )
 					else:
+						data[col].append( u'' )
+			elif f == 'prize':
+				for row, rr in enumerate(results):
+					try:
+						data[col].append( prizes[row] )
+					except IndexError:
 						data[col].append( u'' )
 			else:
 				for row, rr in enumerate(results):

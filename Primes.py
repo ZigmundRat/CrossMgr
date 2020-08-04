@@ -1,7 +1,6 @@
 import wx
 from wx.lib.masked import NumCtrl
 import os
-import six
 import sys
 import math
 import Utils
@@ -41,7 +40,7 @@ with Utils.SuspendTranslation():
 
 class Primes( wx.Panel ):
 	def __init__( self, parent, id=wx.ID_ANY, size=wx.DefaultSize ):
-		super(Primes, self).__init__( parent, id, size=size )
+		super().__init__( parent, id, size=size )
 		
 		self.state = RaceInputState()
 		
@@ -289,13 +288,13 @@ class Primes( wx.Panel ):
 				v = GetTranslation(effortType)
 			elif attr == 'position':
 				position = prime.get('position', 1)
-				v = u'' if position == 0 else six.text_type(position)
+				v = u'' if position == 0 else '{}'.format(position)
 			elif attr == 'points':
 				points = prime.get('points', 0)
-				v = u'' if points == 0 else six.text_type(points)
+				v = u'' if points == 0 else '{}'.format(points)
 			elif attr == 'winnerBib':
 				winnerBib = prime.get('winnerBib', None)
-				v = u'' if not winnerBib else six.text_type(winnerBib)
+				v = u'' if not winnerBib else '{}'.format(winnerBib)
 			elif attr == 'winnerInfo':
 				v = getWinnerInfo(winnerBib)
 			elif dataType == 'f':
@@ -305,7 +304,7 @@ class Primes( wx.Panel ):
 				t = prime.get(attr, 0.0)
 				v = Utils.formatTime(t, forceHours=True, twoDigitHours=True) if t != 0 else u''
 			else:
-				v = six.text_type(prime.get(attr, u''))
+				v = '{}'.format(prime.get(attr, u''))
 			if updateGrid:
 				self.grid.SetCellValue( row, col, v )
 			data.append( v )
@@ -363,7 +362,7 @@ class Primes( wx.Panel ):
 		race = Model.race
 		if not race:
 			return
-		race.primes = [self.getRow(row) for row in six.moves.range(self.grid.GetNumberRows())]
+		race.primes = [self.getRow(row) for row in range(self.grid.GetNumberRows())]
 
 def GetGrid():
 	race = Model.race
@@ -422,9 +421,9 @@ def GetGrid():
 	if hasSponsor:
 		colnames.append( _('Sponsor') )
 
-	leftJustifyCols = set( i for i in six.moves.range(len(colnames)) if i not in rightJustifyCols )
+	leftJustifyCols = set( i for i in range(len(colnames)) if i not in rightJustifyCols )
 	
-	data = [[] for c in six.moves.range(len(colnames))]	# Column oriented table.
+	data = [[] for c in range(len(colnames))]	# Column oriented table.
 	GetTranslation = _
 	for p, prime in enumerate(primes):
 		row = []
@@ -456,7 +455,7 @@ def GetGrid():
 			row.append( prime.get('sponsor',u'') )
 		
 		for c, v in enumerate(row):
-			data[c].append( six.text_type(v) )
+			data[c].append( '{}'.format(v) )
 		
 	return {'title':title, 'colnames':colnames, 'data':data, 'leftJustifyCols':leftJustifyCols}
 

@@ -1,5 +1,4 @@
 import wx
-import six
 import sys
 import Model
 import Utils
@@ -45,9 +44,9 @@ class Gantt( wx.Panel ):
 		
 		self.hbs.Add( self.categoryLabel, flag=wx.TOP | wx.BOTTOM | wx.LEFT | wx.ALIGN_CENTRE_VERTICAL, border=4 )
 		self.hbs.Add( self.categoryChoice, flag=wx.ALL | wx.ALIGN_CENTRE_VERTICAL, border=4 )
-		self.hbs.Add( self.showFullNamesInChart, flag=wx.ALL | wx.ALIGN_CENTRE_VERTICAL | wx.EXPAND, border=4 )
-		self.hbs.Add( self.groupByStartWave, flag=wx.ALL | wx.ALIGN_CENTRE_VERTICAL | wx.EXPAND, border=4 )
-		self.hbs.Add( self.statsLabel, flag=wx.ALL | wx.ALIGN_CENTRE_VERTICAL | wx.EXPAND, border=4 )
+		self.hbs.Add( self.showFullNamesInChart, flag=wx.ALL | wx.ALIGN_CENTRE_VERTICAL, border=4 )
+		self.hbs.Add( self.groupByStartWave, flag=wx.ALL | wx.ALIGN_CENTRE_VERTICAL, border=4 )
+		self.hbs.Add( self.statsLabel, flag=wx.ALL | wx.ALIGN_CENTRE_VERTICAL, border=4 )
 		
 		self.ganttChart = GanttChartPanel.GanttChartPanel( self )
 		self.ganttChart.dClickCallback = UpdateSetNum
@@ -142,8 +141,8 @@ class Gantt( wx.Panel ):
 				(None, None, None, None),
 				(_('Show Lap Details') + u'...', 	_('Show Lap Details'),			self.OnPopupLapDetail, allCases),
 				(None, None, None, None),
-				(_('RiderDetail'),				_('Show RiderDetail Dialog'),	self.OnPopupRiderDetail, allCases),
-				(_('Results'), 					_('Switch to Results tab'),		self.OnPopupResults, allCases),
+				(_('RiderDetail') + u'...',			_('Show RiderDetail Dialog'),	self.OnPopupRiderDetail, allCases),
+				(_('Results'), 						_('Switch to Results tab'),		self.OnPopupResults, allCases),
 			]
 			
 			self.splitMenuInfo = [
@@ -494,7 +493,7 @@ class Gantt( wx.Panel ):
 		
 	def OnPopupResults( self, event ):
 		if Utils.isMainWin():
-			Utils.getMainWin().showPageName( _('Results') )
+			Utils.getMainWin().showResultsPage()
 			
 	def OnPopupRiderDetail( self, event ):
 		from RiderDetail import ShowRiderDetailDialog
