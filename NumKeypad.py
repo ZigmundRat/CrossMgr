@@ -21,7 +21,7 @@ from TimeTrialRecord import TimeTrialRecord
 from ClockDigital import ClockDigital
 from NonBusyCall import NonBusyCall
 
-# codes to cause an enter.
+# key codes recognized as Enter.
 enterCodes = {
 	wx.WXK_RETURN,
 	wx.WXK_SPACE,
@@ -29,9 +29,28 @@ enterCodes = {
 	wx.WXK_NUMPAD_ENTER,
 	wx.WXK_NUMPAD_SPACE,
 	wx.WXK_NUMPAD_TAB,
+	
+	 9,     # \h vertical tab
+	10,		# \r linefeed
+	11,	    # \t horizontal tab
+	12,     # \r formfeed
+	13,		# \n newline
 }
-# backspace, delete, comma, return, digits
-validKeyCodes = set( [8, 127, 44, 13] + list(range(48, 48+10)) )
+if sys.platform == 'darwin':
+	enterCodes.add( 370 )		# Mac's numeric keypad enter code (exceeds 255, but whatever).
+
+# backspace, delete, comma, digits
+validKeyCodes = set( [8, 127, 44] + list(range(48, 48+10)) )
+
+# Codes to clear the entry.
+clearCodes = { 0x2327, 27, ord('c'), ord('C') }
+
+# Codes to do actions.
+# / - DNF
+# * - DNS
+# - - PUL
+# + - DQ
+actionCodes = { ord('/'), ord('*'), ord('-'), ord('+') }
 
 SplitterMinPos = 390
 SplitterMaxPos = 530
@@ -169,10 +188,24 @@ class Keypad( wx.Panel ):
 		keycode = event.GetKeyCode()
 		if keycode in enterCodes:
 			self.onEnterPress()
+		elif keycode in clearCodes:
+			self.numEdit.SetValue( '' )
+		elif keycode in actionCodes:
+			if   keycode == ord('/'):	# DNF
+				pass	
+			elif keycode == ord('*'):	# DNS
+				pass
+			elif keycode == ord('-'):	# PUL
+				pass
+			elif keycode == ord('+'):	# DQ
+				pass
 		elif keycode < 255:
 			if keycode in validKeyCodes:
 				event.Skip()
+			else:
+				Utils.writeLog( 'handleNumKeypress: ignoring keycode < 255: {}'.format(keycode) )
 		else:
+			Utils.writeLog( 'handleNumKeypress: ignoring keycode: >= 255 {}'.format(keycode) )
 			event.Skip()
 	
 	def onEnterPress( self, event = None ):
